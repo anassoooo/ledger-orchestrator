@@ -1,0 +1,17 @@
+*.pdf
+*.xlsx
+outputs/
+data/
+__pycache__/
+.venv/
+*.pyc
+.env
+.env.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+.DS_Store
+Thumbs.db

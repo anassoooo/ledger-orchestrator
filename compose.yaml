@@ -1,0 +1,35 @@
+services:
+  cmf:
+    build: .
+    image: cmf-star:local
+    volumes:
+      - ./data/sources/STAR:/data/sources/STAR:ro
+      - ./data/templates/TAF_G1_G2_G3_G4.xlsx:/data/templates/TAF_G1_G2_G3_G4.xlsx:ro
+      - ./outputs:/output
+    environment:
+      CMF_CONFIG: /app/config/star.json
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [local]
+    mem_limit: 6g
+    cpus: 4
+  gateway:
+    image: cmf-star:local
+    command: ["python", "-m", "cmf.gateway"]
+    ports:
+      - "127.0.0.1:8000:8080"
+    networks: [local, ingress]
+    depends_on:
+      cmf:
+        condition: service_healthy
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+networks:
+  local:
+    internal: true
+  ingress: {}
