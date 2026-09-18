@@ -4,7 +4,7 @@
 
 Docker Desktop fonctionne. Commande et API locale sont opérationnelles : lancement,
 suivi, rapport et téléchargement. Le classeur téléchargé a été comparé au fichier
-local par SHA-256 : identité confirmée lors de la vérification précédente. Les 33 tests passent dans Docker, dont le
+local par SHA-256 : identité confirmée lors de la vérification précédente. Les 53 tests passent dans Docker, dont le
 recalcul LibreOffice réel, les conflits et les regroupements de branches.
 
 Les règles confirmées sont actives : TND, STAR_Details, primes avant réassurance,

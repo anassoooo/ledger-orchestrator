@@ -6,7 +6,7 @@ from cmf.pipeline import execute
 
 
 def main():
-    parser=argparse.ArgumentParser(description='CMF STAR extraction locale et contrôlée')
+    parser=argparse.ArgumentParser(description='LedgerOrchestrator — extraction financière locale et contrôlée')
     parser.add_argument('--root',type=Path,default=Path(os.getenv('CMF_ROOT','data')))
     parser.add_argument('--output',type=Path,default=Path(os.getenv('CMF_OUTPUT','outputs')))
     parser.add_argument('--config',type=Path,default=Path(os.getenv('CMF_CONFIG','config/star.json')))

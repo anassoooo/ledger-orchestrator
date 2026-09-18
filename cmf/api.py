@@ -12,7 +12,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel,Field
 from cmf.pipeline import save_json
 
-app=FastAPI(title='CMF STAR local',version='0.1.0',docs_url=None,redoc_url=None)
+app=FastAPI(title='LedgerOrchestrator local API',version='0.1.0',docs_url=None,redoc_url=None)
 ROOT=Path(os.getenv('CMF_ROOT','/data'))
 OUTPUT=Path(os.getenv('CMF_OUTPUT','/output'))
 CONFIG=Path(os.getenv('CMF_CONFIG','/app/config/star.json'))

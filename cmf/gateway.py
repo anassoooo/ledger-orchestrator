@@ -19,7 +19,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(413)
             return
         body=self.rfile.read(size) if self.command=='POST' else None
-        request=Request('http://cmf:8000'+self.path,data=body,method=self.command,
+        request=Request('http://engine:8000'+self.path,data=body,method=self.command,
                         headers={'Content-Type':'application/json'})
         try:
             response=urlopen(request,timeout=30)

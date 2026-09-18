@@ -1,15 +1,16 @@
 cff-version: 1.2.0
-title: "CMF LedgerFlow"
-message: "If you use this prototype, please cite CMF LedgerFlow."
+title: "LedgerOrchestrator"
+message: "If you use this prototype, please cite LedgerOrchestrator."
 type: software
 authors:
-  - family-names: "Project contributor"
-    given-names: "CMF"
+  - name: "LedgerOrchestrator contributors"
 version: "0.1.0"
 date-released: 2026-09-18
-repository-code: "https://github.com/OWNER/cmf-ledgerflow"
-abstract: "Local-first, evidence-driven extraction of financial statements from PDF to Excel with accounting validation and audit trails."
+abstract: "Local-first, agent-ready extraction of financial statements from PDF to Excel with accounting validation, human review and audit trails."
 keywords:
+  - multi-agent-system
+  - agentic-workflow
+  - orchestrator-agent
   - financial-document-intelligence
   - pdf-extraction
   - OCR

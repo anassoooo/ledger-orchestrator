@@ -1,8 +1,8 @@
-# Dossier de remise — Prototype CMF / STAR
+# Dossier de remise — LedgerOrchestrator
 
 ## Titre
 
-Prototype local d'extraction contrôlée des états financiers publiés en PDF vers un classeur Excel.
+LedgerOrchestrator — prototype local d'extraction contrôlée des états financiers publiés en PDF vers un classeur Excel.
 
 ## Périmètre présenté
 
@@ -57,7 +57,7 @@ Depuis la racine du projet :
 
 ```powershell
 docker compose build
-docker compose run --rm cmf python -m cmf --years 2023 2024 2025
+docker compose run --rm engine python -m cmf --years 2023 2024 2025
 docker compose up -d
 Invoke-RestMethod http://localhost:8000/health
 ```

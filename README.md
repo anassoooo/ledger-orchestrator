@@ -1,10 +1,10 @@
-# CMF LedgerFlow
+# LedgerOrchestrator
 
-### Auditable financial-statement extraction from PDF to Excel
+### Multi-Agent Financial Statement Intelligence
 
-CMF LedgerFlow is a local-first financial document intelligence prototype. It extracts structured accounting data from CMF-style financial statements, validates evidence, recalculates controlled Excel totals, and produces a reviewable audit trail.
+LedgerOrchestrator is a local-first, agent-ready financial document intelligence prototype. It extracts structured accounting data from financial-statement PDFs, validates evidence, recalculates controlled Excel totals, and produces a reviewable audit trail.
 
-The current reference implementation is validated on **STAR individual financial statements, 2023–2025**. The architecture is designed to evolve toward configurable multi-company and multi-year processing.
+The current reference implementation delivers the deterministic extraction and validation core and is validated on **STAR individual financial statements, 2023–2025**, sourced from the Tunisian CMF publication workflow. Its target architecture is a configurable multi-agent system for multi-company and multi-year processing.
 
 > This repository is a proof-of-concept product, not a certified accounting system. Missing, ambiguous, or contradictory source data is reported and never silently invented.
 
@@ -13,10 +13,15 @@ The current reference implementation is validated on **STAR individual financial
 Financial PDF extraction is not only an OCR problem. A reliable workflow must preserve units, periods, source locations, accounting relationships, conflicts, and the distinction between a real zero and missing information.
 
 ```text
-Local documents → identity and period checks → native text / OCR
-→ business mapping → accounting validation → controlled Excel writer
-→ workbook, anomalies, coverage and audit reports
+Orchestrator
+├── Document agent: identity, period, native text and OCR
+├── Mapping agent: configurable labels and business dictionary
+├── Validation agent: evidence and accounting controls
+├── Workbook agent: controlled Excel writing and recalculation
+└── Review agent: anomalies, coverage and human-review queue
 ```
+
+These roles describe the target multi-agent architecture. In the current MVP, their reliable deterministic capabilities are implemented as isolated Python components; explicit agent coordination is the next product layer.
 
 ## Current capabilities
 
@@ -29,6 +34,10 @@ Local documents → identity and period checks → native text / OCR
 - LibreOffice recalculation in a disposable environment with formula-cache verification.
 - Docker image, CLI and minimal local API.
 - Review files for unresolved or non-revalidated target cells.
+
+## Agentic architecture
+
+LedgerOrchestrator separates decision-making from evidence production. Specialist components extract, map, validate, write and review data, while the planned orchestrator will route tasks and consolidate status without bypassing deterministic accounting controls. A future local model is reserved for ambiguous label correspondence; it will never invent or directly approve financial values.
 
 ## STAR reference result
 
@@ -55,7 +64,7 @@ Docker Desktop is required for the full integration workflow.
 
 ```powershell
 docker compose build
-docker compose run --rm cmf python -m cmf --years 2023 2024 2025
+docker compose run --rm engine python -m cmf --years 2023 2024 2025
 docker compose up -d
 Invoke-RestMethod http://localhost:8000/health
 ```
