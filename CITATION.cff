@@ -3,7 +3,8 @@ title: "LedgerOrchestrator"
 message: "If you use this prototype, please cite LedgerOrchestrator."
 type: software
 authors:
-  - name: "LedgerOrchestrator contributors"
+  - family-names: "Bougrine"
+    given-names: "Anas"
 version: "0.1.0"
 date-released: 2026-09-18
 abstract: "Local-first, agent-ready extraction of financial statements from PDF to Excel with accounting validation, human review and audit trails."

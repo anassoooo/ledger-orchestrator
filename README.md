@@ -110,6 +110,11 @@ The Docker workflow additionally verifies the LibreOffice recalculation path. Th
 - [Business logic](docs/LOGIQUE_METIER.md)
 - [Project status](docs/STATUS.md)
 
+## Project attribution
+
+- Author: **Anas Bougrine**
+- Academic supervisor: **Lazhar Hedfi, Actuary**
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

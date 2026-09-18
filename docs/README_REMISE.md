@@ -1,5 +1,9 @@
 # Dossier de remise — LedgerOrchestrator
 
+**Auteur :** Anas Bougrine
+
+**Encadrant académique :** Lazhar Hedfi, actuaire
+
 ## Titre
 
 LedgerOrchestrator — prototype local d'extraction contrôlée des états financiers publiés en PDF vers un classeur Excel.
