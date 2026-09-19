@@ -107,6 +107,7 @@ The Docker workflow additionally verifies the LibreOffice recalculation path. Th
 ## Documentation
 
 - [Delivery brief](docs/README_REMISE.md)
+- [15-minute demonstration guide](docs/DEMO_15_MIN.md)
 - [Business logic](docs/LOGIQUE_METIER.md)
 - [Project status](docs/STATUS.md)
 
