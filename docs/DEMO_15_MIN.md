@@ -57,6 +57,12 @@ API status : ok
 Local only : True
 ```
 
+Ouvrir aussi <http://127.0.0.1:8000/review> : la page liste les cellules non
+résolues du run choisi. Sélectionner `AC613` en 2025 pour montrer le contrôle
+arithmétique bloquant, la source PDF et l'action suggérée. La décision humaine
+peut être consignée avec LangGraph, sans écriture dans Excel. Pour la
+démonstration, ne pas marquer un dossier « Revue documentée » sans examen réel.
+
 Message à faire passer : les PDF, le classeur et les résultats restent sur la machine. Le moteur ne consulte pas Internet et n'envoie pas les documents à une API externe.
 
 ### 5:00–8:00 — Résultat TAF_G3

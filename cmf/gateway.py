@@ -4,10 +4,15 @@ from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
 import re
 
+RUN_ID = r'\d{8}T\d{6}_[a-f0-9]{8}'
+CASE_ID = r'TAF_G[13]-[A-Z]{1,3}[1-9][0-9]{0,4}'
+RUN_ROUTE = rf'runs/{RUN_ID}/(?:report|agents|workbook|review(?:/{CASE_ID}(?:/(?:start|decision|source))?)?)'
+ALLOWED_PATH = re.compile(rf'/(?:health|review(?:/(?:app\.js|style\.css))?|openapi\.json|runs|jobs/[a-f0-9]{{32}}|{RUN_ROUTE})')
+
 
 class Handler(BaseHTTPRequestHandler):
     def proxy(self):
-        if re.fullmatch(r'/(health|openapi\.json|runs|jobs/[a-f0-9]{32}|runs/\d{8}T\d{6}_[a-f0-9]{8}/(report|agents|workbook))',self.path) is None:
+        if ALLOWED_PATH.fullmatch(self.path) is None:
             self.send_error(404)
             return
         try:

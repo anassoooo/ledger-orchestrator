@@ -23,6 +23,15 @@ La trace est incluse dans `report.json` et consultable seule à l'adresse
 `GET /runs/{run_id}/agents`. Les preuves financières détaillées restent dans les
 sections existantes du rapport.
 
+## Graphe de revue humaine
+
+LangGraph pilote un second flux, indépendant des cinq agents d'extraction :
+`dossier → interruption → décision humaine → historique → interruption`.
+Le checkpointer SQLite permet de reprendre un dossier après redémarrage.
+L'interface locale présente la file, le motif, la page PDF et l'historique.
+Une décision de revue ne valide pas une valeur et n'écrit rien dans Excel.
+Voir [Revue humaine avec LangGraph](REVUE_LANGGRAPH.md).
+
 ## Règles qui ne dépendent pas d'un modèle
 
 - L'unité cible STAR est le TND ; l'unité source et la conversion sont conservées.

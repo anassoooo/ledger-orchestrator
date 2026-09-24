@@ -1,5 +1,25 @@
 # État du MVP
 
+## Interface de revue LangGraph
+
+Une interface locale de revue est ajoutée sous `/review`. Elle liste les runs
+terminés et les cellules à examiner, permet d'ouvrir le PDF source et consigne
+les décisions humaines avec une note. LangGraph suspend chaque dossier avec
+`interrupt()` et conserve son historique dans un checkpointer SQLite local.
+Les décisions ne modifient pas les montants, les PDF, les rapports d'extraction
+ou le classeur. L'interface peut aussi démarrer un traitement STAR 2023–2025.
+Les 63 tests passent avec le code courant dans Docker. Une image incrémentale
+contient le code et les
+dépendances, sans montage du dépôt. Cette image est affectée au nom local utilisé
+par Compose ; `engine` et `gateway` ont démarré, et `/review` répond sur
+`127.0.0.1:8000` avec les 37 dossiers du run de référence. Le checkpoint créé
+avant le redémarrage est toujours consultable. La reconstruction standard depuis
+Docker Hub reste bloquée par la résolution DNS de `registry-1.docker.io` ; le
+build neuf sur une autre machine n'est donc pas encore confirmé.
+Un lancement par `POST /runs` depuis cette stack a aussi terminé le run
+`20260924T164906_1b40dd9c` avec 255 écritures, 45 anomalies, 37 dossiers de
+revue et cinq agents terminés.
+
 ## Vérification Docker du 24 septembre 2026
 
 Le moteur Docker est de nouveau accessible. Les 59 tests passent dans le conteneur,

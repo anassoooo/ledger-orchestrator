@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revue des cellules · LedgerOrchestrator</title>
+  <link rel="stylesheet" href="/review/style.css">
+  <script src="/review/app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="identity">
+      <span class="mark" aria-hidden="true">L</span>
+      <div><strong>LedgerOrchestrator</strong><span>Revue locale des états financiers</span></div>
+    </div>
+    <span class="privacy">Documents conservés sur cette machine</span>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Cellules à examiner</h1>
+        <p>Chaque décision est enregistrée. Les PDF sources et le classeur restent inchangés.</p>
+      </div>
+      <div class="run-control">
+        <label for="run-select">Exécution</label>
+        <select id="run-select" aria-label="Choisir une exécution"></select>
+        <a id="workbook-link" href="#" hidden>Télécharger le classeur</a>
+      </div>
+    </section>
+
+    <details class="new-run">
+      <summary>Lancer une nouvelle extraction STAR</summary>
+      <form id="run-form">
+        <fieldset>
+          <legend>Exercices à traiter</legend>
+          <label><input type="checkbox" name="year" value="2023" checked> 2023</label>
+          <label><input type="checkbox" name="year" value="2024" checked> 2024</label>
+          <label><input type="checkbox" name="year" value="2025" checked> 2025</label>
+        </fieldset>
+        <button type="submit" id="start-run">Lancer l’extraction</button>
+        <span id="job-progress" role="status" aria-live="polite"></span>
+      </form>
+    </details>
+
+    <section class="summary" aria-label="État de la revue">
+      <div><span id="total-count">–</span><small>à examiner</small></div>
+      <div><span id="documented-count">–</span><small>revues documentées</small></div>
+      <div><span id="follow-up-count">–</span><small>suivis nécessaires</small></div>
+      <p id="run-status">Choisissez une exécution pour ouvrir la revue.</p>
+    </section>
+
+    <div class="workspace">
+      <section class="queue" aria-labelledby="queue-title">
+        <div class="section-heading">
+          <h2 id="queue-title">Dossiers de revue</h2>
+          <span id="queue-count"></span>
+        </div>
+        <div class="queue-filters">
+          <label for="filter">Afficher</label>
+          <select id="filter">
+            <option value="all">Tous les dossiers</option>
+            <option value="open">Sans décision</option>
+            <option value="follow_up">À reprendre</option>
+            <option value="documented">Documentés</option>
+          </select>
+        </div>
+        <div id="case-list" class="case-list" role="list"></div>
+      </section>
+
+      <section class="case-file" aria-labelledby="case-title">
+        <div id="empty-case" class="empty-case">Sélectionnez une cellule pour voir son motif et sa source.</div>
+        <div id="case-content" hidden>
+          <div class="case-header">
+            <div>
+              <p id="case-location" class="case-location"></p>
+              <h2 id="case-title"></h2>
+            </div>
+            <span id="case-state" class="case-state"></span>
+          </div>
+          <div class="case-grid">
+            <div><span class="field-label">Motif du blocage</span><p id="case-reason"></p></div>
+            <div><span class="field-label">Action suggérée</span><p id="case-action"></p></div>
+            <div><span class="field-label">Source</span><p id="case-source"></p><a id="source-link" target="_blank" rel="noopener">Ouvrir le PDF à la page concernée</a></div>
+            <div><span class="field-label">Dépendances et anomalies</span><p id="case-dependencies"></p></div>
+          </div>
+          <div class="review-form-wrap">
+            <h3>Consigner une décision</h3>
+            <p class="form-explain">Documenter signifie que la cellule a été examinée, pas que son montant est approuvé. Une nouvelle note peut compléter l’historique.</p>
+            <form id="decision-form">
+              <div class="form-row">
+                <label>Votre nom<input id="reviewer" type="text" minlength="2" maxlength="80" required autocomplete="name"></label>
+                <label>Décision<select id="decision-action"><option value="follow_up">Suivi nécessaire</option><option value="documented">Revue documentée</option></select></label>
+              </div>
+              <label>Note de revue<textarea id="decision-note" minlength="3" maxlength="1000" required rows="3" placeholder="Ce qui a été vérifié ou ce qu’il reste à obtenir"></textarea></label>
+              <button id="save-decision" type="submit">Enregistrer la décision</button>
+            </form>
+          </div>
+          <div class="history-wrap">
+            <h3>Historique des décisions</h3>
+            <div id="history"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+  </main>
+</body>
+</html>

@@ -35,6 +35,7 @@ The orchestrator runs these specialist agents in dependency order, stops downstr
 - Docker image, CLI and minimal local API.
 - Review files for unresolved or non-revalidated target cells.
 - Agent execution trace with stage status, duration and count-based metrics, available at `/runs/{run_id}/agents`.
+- Local review desk powered by LangGraph interrupts and SQLite checkpoints: inspect unresolved cells, open their PDF source, and record human decisions without changing the workbook.
 
 ## Agentic architecture
 
@@ -69,6 +70,9 @@ docker compose run --rm engine python -m cmf --years 2023 2024 2025
 docker compose up -d
 Invoke-RestMethod http://localhost:8000/health
 ```
+
+Open <http://127.0.0.1:8000/review> to start a STAR run or inspect unresolved
+cells. The review workflow is documented in [Human review with LangGraph](docs/REVUE_LANGGRAPH.md).
 
 Generated artifacts are written under `outputs/<run_id>/`: the review workbook, structured report, anomaly log, review queue and optional previews.
 
@@ -111,6 +115,7 @@ The Docker workflow additionally verifies the LibreOffice recalculation path. Th
 - [15-minute demonstration guide](docs/DEMO_15_MIN.md)
 - [Business logic](docs/LOGIQUE_METIER.md)
 - [Project status](docs/STATUS.md)
+- [LangGraph review workflow](docs/REVUE_LANGGRAPH.md)
 
 ## Project attribution
 
