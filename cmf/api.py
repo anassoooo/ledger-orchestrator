@@ -80,6 +80,13 @@ def report(run_id:str):
     return json.loads((run_folder(run_id)/'report.json').read_text(encoding='utf-8'))
 
 
+@app.get('/runs/{run_id}/agents')
+def agent_status(run_id:str):
+    result=json.loads((run_folder(run_id)/'report.json').read_text(encoding='utf-8'))
+    return dict(run_id=run_id,status=result['status'],orchestration_version=result.get('orchestration_version'),
+                agents=result.get('agent_trace',[]))
+
+
 @app.get('/runs/{run_id}/workbook')
 def workbook(run_id:str):
     folder=run_folder(run_id)

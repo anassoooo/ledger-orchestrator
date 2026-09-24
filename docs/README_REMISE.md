@@ -82,4 +82,4 @@ Présenter ensuite :
 
 ## Suite proposée
 
-La prochaine phase transforme le profil STAR en moteur configurable multi-entreprises et multi-années : détection du profil du document, dictionnaires par modèle, schéma de données commun, validation indépendante et orchestrateur. Le prototype livré sert de base de test et de preuve de faisabilité.
+Une orchestration déterministe coordonne maintenant les étapes document, extraction, validation, classeur et revue, avec une trace consultable. La prochaine phase transforme le profil STAR en moteur configurable multi-entreprises et multi-années : détection du profil du document, dictionnaires par modèle et schéma de données commun. Le prototype sert de base de test et de preuve de faisabilité.

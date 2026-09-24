@@ -2,9 +2,9 @@
 
 ### Multi-Agent Financial Statement Intelligence
 
-LedgerOrchestrator is a local-first, agent-ready financial document intelligence prototype. It extracts structured accounting data from financial-statement PDFs, validates evidence, recalculates controlled Excel totals, and produces a reviewable audit trail.
+LedgerOrchestrator is a local-first financial document intelligence prototype with explicit deterministic agent orchestration. It extracts structured accounting data from financial-statement PDFs, validates evidence, recalculates controlled Excel totals, and produces a reviewable audit trail.
 
-The current reference implementation delivers the deterministic extraction and validation core and is validated on **STAR individual financial statements, 2023–2025**, sourced from the Tunisian CMF publication workflow. Its target architecture is a configurable multi-agent system for multi-company and multi-year processing.
+The current reference implementation is validated on **STAR individual financial statements, 2023–2025**, sourced from the Tunisian CMF publication workflow. Multi-company and multi-year configuration beyond this profile remains future work.
 
 > This repository is a proof-of-concept product, not a certified accounting system. Missing, ambiguous, or contradictory source data is reported and never silently invented.
 
@@ -14,14 +14,14 @@ Financial PDF extraction is not only an OCR problem. A reliable workflow must pr
 
 ```text
 Orchestrator
-├── Document agent: identity, period, native text and OCR
-├── Mapping agent: configurable labels and business dictionary
-├── Validation agent: evidence and accounting controls
-├── Workbook agent: controlled Excel writing and recalculation
-└── Review agent: anomalies, coverage and human-review queue
+├── Documents: identity, period, native text and OCR
+├── Extraction: accounting lines, notes and branch premiums
+├── Validation: source reconciliation and evidence admission
+├── Workbook: controlled Excel writing and recalculation
+└── Review: coverage, anomalies and human-review queue
 ```
 
-These roles describe the target multi-agent architecture. In the current MVP, their reliable deterministic capabilities are implemented as isolated Python components; explicit agent coordination is the next product layer.
+The orchestrator runs these specialist agents in dependency order, stops downstream work on failure and records each transition in the run report. These agents are deterministic software components; no language model makes accounting decisions in the current version.
 
 ## Current capabilities
 
@@ -34,10 +34,11 @@ These roles describe the target multi-agent architecture. In the current MVP, th
 - LibreOffice recalculation in a disposable environment with formula-cache verification.
 - Docker image, CLI and minimal local API.
 - Review files for unresolved or non-revalidated target cells.
+- Agent execution trace with stage status, duration and count-based metrics, available at `/runs/{run_id}/agents`.
 
 ## Agentic architecture
 
-LedgerOrchestrator separates decision-making from evidence production. Specialist components extract, map, validate, write and review data, while the planned orchestrator will route tasks and consolidate status without bypassing deterministic accounting controls. A future local model is reserved for ambiguous label correspondence; it will never invent or directly approve financial values.
+LedgerOrchestrator coordinates specialist agents through explicit prerequisites. The validation agent must complete before the workbook agent can write; the review agent receives both validated data and the resulting workbook. A future local model is reserved for ambiguous label correspondence and will not directly approve financial values. See the [agent architecture](docs/ARCHITECTURE_AGENTS.md).
 
 ## STAR reference result
 
@@ -100,7 +101,7 @@ The Docker workflow additionally verifies the LibreOffice recalculation path. Th
 
 1. Generalize the profile and mapping layer from STAR to every supplied company and exercise.
 2. Introduce a common financial-record schema and configurable workbook profiles.
-3. Add the orchestrator and specialist agents around deterministic extraction and validation components.
+3. Extend the orchestrator to select validated company profiles and route unresolved mappings.
 4. Add a local human-review interface for conflicts and unresolved mappings.
 5. Add an optional local model only for ambiguous correspondence, never as an untraceable value generator.
 

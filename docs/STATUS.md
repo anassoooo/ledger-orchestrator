@@ -1,4 +1,21 @@
-# État du MVP au 17 septembre 2026
+# État du MVP
+
+## Mise à jour du 24 septembre 2026
+
+L'exécution passe désormais par cinq agents déterministes : documents, extraction,
+validation, classeur et revue. Un orchestrateur vérifie leurs dépendances, arrête
+la chaîne sur erreur et écrit les transitions dans `report.json`. Une vue compacte
+est disponible via `GET /runs/{run_id}/agents`. Il ne s'agit pas encore d'agents IA
+autonomes ni d'une prise en charge validée des autres entreprises.
+
+Les 59 tests locaux passent, dont deux ignorés ici sans LibreOffice ni FastAPI. Une comparaison
+avec le run STAR de référence confirme les montants extraits et les branches,
+les types d'anomalies, la couverture et la file de revue. Le test Docker complet
+n'a pas été rejoué le 24 septembre : le service Docker Desktop était indisponible
+sur cette session. Cette comparaison réutilise le classeur de référence : elle
+ne valide donc pas à nouveau l'écriture Excel et le recalcul LibreOffice.
+
+## État de référence au 17 septembre 2026
 
 ## Fonctionnel et vérifié
 

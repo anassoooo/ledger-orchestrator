@@ -40,7 +40,7 @@ Afficher le schéma du README :
 5. écriture Excel et recalcul LibreOffice ;
 6. rapport d'anomalies et file de revue humaine.
 
-Préciser que le noyau déterministe est opérationnel. L'orchestrateur multi-agent explicite est la prochaine couche, autour de composants déjà séparés par responsabilité.
+Préciser que l'orchestrateur déterministe coordonne désormais cinq agents spécialisés et consigne leur exécution. Les profils multi-entreprises et le modèle local restent à développer.
 
 ### 3:30–5:00 — Démarrage local
 
@@ -135,15 +135,15 @@ Ne pas passer du temps à parcourir le code ligne par ligne.
 
 Dire :
 
-> Le prototype prouve que la chaîne complète est réalisable : extraction, contrôle, Excel et audit. La prochaine étape n'est pas de remplir davantage à tout prix. Elle consiste à valider les cas restants, formaliser les profils d'autres entreprises et ajouter l'orchestrateur multi-agent autour de ce noyau contrôlé.
+> Le prototype prouve que la chaîne complète est réalisable : extraction, contrôle, Excel et audit. L'orchestration des agents est explicite. La prochaine étape consiste à valider les cas restants et à formaliser les profils d'autres entreprises.
 
-Demander la priorité pour la suite : approfondir STAR, ajouter une deuxième entreprise ou commencer l'orchestration multi-agent.
+Demander la priorité pour la suite : approfondir STAR, ajouter une deuxième entreprise ou développer l'interface de revue.
 
 ## Questions probables
 
 ### « Est-ce déjà un système multi-agent ? »
 
-Le noyau est actuellement composé de modules spécialisés et testés. Le véritable orchestrateur multi-agent, chargé de distribuer les tâches et de consolider les décisions, reste à implémenter. Les contrôles comptables resteront déterministes même après son ajout.
+Oui, au sens logiciel : un orchestrateur exécute cinq agents spécialisés avec dépendances et trace d'exécution. Ces agents appliquent des règles déterministes ; ils ne sont pas encore des agents autonomes pilotés par un modèle de langage. La version actuelle reste limitée au profil STAR validé.
 
 ### « Pourquoi faut-il encore une revue humaine ? »
 
@@ -164,7 +164,7 @@ Une semaine suffit pour construire un MVP démontrable. Une généralisation fia
 ## Points à éviter
 
 - Ne pas dire que toutes les entreprises et toutes les années sont déjà prises en charge.
-- Ne pas présenter l'architecture cible comme un orchestrateur multi-agent déjà terminé.
+- Ne pas présenter ces agents déterministes comme des agents IA autonomes ou comme une généralisation déjà terminée.
 - Ne pas qualifier les cellules vides d'échecs : elles représentent des décisions de prudence documentées.
 - Ne pas ouvrir les PDF d'autres entreprises pendant cette démonstration STAR.
 - Dans `TAF_G3`, rester centré sur 2023–2025. Les zéros visibles sur certains totaux historiques proviennent du modèle Excel préexistant et ne sont pas des extractions du moteur.

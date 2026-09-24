@@ -7,7 +7,7 @@ import re
 
 class Handler(BaseHTTPRequestHandler):
     def proxy(self):
-        if re.fullmatch(r'/(health|openapi\.json|runs|jobs/[a-f0-9]{32}|runs/\d{8}T\d{6}_[a-f0-9]{8}/(report|workbook))',self.path) is None:
+        if re.fullmatch(r'/(health|openapi\.json|runs|jobs/[a-f0-9]{32}|runs/\d{8}T\d{6}_[a-f0-9]{8}/(report|agents|workbook))',self.path) is None:
             self.send_error(404)
             return
         try:
