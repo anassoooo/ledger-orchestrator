@@ -1,6 +1,26 @@
 # État du MVP
 
-## Mise à jour du 24 septembre 2026
+## Vérification Docker du 24 septembre 2026
+
+Le moteur Docker est de nouveau accessible. Les 59 tests passent dans le conteneur,
+sans test ignoré, avec le code actuel monté en lecture seule sur l'image locale.
+Une exécution complète STAR 2023–2025 a produit le run
+`20260924T074936_4a5f2ea5` : 255 écritures, 45 anomalies, 37 cellules à revoir,
+et le statut `needs_review`. Les rapports coïncident avec la référence du
+17 septembre pour les documents, les données extraites, les écritures, les types
+d'anomalies, la couverture et la revue. Les 255 cellules écrites du classeur,
+dont 73 formules, ont les mêmes formules et valeurs recalculées que la référence.
+L'audit interne de ce nouveau classeur relève zéro erreur d'intégrité. L'API
+locale a répondu à `/health` et à `/runs/{run_id}/agents` avec les cinq agents
+terminés.
+
+La reconstruction de l'image Docker n'a pas abouti : Docker Hub a expiré lors
+de la résolution de `python:3.12-slim-bookworm`. Ces contrôles utilisent donc
+l'image locale du 18 septembre avec le code courant monté en lecture seule ;
+ils valident le parcours d'exécution, mais pas la reproductibilité d'un build
+neuf hors ligne. Le conteneur temporaire de test API a été arrêté.
+
+## Orchestration ajoutée le 24 septembre 2026
 
 L'exécution passe désormais par cinq agents déterministes : documents, extraction,
 validation, classeur et revue. Un orchestrateur vérifie leurs dépendances, arrête
@@ -8,12 +28,12 @@ la chaîne sur erreur et écrit les transitions dans `report.json`. Une vue comp
 est disponible via `GET /runs/{run_id}/agents`. Il ne s'agit pas encore d'agents IA
 autonomes ni d'une prise en charge validée des autres entreprises.
 
-Les 59 tests locaux passent, dont deux ignorés ici sans LibreOffice ni FastAPI. Une comparaison
-avec le run STAR de référence confirme les montants extraits et les branches,
-les types d'anomalies, la couverture et la file de revue. Le test Docker complet
-n'a pas été rejoué le 24 septembre : le service Docker Desktop était indisponible
-sur cette session. Cette comparaison réutilise le classeur de référence : elle
-ne valide donc pas à nouveau l'écriture Excel et le recalcul LibreOffice.
+Les 59 tests locaux passent, dont deux ignorés ici sans LibreOffice ni FastAPI.
+Une première comparaison, hors Docker, avait confirmé les montants extraits et
+les branches, les types d'anomalies, la couverture et la file de revue. Elle
+réutilisait le classeur de référence et ne validait donc pas l'écriture Excel ni
+le recalcul LibreOffice. La vérification Docker ci-dessus a depuis couvert ces
+deux étapes avec un classeur nouvellement généré.
 
 ## État de référence au 17 septembre 2026
 
