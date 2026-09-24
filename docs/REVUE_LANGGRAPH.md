@@ -27,7 +27,11 @@ sérialisés dans le processus API.
 L'historique porte sur des décisions de revue, pas sur des écritures Excel.
 Ni le PDF, ni le modèle de classeur, ni le classeur généré, ni `report.json`
 ne sont modifiés par la revue. Les décisions restent locales sous `outputs/`,
-ignoré par Git. Aucun modèle de langage n'est requis ou appelé.
+ignoré par Git. Aucun modèle de langage n'est requis pour la revue humaine.
+
+Un copilote local facultatif est disponible dans la même interface. Il consulte
+le rapport en lecture seule et ne change pas le graphe de revue humaine. Voir
+[Copilote local](COPILOTE_LOCAL.md).
 
 ## Routes locales
 
@@ -38,6 +42,8 @@ ignoré par Git. Aucun modèle de langage n'est requis ou appelé.
 | `POST /runs` | Démarrer l'extraction depuis l'interface |
 | `GET /runs/{run_id}/review` | File de cellules et dernière décision |
 | `GET /runs/{run_id}/review/{case_id}` | Dossier et historique |
+| `GET /copilot/status` | Configuration du modèle local |
+| `POST /runs/{run_id}/copilot` | Question bornée au rapport et au dossier optionnel |
 | `POST /runs/{run_id}/review/{case_id}/start` | Créer le point d'interruption |
 | `POST /runs/{run_id}/review/{case_id}/decision` | Reprendre avec une décision humaine |
 | `GET /runs/{run_id}/review/{case_id}/source` | PDF source, servi en lecture seule |

@@ -13,12 +13,14 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel,Field
 from cmf.pipeline import save_json
 from cmf.review_graph import ReviewWorkflow
+from cmf.copilot import ReadOnlyCopilot, LocalModelUnavailable, _evidence, status as copilot_status
 
 app=FastAPI(title='LedgerOrchestrator local API',version='0.1.0',docs_url=None,redoc_url=None)
 ROOT=Path(os.getenv('CMF_ROOT','/data'))
 OUTPUT=Path(os.getenv('CMF_OUTPUT','/output'))
 CONFIG=Path(os.getenv('CMF_CONFIG','/app/config/star.json'))
 LOCK=threading.Lock()
+COPILOT_LOCK=threading.Lock()
 STATIC=Path(__file__).parent/'ui'
 
 
@@ -32,6 +34,11 @@ class ReviewDecision(BaseModel):
     note:str=Field(min_length=3,max_length=1000)
 
 
+class CopilotQuestion(BaseModel):
+    question:str=Field(min_length=5,max_length=600)
+    case_id:str|None=None
+
+
 @lru_cache(maxsize=4)
 def review_workflow(database: str):
     return ReviewWorkflow(Path(database))
@@ -41,9 +48,19 @@ def workflow():
     return review_workflow(str(OUTPUT/'review_graph.sqlite3'))
 
 
+@lru_cache(maxsize=1)
+def copilot_graph():
+    return ReadOnlyCopilot()
+
+
 @app.get('/health')
 def health():
     return {'status':'ok','local_only':True}
+
+
+@app.get('/copilot/status')
+def local_copilot_status():
+    return copilot_status()
 
 
 @app.get('/review')
@@ -129,6 +146,24 @@ def report(run_id:str):
     return json.loads((run_folder(run_id)/'report.json').read_text(encoding='utf-8'))
 
 
+@app.post('/runs/{run_id}/copilot')
+def ask_copilot(run_id:str,body:CopilotQuestion):
+    report_data=report(run_id)
+    if report_data.get('status') not in ('completed','needs_review'):
+        raise HTTPException(409,'Traitement non terminé')
+    case=review_case(run_id,body.case_id) if body.case_id else None
+    if not COPILOT_LOCK.acquire(blocking=False):
+        raise HTTPException(409,'Le modèle local traite déjà une question')
+    try:
+        return copilot_graph().answer(report_data,body.question.strip(),case)
+    except LocalModelUnavailable as exc:
+        raise HTTPException(503,str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(503,'Configuration du modèle local invalide') from exc
+    finally:
+        COPILOT_LOCK.release()
+
+
 def review_case(run_id:str,case_id:str):
     report_data=json.loads((run_folder(run_id)/'report.json').read_text(encoding='utf-8'))
     if report_data['status'] not in ('completed','needs_review'):
@@ -165,7 +200,9 @@ def review_queue(run_id:str):
 @app.get('/runs/{run_id}/review/{case_id}')
 def review_detail(run_id:str,case_id:str):
     case=review_case(run_id,case_id)
-    return {'case':case,**workflow().snapshot(case_thread(run_id,case_id))}
+    facts=_evidence(report(run_id),case)
+    return {'case':case,'evidence':[item for item in facts if item['kind'] in ('anomalie','extraction')],
+            **workflow().snapshot(case_thread(run_id,case_id))}
 
 
 @app.get('/runs/{run_id}/review/{case_id}/source')

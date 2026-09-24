@@ -20,7 +20,7 @@
     <section class="intro" aria-labelledby="page-title">
       <div>
         <h1 id="page-title">Cellules à examiner</h1>
-        <p>Chaque décision est enregistrée. Les PDF sources et le classeur restent inchangés.</p>
+        <p>Chaque décision est enregistrée. Le copilote explique les anomalies à partir du rapport local ; il ne valide ni ne modifie les montants.</p>
       </div>
       <div class="run-control">
         <label for="run-select">Exécution</label>
@@ -49,6 +49,11 @@
       <div><span id="follow-up-count">–</span><small>suivis nécessaires</small></div>
       <p id="run-status">Choisissez une exécution pour ouvrir la revue.</p>
     </section>
+
+    <details class="agent-flow">
+      <summary>Voir le parcours des agents pour cette exécution</summary>
+      <div id="agent-list" class="agent-list"></div>
+    </details>
 
     <div class="workspace">
       <section class="queue" aria-labelledby="queue-title">
@@ -84,6 +89,10 @@
             <div><span class="field-label">Source</span><p id="case-source"></p><a id="source-link" target="_blank" rel="noopener">Ouvrir le PDF à la page concernée</a></div>
             <div><span class="field-label">Dépendances et anomalies</span><p id="case-dependencies"></p></div>
           </div>
+          <div class="evidence-wrap">
+            <h3>Éléments disponibles dans le rapport</h3>
+            <div id="case-evidence"></div>
+          </div>
           <div class="review-form-wrap">
             <h3>Consigner une décision</h3>
             <p class="form-explain">Documenter signifie que la cellule a été examinée, pas que son montant est approuvé. Une nouvelle note peut compléter l’historique.</p>
@@ -102,6 +111,30 @@
           </div>
         </div>
       </section>
+
+      <aside class="copilot" aria-labelledby="copilot-title">
+        <div class="copilot-head">
+          <h2 id="copilot-title">Copilote de revue</h2>
+          <span id="copilot-state" class="copilot-state">Vérification…</span>
+        </div>
+        <p class="copilot-explain">Questions sur le traitement ou sur la cellule sélectionnée. Réponses limitées aux preuves extraites et au rapport local.</p>
+        <form id="copilot-form">
+          <label for="copilot-scope">Portée</label>
+          <select id="copilot-scope">
+            <option value="case">Cellule sélectionnée</option>
+            <option value="run">Traitement complet</option>
+          </select>
+          <label for="copilot-question">Votre question</label>
+          <textarea id="copilot-question" rows="4" minlength="5" maxlength="600" placeholder="Pourquoi cette cellule est-elle bloquée ?" required></textarea>
+          <button id="ask-copilot" type="submit">Examiner les éléments</button>
+        </form>
+        <div id="copilot-result" class="copilot-result" aria-live="polite" hidden>
+          <h3>Réponse</h3>
+          <p id="copilot-answer"></p>
+          <div id="copilot-citations" class="copilot-citations"></div>
+        </div>
+        <p class="copilot-caution">Aucune réponse du modèle ne vaut validation comptable. Les citations renvoient aux éléments du traitement et, lorsqu’elle est connue, à la page du PDF.</p>
+      </aside>
     </div>
     <p id="message" class="message" role="status" aria-live="polite"></p>
   </main>

@@ -1,5 +1,22 @@
 # État du MVP
 
+## Copilote local de revue (24 septembre 2026)
+
+Une intégration Ollama optionnelle a été ajoutée en lecture seule : graphe
+LangGraph à trois étapes (sélection des faits, appel du modèle local, vérification
+des citations), API et panneau dans `/review`. Les dossiers affichent maintenant
+les montants extraits et anomalies déjà présents dans le rapport. Aucun modèle
+n'est installé dans la stack actuelle ; l'intégration est couverte par des tests
+avec transport simulé, mais pas encore par un essai avec un vrai modèle. Le
+service Ollama Docker ne pourra être téléchargé tant que la connexion HTTPS à
+Docker Hub reste indisponible : le DNS répond désormais, mais la connexion au
+port 443 échoue. Voir [Copilote local](COPILOTE_LOCAL.md).
+La suite complète passe avec 70 tests dans l'image Docker locale mise à jour.
+
+La revue humaine ne valide toujours pas un montant et ne régénère pas le
+classeur. L'interface doit rester décrite comme une revue documentée, pas une
+résolution comptable complète.
+
 ## Interface de revue LangGraph
 
 Une interface locale de revue est ajoutée sous `/review`. Elle liste les runs

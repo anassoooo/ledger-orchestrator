@@ -8,6 +8,8 @@ services:
       - ./outputs:/output
     environment:
       CMF_CONFIG: /app/config/star.json
+      CMF_LLM_URL: http://ollama:11434
+      CMF_LLM_MODEL: ${CMF_LLM_MODEL:-}
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     networks: [local]
@@ -29,7 +31,19 @@ services:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health', timeout=3)"]
       interval: 15s
       timeout: 5s
+  ollama:
+    profiles: [llm]
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_models:/root/.ollama
+    networks: [local, ingress]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 8g
+    cpus: 4
 networks:
   local:
     internal: true
   ingress: {}
+
+volumes:
+  ollama_models: {}

@@ -36,10 +36,11 @@ The orchestrator runs these specialist agents in dependency order, stops downstr
 - Review files for unresolved or non-revalidated target cells.
 - Agent execution trace with stage status, duration and count-based metrics, available at `/runs/{run_id}/agents`.
 - Local review desk powered by LangGraph interrupts and SQLite checkpoints: inspect unresolved cells, open their PDF source, and record human decisions without changing the workbook.
+- Optional read-only local copilot: explains a run or review case from selected report facts, with server-checked citations; it never edits a workbook.
 
 ## Agentic architecture
 
-LedgerOrchestrator coordinates specialist agents through explicit prerequisites. The validation agent must complete before the workbook agent can write; the review agent receives both validated data and the resulting workbook. A future local model is reserved for ambiguous label correspondence and will not directly approve financial values. See the [agent architecture](docs/ARCHITECTURE_AGENTS.md).
+LedgerOrchestrator coordinates specialist agents through explicit prerequisites. The validation agent must complete before the workbook agent can write; the review agent receives both validated data and the resulting workbook. An optional local model now assists the user in reading a run; agent-side ambiguous label correspondence remains future work. The model never approves financial values. See the [agent architecture](docs/ARCHITECTURE_AGENTS.md).
 
 ## STAR reference result
 
@@ -73,6 +74,7 @@ Invoke-RestMethod http://localhost:8000/health
 
 Open <http://127.0.0.1:8000/review> to start a STAR run or inspect unresolved
 cells. The review workflow is documented in [Human review with LangGraph](docs/REVUE_LANGGRAPH.md).
+The optional model setup is documented in [Local review copilot](docs/COPILOTE_LOCAL.md).
 
 Generated artifacts are written under `outputs/<run_id>/`: the review workbook, structured report, anomaly log, review queue and optional previews.
 
@@ -106,8 +108,8 @@ The Docker workflow additionally verifies the LibreOffice recalculation path. Th
 1. Generalize the profile and mapping layer from STAR to every supplied company and exercise.
 2. Introduce a common financial-record schema and configurable workbook profiles.
 3. Extend the orchestrator to select validated company profiles and route unresolved mappings.
-4. Add a local human-review interface for conflicts and unresolved mappings.
-5. Add an optional local model only for ambiguous correspondence, never as an untraceable value generator.
+4. Extend the local review interface from documented decisions to controlled, auditable resolution and workbook regeneration.
+5. Extend the optional local model from read-only user assistance to ambiguous correspondence proposals, subject to deterministic validation.
 
 ## Documentation
 
@@ -116,6 +118,7 @@ The Docker workflow additionally verifies the LibreOffice recalculation path. Th
 - [Business logic](docs/LOGIQUE_METIER.md)
 - [Project status](docs/STATUS.md)
 - [LangGraph review workflow](docs/REVUE_LANGGRAPH.md)
+- [Local review copilot](docs/COPILOTE_LOCAL.md)
 
 ## Project attribution
 

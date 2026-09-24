@@ -1,4 +1,4 @@
-const state = { runId: null, cases: [], selected: null };
+const state = { runId: null, cases: [], selected: null, copilotEnabled: false };
 const byId = (id) => document.getElementById(id);
 
 async function request(path, options = {}) {
@@ -15,6 +15,78 @@ function message(text, error = false) {
   const target = byId('message');
   target.textContent = text;
   target.classList.toggle('error', error);
+}
+
+function clearCopilotResult() {
+  byId('copilot-result').hidden = true;
+  byId('copilot-answer').textContent = '';
+  byId('copilot-citations').replaceChildren();
+}
+
+async function loadCopilotStatus() {
+  const status = await request('/copilot/status');
+  state.copilotEnabled = status.enabled;
+  const indicator = byId('copilot-state');
+  indicator.textContent = status.enabled ? `Configuré · ${status.model}` : 'Modèle non configuré';
+  indicator.classList.toggle('ready', status.enabled);
+  byId('ask-copilot').disabled = !status.enabled;
+  if (!status.enabled) {
+    byId('copilot-question').placeholder = 'Configurer CMF_LLM_MODEL pour activer le copilote local.';
+  }
+}
+
+function showCitations(citations, runId, caseId) {
+  const target = byId('copilot-citations');
+  target.replaceChildren();
+  if (!citations.length) return;
+  const heading = document.createElement('strong');
+  heading.textContent = 'Éléments cités';
+  target.append(heading);
+  for (const item of citations) {
+    const label = `${item.id} · ${item.kind}${item.page ? ` · page ${item.page}` : ''}`;
+    if (caseId && item.source && item.page) {
+      const link = document.createElement('a');
+      link.href = `/runs/${runId}/review/${caseId}/source#page=${encodeURIComponent(item.page)}`;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = label;
+      target.append(link);
+    } else {
+      const span = document.createElement('span');
+      span.textContent = label;
+      target.append(span);
+    }
+  }
+}
+
+async function askCopilot(event) {
+  event.preventDefault();
+  if (!state.runId || !state.copilotEnabled) return;
+  const runId = state.runId;
+  const caseId = byId('copilot-scope').value === 'case' ? state.selected : null;
+  if (byId('copilot-scope').value === 'case' && !caseId) {
+    message('Sélectionnez une cellule ou choisissez la portée « traitement complet ».', true);
+    return;
+  }
+  const button = byId('ask-copilot');
+  button.disabled = true;
+  button.textContent = 'Analyse locale en cours…';
+  clearCopilotResult();
+  try {
+    const data = await request(`/runs/${runId}/copilot`, {
+      method: 'POST',
+      body: JSON.stringify({ question: byId('copilot-question').value.trim(), case_id: caseId }),
+    });
+    if (runId !== state.runId || (caseId && caseId !== state.selected)) return;
+    byId('copilot-answer').textContent = data.answer;
+    showCitations(data.citations, runId, caseId);
+    byId('copilot-result').hidden = false;
+    message(data.abstained ? 'Le rapport ne contient pas assez de preuves pour répondre.' : 'Réponse locale affichée avec ses références.');
+  } catch (error) { message(error.message, true); }
+  finally {
+    button.disabled = !state.copilotEnabled;
+    button.textContent = 'Examiner les éléments';
+  }
 }
 
 function decisionLabel(decision) {
@@ -72,10 +144,29 @@ function renderSummary(status) {
   byId('run-status').textContent = `Run ${state.runId} · ${status}`;
 }
 
+async function loadAgentFlow(runId) {
+  const target = byId('agent-list');
+  target.replaceChildren();
+  let data;
+  try { data = await request(`/runs/${runId}/agents`); }
+  catch (_) { target.textContent = 'Trace des agents momentanément indisponible.'; return; }
+  if (runId !== state.runId) return;
+  const labels = { documents: 'Documents', extraction: 'Extraction', validation: 'Validation', workbook: 'Classeur', review: 'Revue' };
+  const latest = new Map((data.agents || []).map((event) => [event.agent, event]));
+  for (const agent of latest.values()) {
+    const step = document.createElement('span');
+    step.className = `agent-step ${agent.state || ''}`;
+    step.textContent = `${labels[agent.agent] || agent.agent} : ${agent.state || 'inconnu'}`;
+    target.append(step);
+  }
+  if (!target.childNodes.length) target.textContent = 'Aucune trace d’agents disponible pour ce traitement.';
+}
+
 async function loadQueue(preferredCase = null) {
   const data = await request(`/runs/${state.runId}/review`);
   state.cases = data.cases;
   renderSummary(data.status);
+  await loadAgentFlow(state.runId);
   const firstOpen = data.cases.find((item) => !item.decision);
   const selected = preferredCase || firstOpen?.case_id || data.cases[0]?.case_id;
   if (selected) await selectCase(selected);
@@ -108,12 +199,42 @@ function renderHistory(history) {
   }
 }
 
+function renderEvidence(evidence) {
+  const target = byId('case-evidence');
+  target.replaceChildren();
+  if (!evidence.length) {
+    target.textContent = 'Aucun montant ni contrôle détaillé enregistré pour cette cellule.';
+    return;
+  }
+  for (const fact of evidence) {
+    const box = document.createElement('div');
+    box.className = 'evidence-item';
+    const title = document.createElement('strong');
+    title.textContent = fact.kind === 'extraction' ? 'Montant extrait — non nécessairement validé' : `Anomalie : ${fact.content.type || 'contrôle'}`;
+    const detail = document.createElement('p');
+    const data = fact.content;
+    const check = data.check || data.note_checks?.find((item) => item.status === 'blocked');
+    const amount = (value) => typeof value === 'number' ? new Intl.NumberFormat('fr-TN').format(value) : value;
+    const fields = fact.kind === 'extraction'
+      ? [['Valeur TND', data.value], ['Comparatif', data.previous], ['État de validation', data.approved === true ? 'admis par les contrôles' : 'non admis'], ['Ligne source', data.source_label]]
+      : [['Valeur existante', data.existing], ['Valeur proposée', data.proposed], ['Message', data.message]];
+    if (check) fields.push(['Brut', check.gross], ['Provision', check.provision], ['Net publié', check.net], ['Écart TND', check.delta]);
+    detail.textContent = fields.filter(([, value]) => value !== undefined && value !== null && value !== '').map(([label, value]) => `${label} : ${amount(value)}`).join(' · ') || 'Consultez la page source et le rapport complet.';
+    box.append(title, detail);
+    target.append(box);
+  }
+}
+
 async function selectCase(caseId) {
   try {
     state.selected = caseId;
+    clearCopilotResult();
     renderQueue();
     let data = await request(`/runs/${state.runId}/review/${caseId}`);
-    if (!data.started) data = await request(`/runs/${state.runId}/review/${caseId}/start`, { method: 'POST' });
+    if (!data.started) {
+      await request(`/runs/${state.runId}/review/${caseId}/start`, { method: 'POST' });
+      data = await request(`/runs/${state.runId}/review/${caseId}`);
+    }
     const item = data.case;
     byId('empty-case').hidden = true;
     byId('case-content').hidden = false;
@@ -125,10 +246,12 @@ async function selectCase(caseId) {
     byId('case-dependencies').textContent = [...item.dependencies, ...item.issue_types].join(', ') || 'Aucune dépendance signalée.';
     const source = byId('source-link');
     source.href = `/runs/${state.runId}/review/${caseId}/source${item.page ? `#page=${item.page}` : ''}`;
+    source.textContent = item.page ? 'Ouvrir le PDF à la page concernée' : 'Ouvrir le PDF source';
     const badge = byId('case-state');
     badge.textContent = decisionLabel(data.decision);
     badge.className = `case-state ${data.decision?.action || ''}`;
     renderHistory(data.history);
+    renderEvidence(data.evidence || []);
     message('');
   } catch (error) { message(error.message, true); }
 }
@@ -177,6 +300,7 @@ async function loadRuns(preferredRun = null) {
   }
   selector.value = runs.some((run) => run.run_id === preferredRun) ? preferredRun : runs[0].run_id;
   state.runId = selector.value;
+  clearCopilotResult();
   byId('workbook-link').href = `/runs/${state.runId}/workbook`;
   byId('workbook-link').hidden = false;
   await loadQueue();
@@ -213,12 +337,14 @@ async function init() {
   byId('filter').addEventListener('change', renderQueue);
   byId('decision-form').addEventListener('submit', saveDecision);
   byId('run-form').addEventListener('submit', startRun);
+  byId('copilot-form').addEventListener('submit', askCopilot);
   byId('run-select').addEventListener('change', async (event) => {
     state.runId = event.target.value;
     byId('workbook-link').href = `/runs/${state.runId}/workbook`;
     byId('workbook-link').hidden = false;
     try { await loadQueue(); } catch (error) { message(error.message, true); }
   });
+  try { await loadCopilotStatus(); } catch (error) { byId('copilot-state').textContent = 'État indisponible'; message(error.message, true); }
   try { await loadRuns(); } catch (error) { message(error.message, true); }
 }
 
