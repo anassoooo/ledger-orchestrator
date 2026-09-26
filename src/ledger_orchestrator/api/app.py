@@ -10,10 +10,10 @@ from functools import lru_cache
 from pathlib import Path
 from fastapi import FastAPI,HTTPException
 from fastapi.responses import FileResponse
-from pydantic import BaseModel,Field
+from ledger_orchestrator.api.schemas import RunRequest, ReviewDecision, CopilotQuestion
 from ledger_orchestrator.pipeline import save_json
-from ledger_orchestrator.review_graph import ReviewWorkflow
-from ledger_orchestrator.copilot import ReadOnlyCopilot, LocalModelUnavailable, _evidence, status as copilot_status
+from ledger_orchestrator.review.graph import ReviewWorkflow
+from ledger_orchestrator.review.copilot import ReadOnlyCopilot, LocalModelUnavailable, _evidence, status as copilot_status
 
 app=FastAPI(title='LedgerOrchestrator local API',version='0.1.0',docs_url=None,redoc_url=None)
 ROOT=Path(os.getenv('CMF_ROOT','/data'))
@@ -21,22 +21,7 @@ OUTPUT=Path(os.getenv('CMF_OUTPUT','/output'))
 CONFIG=Path(os.getenv('CMF_CONFIG','/app/config/star.json'))
 LOCK=threading.Lock()
 COPILOT_LOCK=threading.Lock()
-STATIC=Path(__file__).parent/'ui'
-
-
-class RunRequest(BaseModel):
-    years:list[int]=Field(default_factory=lambda:[2023,2024,2025],min_length=1,max_length=3)
-
-
-class ReviewDecision(BaseModel):
-    action:str
-    reviewer:str=Field(min_length=2,max_length=80)
-    note:str=Field(min_length=3,max_length=1000)
-
-
-class CopilotQuestion(BaseModel):
-    question:str=Field(min_length=5,max_length=600)
-    case_id:str|None=None
+STATIC=Path(__file__).resolve().parent.parent/'ui'
 
 
 @lru_cache(maxsize=4)

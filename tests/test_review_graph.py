@@ -3,10 +3,10 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
-from ledger_orchestrator.gateway import ALLOWED_PATH
+from ledger_orchestrator.api.gateway import ALLOWED_PATH
 
 try:
-    from ledger_orchestrator.review_graph import ReviewWorkflow
+    from ledger_orchestrator.review.graph import ReviewWorkflow
 except ImportError:
     ReviewWorkflow = None
 
@@ -66,7 +66,7 @@ class ReviewApiTests(unittest.TestCase):
     def test_local_review_flow_does_not_edit_workbook(self):
         try:
             from fastapi.testclient import TestClient
-            from ledger_orchestrator import api
+            from ledger_orchestrator.api import app as api
         except ImportError:
             self.skipTest('FastAPI TestClient is unavailable')
         with tempfile.TemporaryDirectory() as temp:

@@ -83,11 +83,12 @@ Generated artifacts are written under `outputs/<run_id>/`: the review workbook, 
 ```text
 src/ledger_orchestrator/  product source package
 ├── orchestration.py      specialist-agent coordination
-├── extraction.py         PDF and OCR extraction
-├── validation.py         evidence and accounting controls
-├── workbook.py           guarded Excel writing and recalculation
-├── review_graph.py       LangGraph human-review workflow
-├── api.py                private application API
+├── pipeline.py           agent execution and run reporting
+├── extraction/           PDF, OCR, notes and comparatives
+├── validation/           accounting rules and source evidence
+├── workbook/             guarded writing, recalculation and audits
+├── review/               review queue, LangGraph and local copilot
+├── api/                  application routes and loopback gateway
 └── ui/                   local review interface
 config/                   company/template-specific rules
 tests/                    deterministic unit and integration tests

@@ -2,7 +2,7 @@
 import argparse
 import json
 from pathlib import Path
-from ledger_orchestrator.extraction import read_pages, balance, premiums
+from ledger_orchestrator.extraction.core import read_pages, balance, premiums
 
 
 def main():

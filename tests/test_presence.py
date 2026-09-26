@@ -1,6 +1,6 @@
 import unittest
-from ledger_orchestrator.presence import native_balance_presence
-from ledger_orchestrator.review import build_review
+from ledger_orchestrator.extraction.presence import native_balance_presence
+from ledger_orchestrator.review.queue import build_review
 from test_evidence import page
 
 

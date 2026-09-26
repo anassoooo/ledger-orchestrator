@@ -1,6 +1,6 @@
 import copy
 import unittest
-from ledger_orchestrator.reconcile_visual_audit import reconcile
+from ledger_orchestrator.validation.reconcile_visual_audit import reconcile
 
 
 class VisualAuditTests(unittest.TestCase):

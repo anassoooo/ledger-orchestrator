@@ -1,7 +1,7 @@
 import unittest
-from ledger_orchestrator.extraction import number, normalize
-from ledger_orchestrator.validation import validate_balance,validate_premiums
-from ledger_orchestrator.workbook import guarded_sum
+from ledger_orchestrator.extraction.core import number, normalize
+from ledger_orchestrator.validation.accounting import validate_balance,validate_premiums
+from ledger_orchestrator.workbook.writer import guarded_sum
 
 
 class ExtractionTests(unittest.TestCase):

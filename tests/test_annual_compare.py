@@ -1,5 +1,5 @@
 import unittest
-from ledger_orchestrator.annual_compare import extract_asset
+from ledger_orchestrator.extraction.annual_compare import extract_asset
 
 
 class Page:

@@ -1,7 +1,7 @@
 import unittest
 from types import SimpleNamespace
 from PIL import Image
-from ledger_orchestrator.ocr_probe import embedded_crop
+from ledger_orchestrator.extraction.ocr_probe import embedded_crop
 
 
 class Stream:

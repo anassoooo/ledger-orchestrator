@@ -1,6 +1,6 @@
 import copy
 import unittest
-from ledger_orchestrator.diagnostics import diagnose_candidates
+from ledger_orchestrator.validation.diagnostics import diagnose_candidates
 
 
 class DiagnosticTests(unittest.TestCase):

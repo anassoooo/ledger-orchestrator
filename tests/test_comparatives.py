@@ -1,6 +1,6 @@
 import unittest
-from ledger_orchestrator.comparatives import supplement_comparatives
-from ledger_orchestrator.review import build_review
+from ledger_orchestrator.extraction.comparatives import supplement_comparatives
+from ledger_orchestrator.review.queue import build_review
 
 
 class ComparativeTests(unittest.TestCase):

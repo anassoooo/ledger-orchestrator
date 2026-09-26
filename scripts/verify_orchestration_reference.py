@@ -13,8 +13,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from ledger_orchestrator import pipeline
-from ledger_orchestrator.cell_ocr import read_scanned_asset as original_scanned_asset
-from ledger_orchestrator.extraction import read_pages as original_read_pages
+from ledger_orchestrator.extraction.cell_ocr import read_scanned_asset as original_scanned_asset
+from ledger_orchestrator.extraction.core import read_pages as original_read_pages
 
 
 def evidence_signature(report):

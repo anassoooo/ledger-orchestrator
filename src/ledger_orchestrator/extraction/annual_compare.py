@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 import pdfplumber
 import pypdfium2
-from ledger_orchestrator.extraction import lines,normalize,number
+from ledger_orchestrator.extraction.core import lines,normalize,number
 
 
 def extract_asset(page,section_text,header_text):

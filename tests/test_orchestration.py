@@ -8,7 +8,7 @@ from ledger_orchestrator.orchestration import Agent, AgentResult, Orchestrator
 from ledger_orchestrator import pipeline
 
 try:
-    from ledger_orchestrator import api
+    from ledger_orchestrator.api import app as api
 except ModuleNotFoundError as exc:
     if exc.name not in ('fastapi', 'pydantic'):
         raise
