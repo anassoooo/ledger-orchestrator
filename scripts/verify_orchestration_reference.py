@@ -12,9 +12,9 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from cmf import pipeline
-from cmf.cell_ocr import read_scanned_asset as original_scanned_asset
-from cmf.extraction import read_pages as original_read_pages
+from ledger_orchestrator import pipeline
+from ledger_orchestrator.cell_ocr import read_scanned_asset as original_scanned_asset
+from ledger_orchestrator.extraction import read_pages as original_read_pages
 
 
 def evidence_signature(report):

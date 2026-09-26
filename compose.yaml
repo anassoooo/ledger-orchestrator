@@ -17,7 +17,7 @@ services:
     cpus: 4
   gateway:
     image: ledger-orchestrator:local
-    command: ["python", "-m", "cmf.gateway"]
+    command: ["python", "-m", "ledger_orchestrator.gateway"]
     ports:
       - "127.0.0.1:8000:8080"
     networks: [local, ingress]

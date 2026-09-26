@@ -4,12 +4,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr t
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY cmf cmf
+COPY src src
 COPY config config
 COPY tests tests
-RUN useradd --create-home --uid 10001 cmf && mkdir /output && chown cmf:cmf /output
-USER cmf
-ENV CMF_ROOT=/data CMF_OUTPUT=/output CMF_CONFIG=/app/config/star.json
+RUN useradd --create-home --uid 10001 app && mkdir /output && chown app:app /output
+USER app
+ENV PYTHONPATH=/app/src CMF_ROOT=/data CMF_OUTPUT=/output CMF_CONFIG=/app/config/star.json
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"
-CMD ["python", "-m", "uvicorn", "cmf.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "ledger_orchestrator.api:app", "--host", "0.0.0.0", "--port", "8000"]

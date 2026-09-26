@@ -1,8 +1,8 @@
 import copy
 import unittest
-from cmf.notes import asset_notes,supplement
-from cmf.validation import validate_balance
-from cmf.premium_evidence import corroborate_premiums,ORDER,ALIASES
+from ledger_orchestrator.notes import asset_notes,supplement
+from ledger_orchestrator.validation import validate_balance
+from ledger_orchestrator.premium_evidence import corroborate_premiums,ORDER,ALIASES
 
 
 def word(text,x,y):

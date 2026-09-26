@@ -4,8 +4,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from cmf.copilot import ABSTENTION, LocalModelUnavailable, ReadOnlyCopilot, local_model_settings
-from cmf.gateway import ALLOWED_PATH
+from ledger_orchestrator.copilot import ABSTENTION, LocalModelUnavailable, ReadOnlyCopilot, local_model_settings
+from ledger_orchestrator.gateway import ALLOWED_PATH
 
 
 def sample_report():
@@ -110,7 +110,7 @@ class CopilotTests(unittest.TestCase):
 
         with patch.dict('os.environ', {'CMF_LLM_MODEL': 'local-model',
                                        'CMF_LLM_URL': 'http://ollama:11434'}, clear=False), \
-             patch('cmf.copilot.build_opener', return_value=Opener()):
+             patch('ledger_orchestrator.copilot.build_opener', return_value=Opener()):
             result = ReadOnlyCopilot().answer(sample_report(), 'Quel est le statut ?')
         self.assertEqual(result['citations'][0]['id'], 'run')
         self.assertEqual([url.rsplit('/', 1)[-1] for url, _ in calls], ['tags', 'chat'])
@@ -124,7 +124,7 @@ class CopilotTests(unittest.TestCase):
     def test_api_copilot_is_read_only(self):
         try:
             from fastapi.testclient import TestClient
-            from cmf import api
+            from ledger_orchestrator import api
         except ImportError:
             self.skipTest('FastAPI TestClient is unavailable')
         with tempfile.TemporaryDirectory() as temp:

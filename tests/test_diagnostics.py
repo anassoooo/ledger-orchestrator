@@ -1,6 +1,6 @@
 import copy
 import unittest
-from cmf.diagnostics import diagnose_candidates
+from ledger_orchestrator.diagnostics import diagnose_candidates
 
 
 class DiagnosticTests(unittest.TestCase):

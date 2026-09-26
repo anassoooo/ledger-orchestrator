@@ -38,7 +38,7 @@ Le moteur n'est pas encore présenté comme une solution complète pour toutes l
 
 ## Résultat de démonstration
 
-Dernière exécution : `20260917T125647_54b032c5`.
+Exécution de référence pour la démonstration : `20260924T164906_1b40dd9c`.
 
 | Exercice | TAF_G1 | TAF_G3 |
 | --- | ---: | ---: |
@@ -50,7 +50,7 @@ Le statut est `needs_review` : le résultat est exploitable comme démonstrateur
 
 ## Contrôles réalisés
 
-- 53 tests locaux recensés ; les tests d'intégration Docker incluent le recalcul LibreOffice.
+- 70 tests réussis dans Docker le 25 septembre ; les tests d'intégration incluent le recalcul LibreOffice.
 - Audit de 255 écritures, dont 73 formules.
 - Vérification de l'empreinte des sources et de la conservation du modèle original.
 - Rapports de cellules à revoir, anomalies, couverture et audit des sources.
@@ -60,15 +60,12 @@ Le statut est `needs_review` : le résultat est exploitable comme démonstrateur
 Depuis la racine du projet :
 
 ```powershell
-docker compose build
-docker compose run --rm engine python -m cmf --years 2023 2024 2025
-docker compose up -d
-Invoke-RestMethod http://localhost:8000/health
+.\scripts\demo_check.ps1
 ```
 
 Présenter ensuite :
 
-1. `outputs/20260917T125647_54b032c5/STAR_consolide.xlsx` ;
+1. `outputs/20260924T164906_1b40dd9c/STAR_consolide.xlsx` ;
 2. `cellules_a_revoir.csv` pour montrer les limites et les anomalies ;
 3. `report.json` pour la traçabilité ;
 4. `docs/LOGIQUE_METIER.md` pour les règles métier.
@@ -77,7 +74,8 @@ Présenter ensuite :
 
 - Les autres entreprises et exercices du dossier ne sont pas encore généralisés.
 - Les documents illisibles, les rubriques absentes et les contradictions restent bloqués ou signalés.
-- Le modèle local et l'interface de résolution humaine ne sont pas encore intégrés.
+- La revue humaine LangGraph permet de documenter une décision, mais pas encore de régénérer le classeur après arbitrage.
+- Le copilote LLM local en lecture seule est codé, mais le modèle n'est pas encore installé sur cette machine : le téléchargement de l'image Ollama est bloqué par l'accès HTTPS au registre.
 - Les recherches externes ne font pas partie du traitement : l'agent doit utiliser uniquement les documents fournis.
 
 ## Suite proposée

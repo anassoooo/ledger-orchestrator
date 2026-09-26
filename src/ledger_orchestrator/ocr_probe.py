@@ -8,7 +8,7 @@ from pathlib import Path
 import pypdfium2
 from PIL import Image,ImageOps
 import pdfplumber
-from cmf.cell_ocr import ROWS
+from ledger_orchestrator.cell_ocr import ROWS
 
 
 def embedded_crop(page,box):

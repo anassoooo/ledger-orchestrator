@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 from pathlib import Path
-from cmf.pipeline import execute
+from ledger_orchestrator.pipeline import execute
 
 
 def main():

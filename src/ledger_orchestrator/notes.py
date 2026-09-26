@@ -1,6 +1,6 @@
 """Conservative native-note supplement; never infer a missing balance amount."""
 import re
-from cmf.extraction import normalize, lines, numeric_groups
+from ledger_orchestrator.extraction import normalize, lines, numeric_groups
 
 
 # Exact labels scoped to their note. No amounts or balancing plugs in the dictionary.

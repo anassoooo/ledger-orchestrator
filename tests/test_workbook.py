@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 import openpyxl
-from cmf.workbook import write_workbook,recalculate,set_column_width
+from ledger_orchestrator.workbook import write_workbook,recalculate,set_column_width
 
 
 class WorkbookTests(unittest.TestCase):
@@ -37,7 +37,7 @@ class WorkbookTests(unittest.TestCase):
             config['extend_template']=False
             r=dict(value=456,approved=True)
             annual={2025:dict(records={'AC12':r},validation={'eligible':['AC12'],'dependencies':{}},branches={})}
-            with patch('cmf.workbook.recalculate'):
+            with patch('ledger_orchestrator.workbook.recalculate'):
                 writes,issues=write_workbook(source,root/'result.xlsx',config,annual)
             actual=openpyxl.load_workbook(root/'result.xlsx')
             self.assertEqual(actual['TAF_G1']['C54'].value,123)

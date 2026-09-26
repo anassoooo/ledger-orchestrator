@@ -6,18 +6,24 @@ Montrer un MVP local qui extrait des données financières depuis des PDF, appli
 
 Message principal : le système écrit une valeur uniquement lorsqu'elle est suffisamment prouvée. Une donnée ambiguë reste vide et devient un cas de revue.
 
+État vérifié le 25 septembre : `scripts/demo_check.ps1` réussit, l'API répond
+`ok`, les deux conteneurs applicatifs sont sains, et les 70 tests Docker passent.
+Le run de démonstration est `20260924T164906_1b40dd9c` (`needs_review`,
+255 écritures, 45 anomalies, 37 cellules à revoir). Le copilote LLM n'est pas
+activé : ne pas essayer de le présenter comme fonctionnel pendant la démonstration.
+
 ## Fichiers à préparer
 
 Ouvrir avant l'appel, sans les partager à l'écran avant le moment prévu :
 
-- `outputs/20260917T125647_54b032c5/STAR_consolide.xlsx`
-- `outputs/20260917T125647_54b032c5/anomalies.csv`
-- `outputs/20260917T125647_54b032c5/cellules_a_revoir.csv`
+- `outputs/20260924T164906_1b40dd9c/STAR_consolide.xlsx`
+- `outputs/20260924T164906_1b40dd9c/anomalies.csv`
+- `outputs/20260924T164906_1b40dd9c/cellules_a_revoir.csv`
 - `outputs/20260917T125647_54b032c5/preview_TAF_G1.png`
 - `outputs/20260917T125647_54b032c5/preview_TAF_G3.png`
 - le dépôt GitHub : <https://github.com/anassoooo/ledger-orchestrator>
 
-Ne pas lancer l'OCR complet pendant les 15 minutes. Le traitement de plusieurs PDF est volontairement séparé de la consultation des résultats. Utiliser le run déjà produit et vérifié.
+Ne pas lancer l'OCR complet pendant les 15 minutes. Le traitement de plusieurs PDF est volontairement séparé de la consultation des résultats. Utiliser le run du 24 septembre déjà produit et vérifié. Les deux prévisualisations PNG sont un secours issu du run antérieur du 17 septembre, pas une preuve du run courant.
 
 ## Déroulé minute par minute
 
@@ -40,7 +46,7 @@ Afficher le schéma du README :
 5. écriture Excel et recalcul LibreOffice ;
 6. rapport d'anomalies et file de revue humaine.
 
-Préciser que l'orchestrateur déterministe coordonne désormais cinq agents spécialisés et consigne leur exécution. Les profils multi-entreprises et le modèle local restent à développer.
+Préciser que l'orchestrateur déterministe coordonne cinq agents spécialisés et consigne leur exécution. La revue humaine LangGraph est disponible ; le copilote LLM est codé comme option de lecture, mais son modèle n'est pas installé sur cette machine à cause du blocage du téléchargement HTTPS. Les profils multi-entreprises restent à développer.
 
 ### 3:30–5:00 — Démarrage local
 
@@ -127,12 +133,14 @@ Montrer ensuite `cellules_a_revoir.csv` pour expliquer que la revue humaine est 
 
 ### 13:00–14:15 — Qualité technique
 
-Afficher rapidement GitHub :
+Afficher rapidement le README local, puis GitHub seulement si la connexion est
+disponible. Vérifier que le dernier commit attendu apparaît avant d'affirmer que
+le site montre l'état courant du projet.
 
 - dépôt public sans PDF ni Excel confidentiel ;
 - Docker, commande et API locale ;
-- 53 tests automatisés ;
-- CI GitHub réussie ;
+- 70 tests automatisés réussis localement dans Docker le 25 septembre ;
+- CI GitHub à montrer uniquement si son statut est visible et à jour ;
 - documentation de la logique métier.
 
 Ne pas passer du temps à parcourir le code ligne par ligne.
@@ -192,5 +200,5 @@ Si Internet ne fonctionne pas : le dépôt GitHub n'est pas indispensable. Toute
 - PowerShell ouvert à la racine locale du projet.
 - `scripts\demo_check.ps1` exécuté une fois.
 - Classeur, anomalies et file de revue ouverts.
-- GitHub ouvert sur la page du dépôt.
+- README local ouvert ; GitHub facultatif si son accès et sa synchronisation sont confirmés.
 - Préviews disponibles en secours.

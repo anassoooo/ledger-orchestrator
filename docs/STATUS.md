@@ -65,7 +65,8 @@ la chaîne sur erreur et écrit les transitions dans `report.json`. Une vue comp
 est disponible via `GET /runs/{run_id}/agents`. Il ne s'agit pas encore d'agents IA
 autonomes ni d'une prise en charge validée des autres entreprises.
 
-Les 59 tests locaux passent, dont deux ignorés ici sans LibreOffice ni FastAPI.
+À cette étape, 59 tests locaux passaient, dont deux ignorés hors Docker sans
+LibreOffice ni FastAPI. La suite courante compte désormais 70 tests réussis.
 Une première comparaison, hors Docker, avait confirmé les montants extraits et
 les branches, les types d'anomalies, la couverture et la file de revue. Elle
 réutilisait le classeur de référence et ne validait donc pas l'écriture Excel ni
@@ -78,14 +79,17 @@ deux étapes avec un classeur nouvellement généré.
 
 Docker Desktop fonctionne. Commande et API locale sont opérationnelles : lancement,
 suivi, rapport et téléchargement. Le classeur téléchargé a été comparé au fichier
-local par SHA-256 : identité confirmée lors de la vérification précédente. Les 53 tests passent dans Docker, dont le
-recalcul LibreOffice réel, les conflits et les regroupements de branches.
+local par SHA-256 : identité confirmée lors de la vérification précédente. À cette
+date, 53 tests passaient dans Docker, dont le recalcul LibreOffice réel, les
+conflits et les regroupements de branches. La suite courante en compte 70.
 
 Les règles confirmées sont actives : TND, STAR_Details, primes avant réassurance,
 Transport + Aviation, IRDS + Accidents du travail, Acceptations non-vie exclues.
 La documentation complète est dans LOGIQUE_METIER.md.
 
-La dernière exécution `20260917T125647_54b032c5` produit 255 écritures de valeurs/formules (pas 255 montants indépendants).
+L'exécution de référence à cette date, `20260917T125647_54b032c5`, produisait
+255 écritures de valeurs/formules (pas 255 montants indépendants). Le run courant
+de démonstration est `20260924T164906_1b40dd9c`.
 Le résultat reste partiel : statut needs_review. Les sources restent inchangées.
 
 La couverture mesurée des cellules configurées, totaux inclus, est :
@@ -124,7 +128,7 @@ Le fichier généré est un classeur de revue, pas une livraison comptable compl
 
 ## Diagnostic complémentaire sans écriture comptable
 
-`cmf.diagnostics` compare les candidats OCR au texte natif et contrôle les familles
+`ledger_orchestrator.diagnostics` compare les candidats OCR au texte natif et contrôle les familles
 complètes. Le diagnostic de la dernière exécution relève 14 écarts/contrôles
 à examiner. Ils ne sont pas 14 nouvelles anomalies comptables confirmées : les
 candidats restent non validés, même si deux lectures OCR concordent.
@@ -152,6 +156,6 @@ fournit des montants natifs pour des rubriques bloquées, mais introduit des con
 AC33/AC336 et des différences de 1 TND. Aucune substitution globale ni écriture
 Excel effectuée. Voir `outputs/cmf_verification_20260918/COMPARAISON_CMF.md`.
 
-Le mode `cmf.ocr_probe --raw` reconstitue les bandes d'images qui se chevauchent
+Le mode `ledger_orchestrator.ocr_probe --raw` reconstitue les bandes d'images qui se chevauchent
 avec une ligne. AC322 peut ainsi être examiné, mais les lectures anglaise et
 française divergent encore. Aucun assouplissement des règles d'admission.

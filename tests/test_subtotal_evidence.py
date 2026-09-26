@@ -1,5 +1,5 @@
 import unittest
-from cmf.subtotal_evidence import corroborate_subtotals
+from ledger_orchestrator.subtotal_evidence import corroborate_subtotals
 
 
 class SubtotalTests(unittest.TestCase):

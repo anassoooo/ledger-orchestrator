@@ -11,9 +11,9 @@ from pathlib import Path
 from fastapi import FastAPI,HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel,Field
-from cmf.pipeline import save_json
-from cmf.review_graph import ReviewWorkflow
-from cmf.copilot import ReadOnlyCopilot, LocalModelUnavailable, _evidence, status as copilot_status
+from ledger_orchestrator.pipeline import save_json
+from ledger_orchestrator.review_graph import ReviewWorkflow
+from ledger_orchestrator.copilot import ReadOnlyCopilot, LocalModelUnavailable, _evidence, status as copilot_status
 
 app=FastAPI(title='LedgerOrchestrator local API',version='0.1.0',docs_url=None,redoc_url=None)
 ROOT=Path(os.getenv('CMF_ROOT','/data'))
@@ -107,7 +107,7 @@ def start(body:RunRequest):
     def worker():
         try:
             with (OUTPUT/f'job_{job}.log').open('w',encoding='utf-8') as log:
-                proc=subprocess.run([sys.executable,'-m','cmf','--root',str(ROOT),'--output',str(OUTPUT),
+                proc=subprocess.run([sys.executable,'-m','ledger_orchestrator','--root',str(ROOT),'--output',str(OUTPUT),
                                      '--config',str(CONFIG),'--years',*[str(y) for y in body.years]],
                                     stdout=log,stderr=subprocess.STDOUT,timeout=3600)
             text=(OUTPUT/f'job_{job}.log').read_text(encoding='utf-8')

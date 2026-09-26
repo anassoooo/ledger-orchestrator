@@ -4,11 +4,11 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from cmf.orchestration import Agent, AgentResult, Orchestrator
-from cmf import pipeline
+from ledger_orchestrator.orchestration import Agent, AgentResult, Orchestrator
+from ledger_orchestrator import pipeline
 
 try:
-    from cmf import api
+    from ledger_orchestrator import api
 except ModuleNotFoundError as exc:
     if exc.name not in ('fastapi', 'pydantic'):
         raise

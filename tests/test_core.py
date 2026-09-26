@@ -1,7 +1,7 @@
 import unittest
-from cmf.extraction import number, normalize
-from cmf.validation import validate_balance,validate_premiums
-from cmf.workbook import guarded_sum
+from ledger_orchestrator.extraction import number, normalize
+from ledger_orchestrator.validation import validate_balance,validate_premiums
+from ledger_orchestrator.workbook import guarded_sum
 
 
 class ExtractionTests(unittest.TestCase):

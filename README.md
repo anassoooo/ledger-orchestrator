@@ -67,7 +67,7 @@ Docker Desktop is required for the full integration workflow.
 
 ```powershell
 docker compose build
-docker compose run --rm engine python -m cmf --years 2023 2024 2025
+docker compose run --rm engine python -m ledger_orchestrator --years 2023 2024 2025
 docker compose up -d
 Invoke-RestMethod http://localhost:8000/health
 ```
@@ -81,12 +81,20 @@ Generated artifacts are written under `outputs/<run_id>/`: the review workbook, 
 ## Repository map
 
 ```text
-cmf/          extraction, validation, orchestration, Excel writer and API
-config/       company/template-specific rules
-tests/        deterministic unit and integration tests
-docs/         business logic, delivery brief and project status
-data/         local confidential inputs (ignored by Git)
-outputs/      local reports and workbooks (ignored by Git)
+src/ledger_orchestrator/  product source package
+├── orchestration.py      specialist-agent coordination
+├── extraction.py         PDF and OCR extraction
+├── validation.py         evidence and accounting controls
+├── workbook.py           guarded Excel writing and recalculation
+├── review_graph.py       LangGraph human-review workflow
+├── api.py                private application API
+└── ui/                   local review interface
+config/                   company/template-specific rules
+tests/                    deterministic unit and integration tests
+docs/                     business logic, architecture and delivery material
+scripts/                  demo and verification utilities
+data/                     confidential local inputs (ignored by Git)
+outputs/                  generated local artifacts (ignored by Git)
 ```
 
 ## Privacy boundary
@@ -98,6 +106,7 @@ The runtime is offline with respect to source documents. External CMF research i
 ## Test suite
 
 ```powershell
+$env:PYTHONPATH = "src"
 python -m unittest discover -s tests -q
 ```
 

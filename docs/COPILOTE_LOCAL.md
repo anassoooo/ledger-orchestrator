@@ -32,6 +32,22 @@ Il faut d'abord rétablir l'accès au registre Docker pour télécharger son ima
 5. Vérifier `GET http://127.0.0.1:8000/copilot/status`, puis poser une question
    dans `/review`.
 
+### Variante NVIDIA
+
+Sur une machine dont le GPU NVIDIA est accessible à Docker, ajouter
+`-f compose.yaml -f compose.gpu.yaml` à chaque commande `docker compose`
+ci-dessus. Cette surcharge réserve un GPU uniquement pour Ollama ; le profil
+standard reste utilisable sur une machine sans GPU. Vérifier l'accès au GPU
+dans Docker avant de l'activer, par exemple avec une image locale contenant
+`nvidia-smi`.
+
+Pour une RTX 3050 de 6 Go et 32 Go de RAM, le modèle
+`qwen3:4b-instruct-2507-q4_K_M` (environ 2,5 Go de poids) est un point de
+départ prudent pour les questions de revue en français. Ce choix laisse de la
+marge pour le contexte et l'application ; il n'autorise jamais le modèle à
+écrire des montants dans le classeur. Il faut télécharger l'image Ollama puis
+les poids du modèle une première fois avant toute utilisation hors ligne.
+
 Le modèle est vérifié par `/api/tags` avant toute question. L'adaptateur
 n'accepte que `http://ollama:11434` ou la boucle locale sur ce même port, sans
 proxy HTTP. Aucune URL de modèle n'est fournie par l'utilisateur. Le modèle

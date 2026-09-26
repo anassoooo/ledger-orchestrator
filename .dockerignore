@@ -1,6 +1,6 @@
 **
 !Dockerfile
 !requirements.txt
-!cmf/**
+!src/**
 !config/**
 !tests/**
