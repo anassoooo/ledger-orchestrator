@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src src
 COPY config config
 COPY tests tests
+COPY scripts/*.py scripts/
 RUN useradd --create-home --uid 10001 app && mkdir /output && chown app:app /output
 USER app
 ENV PYTHONPATH=/app/src CMF_ROOT=/data CMF_OUTPUT=/output CMF_CONFIG=/app/config/star.json

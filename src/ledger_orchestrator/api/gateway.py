@@ -5,9 +5,9 @@ from urllib.error import HTTPError,URLError
 import re
 
 RUN_ID = r'\d{8}T\d{6}_[a-f0-9]{8}'
-CASE_ID = r'TAF_G[13]-[A-Z]{1,3}[1-9][0-9]{0,4}'
+CASE_ID = r'[A-Za-z0-9_]{1,31}-[A-Z]{1,3}[1-9][0-9]{0,6}'
 RUN_ROUTE = rf'runs/{RUN_ID}/(?:report|agents|workbook|copilot|review(?:/{CASE_ID}(?:/(?:start|decision|source))?)?)'
-ALLOWED_PATH = re.compile(rf'/(?:health|copilot/status|review(?:/(?:app\.js|style\.css))?|openapi\.json|runs|jobs/[a-f0-9]{{32}}|{RUN_ROUTE})')
+ALLOWED_PATH = re.compile(rf'/(?:health|profiles|copilot/status|review(?:/(?:app\.js|style\.css))?|openapi\.json|runs|jobs/[a-f0-9]{{32}}|{RUN_ROUTE})')
 
 
 class Handler(BaseHTTPRequestHandler):

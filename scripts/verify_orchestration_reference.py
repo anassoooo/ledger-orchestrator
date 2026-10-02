@@ -54,7 +54,7 @@ def main():
 
     with tempfile.TemporaryDirectory() as temp:
         with patch.object(pipeline, 'read_pages', side_effect=lambda source, _: original_read_pages(source, args.cache)), \
-             patch.object(pipeline, 'read_scanned_asset', side_effect=lambda source, _: original_scanned_asset(source, args.cache)), \
+             patch('ledger_orchestrator.extraction.adapters.read_scanned_asset', side_effect=lambda source, _: original_scanned_asset(source, args.cache)), \
              patch.object(pipeline, 'write_workbook', side_effect=copy_reference):
             actual = pipeline.execute(args.root, Path(temp), args.config, reference['years'])
 

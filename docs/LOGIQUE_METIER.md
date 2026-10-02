@@ -84,6 +84,9 @@ de son rapprochement et reste identifiée dans les preuves.
 - Un zéro n'est écrit que s'il est effectivement extrait d'une source admissible.
 - Une valeur existante différente est conservée et une anomalie contient les deux valeurs.
 - Les totaux 2023–2025 reçoivent une garde COUNT pour ne pas masquer des entrées manquantes.
+- Depuis le 2 octobre, les totaux des primes exigent aussi l'admission de chaque
+  composante. Une valeur existante conflictuelle reste conservée, mais ne peut pas
+  alimenter ces totaux ; les formules dépendantes restent vides après recalcul.
 - L'original n'est jamais modifié ; chaque exécution produit sa propre copie consolidée.
 
 Le niveau `high` est une catégorie de preuves, pas une probabilité annoncée à 95 %.

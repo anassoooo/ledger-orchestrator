@@ -6,6 +6,12 @@ LedgerOrchestrator exécute cinq agents logiciels déterministes sur les états
 financiers individuels STAR 2023–2025. Chaque agent reçoit uniquement les résultats
 de ses prédécesseurs déclarés. Les PDF et le classeur sont fournis localement.
 
+Depuis le 2 octobre, un profil versionné pilote les chemins, exercices et adresses
+Excel. Les particularités STAR sont isolées dans `extraction/adapters.py` et les
+faits financiers passent un contrôle de contrat avant l'agent classeur. La couche
+commune est testée sur un modèle fictif différent ; l'adaptateur STAR reste le seul
+qualifié en production. Voir [les contrats de profils](PROFILES.md).
+
 | Agent | Entrée | Sortie et responsabilité |
 | --- | --- | --- |
 | Documents | Chemins des PDF et exercices demandés | Pages, empreintes SHA-256, identité, exercice, méthode OCR/native |

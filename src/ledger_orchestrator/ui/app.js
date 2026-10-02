@@ -306,14 +306,52 @@ async function loadRuns(preferredRun = null) {
   await loadQueue();
 }
 
+async function loadProfiles() {
+  const data = await request('/profiles');
+  const selector = byId('profile-select');
+  selector.replaceChildren();
+  const profiles = data.profiles.filter((profile) => profile.runnable);
+  if (!profiles.length) {
+    byId('profile-years').textContent = 'Aucun profil qualifié disponible.';
+    return;
+  }
+  for (const profile of profiles) {
+    const option = document.createElement('option');
+    option.value = profile.id;
+    option.textContent = `${profile.company} · profil v${profile.revision}`;
+    selector.append(option);
+  }
+  selector.value = profiles.some((p) => p.id === data.default_profile_id) ? data.default_profile_id : profiles[0].id;
+  const renderYears = () => {
+    const profile = profiles.find((p) => p.id === selector.value);
+    const container = byId('profile-years');
+    container.replaceChildren();
+    for (const year of profile.years) {
+      const available = profile.available_years.includes(year);
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'checkbox'; input.name = 'year'; input.value = year;
+      input.checked = available; input.disabled = !available;
+      label.append(input, document.createTextNode(` ${year}${available ? '' : ' (PDF absent)'}`));
+      container.append(label);
+    }
+    byId('start-run').disabled = !profile.available_years.length;
+  };
+  selector.disabled = false;
+  selector.addEventListener('change', renderYears);
+  renderYears();
+}
+
 async function startRun(event) {
   event.preventDefault();
   const years = [...document.querySelectorAll('input[name="year"]:checked')].map((box) => Number(box.value));
   if (!years.length) { message('Choisissez au moins un exercice.', true); return; }
   const button = byId('start-run');
   button.disabled = true;
+  byId('profile-select').disabled = true;
   try {
-    const started = await request('/runs', { method: 'POST', body: JSON.stringify({ years }) });
+    const profile_id = byId('profile-select').value;
+    const started = await request('/runs', { method: 'POST', body: JSON.stringify({ profile_id, years }) });
     byId('job-progress').textContent = 'Extraction en cours…';
     for (let attempt = 0; attempt < 720; attempt += 1) {
       await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -330,7 +368,7 @@ async function startRun(event) {
   } catch (error) {
     byId('job-progress').textContent = 'Extraction non terminée.';
     message(error.message, true);
-  } finally { button.disabled = false; }
+  } finally { button.disabled = false; byId('profile-select').disabled = false; }
 }
 
 async function init() {
@@ -344,6 +382,7 @@ async function init() {
     byId('workbook-link').hidden = false;
     try { await loadQueue(); } catch (error) { message(error.message, true); }
   });
+  try { await loadProfiles(); } catch (error) { byId('profile-years').textContent = 'Profils indisponibles.'; message(error.message, true); }
   try { await loadCopilotStatus(); } catch (error) { byId('copilot-state').textContent = 'État indisponible'; message(error.message, true); }
   try { await loadRuns(); } catch (error) { message(error.message, true); }
 }

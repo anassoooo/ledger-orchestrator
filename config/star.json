@@ -1,10 +1,43 @@
 {
+  "schema_version": 1,
+  "profile_id": "star",
+  "revision": 1,
+  "status": "validated",
+  "extractor": "star_individual_v1",
+  "identity_terms": ["STAR"],
+  "source_directory": "sources/STAR",
   "company": "STAR",
   "target_unit": "TND",
   "extend_template": true,
   "premium_basis": "before_reinsurance",
   "branch_policy": "grouped",
   "years": [2023, 2024, 2025],
+  "workbook": {
+    "template": "templates/TAF_G1_G2_G3_G4.xlsx",
+    "filename": "STAR_consolide.xlsx",
+    "balance_sheet": "TAF_G1",
+    "premium_sheet": "TAF_G3",
+    "anchors": [{"sheet":"TAF_G1","cell":"A51","value":"STAR"},{"sheet":"TAF_G3","cell":"B1","value":"STAR"}],
+    "columns": {
+      "2023": {"asset":"E","liability":"M","premium":"O","details":"C"},
+      "2024": {"asset":"D","liability":"L","premium":"P","details":"D"},
+      "2025": {"asset":"C","liability":"K","premium":"Q","details":"E"}
+    },
+    "details_sheet": "STAR_Details",
+    "details_title": "Compléments du bilan STAR (TND)",
+    "column_widths": {"liability":19,"premium":18},
+    "premium_totals": {
+      "TOTAL_9": {"row":9,"children":["AUTOMOBILE","INCENDIE","TRANSPORT","IRDS","GROUPE"]},
+      "TOTAL_11": {"row":11,"children":["VIE"]},
+      "TOTAL_12": {"row":12,"children":["TOTAL_9","TOTAL_11"]}
+    },
+    "label_overrides": [
+      {"sheet":"TAF_G1","cell":"I58","value":"CP6 Résultat de l'exercice"},
+      {"sheet":"TAF_G1","cell":"I71","value":"PA360 Autres provisions techniques (vie)"},
+      {"sheet":"TAF_G1","cell":"I85","value":"PA710 Report de commissions reçues des réassureurs"}
+    ],
+    "extension_only": {"PA710":{"sheet":"TAF_G1","cell":"I85","expected":"Report de commissions reçues des réassureurs"}}
+  },
   "rounding_tolerance_tnd": 3,
   "asset_rows": {"AC11":53,"AC12":54,"AC13":55,"AC1":56,"AC21":57,"AC22":58,"AC2":59,"AC31":60,"AC311":61,"AC312":62,"AC32":63,"AC321":64,"AC322":65,"AC323":66,"AC324":67,"AC33":68,"AC331":69,"AC332":70,"AC334":71,"AC335":72,"AC336":73,"AC34":74,"AC3":75,"AC510":76,"AC520":77,"AC530":78,"AC531":79,"AC5":80,"AC61":81,"AC611":82,"AC612":83,"AC613":84,"AC62":85,"AC63":86,"AC631":87,"AC632":88,"AC633":89,"AC6":90,"AC71":91,"AC72":92,"AC721":93,"AC73":94,"AC731":95,"AC733":96,"AC75":97,"AC7":98,"TOTAL_ASSET":99},
   "liability_rows": {"CP1":54,"CP2":55,"CP4":56,"EQUITY_BEFORE":57,"CP6":58,"EQUITY":59,"PA2":61,"PA23":62,"PA3":63,"PA310":64,"PA320":65,"PA330":66,"PA331":67,"PA340":68,"PA341":69,"PA350":70,"PA360":71,"PA361":72,"PA5":73,"PA6":82,"PA61":75,"PA62":76,"PA63":77,"PA631":78,"PA632":79,"PA633":80,"PA634":81,"PA71":84,"PA710":85,"PA712":86,"PA73":87,"PA7":88,"TOTAL_LIABILITY":89,"TOTAL_EQUITY_LIABILITY":90},

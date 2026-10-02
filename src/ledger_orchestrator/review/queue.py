@@ -4,6 +4,7 @@ import csv
 
 def build_review(coverage,annual,config,issues):
     rows=[]
+    target_status={(c['year'],c['code']):c['status'] for c in coverage['cells']}
     for cell in coverage['cells']:
         if cell['status']=='populated_this_run':
             continue
@@ -14,6 +15,10 @@ def build_review(coverage,annual,config,issues):
         linked=[i for i in issues if i.get('year')==year and i.get('code')==code]
         children=config['children'].get(code,[])
         blocked=[c for c in children if not data['records'].get(c,{}).get('approved')]
+        premium_total=config.get('workbook',{}).get('premium_totals',{}).get(code)
+        if premium_total:
+            children=premium_total['children']
+            blocked=[c for c in children if target_status.get((year,c))!='populated_this_run']
         if cell['status']=='conflict':
             reason='Valeur existante différente, conservée'
             action='Arbitrer le conflit entre les deux montants du rapport'
@@ -47,8 +52,9 @@ def build_review(coverage,annual,config,issues):
             reason='Aucun montant admissible détecté pour cette rubrique'
             action='Vérifier la présence dans le PDF ; absence de détection ne signifie pas zéro'
             category='non_detecte'
+        fallback_source=f"{config['source_directory']}/{year}.pdf" if config.get('source_directory') else ''
         rows.append(dict(**cell,category=category,reason=reason,action=action,
-                         source=record.get('source','') if record else presence.get('source',f'sources/STAR/{year}.pdf'),
+                         source=record.get('source','') if record else presence.get('source',fallback_source),
                          page=record.get('page','') if record else presence.get('page',''),
                          presence_evidence=presence,
                          dependencies=blocked,issue_types=[i['type'] for i in linked]))

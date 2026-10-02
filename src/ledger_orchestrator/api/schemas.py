@@ -4,7 +4,8 @@ from pydantic import BaseModel, Field
 
 
 class RunRequest(BaseModel):
-    years:list[int]=Field(default_factory=lambda:[2023,2024,2025],min_length=1,max_length=3)
+    profile_id:str|None=Field(default=None,pattern=r'^[a-z][a-z0-9_-]{0,63}$')
+    years:list[int]|None=Field(default=None,min_length=1,max_length=201)
 
 
 class ReviewDecision(BaseModel):

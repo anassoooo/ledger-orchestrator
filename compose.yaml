@@ -3,8 +3,8 @@ services:
     build: .
     image: ledger-orchestrator:local
     volumes:
-      - ./data/sources/STAR:/data/sources/STAR:ro
-      - ./data/templates/TAF_G1_G2_G3_G4.xlsx:/data/templates/TAF_G1_G2_G3_G4.xlsx:ro
+      - ./data/sources:/data/sources:ro
+      - ./data/templates:/data/templates:ro
       - ./outputs:/output
     environment:
       CMF_CONFIG: /app/config/star.json

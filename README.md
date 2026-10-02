@@ -4,7 +4,7 @@
 
 LedgerOrchestrator is a local-first financial document intelligence prototype with explicit deterministic agent orchestration. It extracts structured accounting data from financial-statement PDFs, validates evidence, recalculates controlled Excel totals, and produces a reviewable audit trail.
 
-The current reference implementation is validated on **STAR individual financial statements, 2023–2025**, sourced from the Tunisian CMF publication workflow. Multi-company and multi-year configuration beyond this profile remains future work.
+The current reference implementation is validated on **STAR individual financial statements, 2023–2025**, sourced from the Tunisian CMF publication workflow. Company/template profiles and explicit year mappings now drive the shared pipeline and workbook layer. Extraction adapters for additional companies and periods still require qualification on supplied documents.
 
 > This repository is a proof-of-concept product, not a certified accounting system. Missing, ambiguous, or contradictory source data is reported and never silently invented.
 
@@ -31,6 +31,8 @@ The orchestrator runs these specialist agents in dependency order, stops downstr
 - Conservative admission rules: blanks remain blank; zero is written only when published and admissible.
 - Accounting controls for totals, subtotals, gross/provision/net relationships and year comparatives.
 - Controlled workbook editing that preserves the supplied template and existing conflicts.
+- Versioned company/template profiles, explicit year-to-column mappings and profile fingerprints.
+- Canonical financial facts with checked document provenance before workbook writing.
 - LibreOffice recalculation in a disposable environment with formula-cache verification.
 - Docker image, CLI and minimal local API.
 - Review files for unresolved or non-revalidated target cells.
@@ -84,6 +86,8 @@ Generated artifacts are written under `outputs/<run_id>/`: the review workbook, 
 src/ledger_orchestrator/  product source package
 ├── orchestration.py      specialist-agent coordination
 ├── pipeline.py           agent execution and run reporting
+├── profiles.py           validated company/template contracts
+├── records.py            canonical financial facts and provenance
 ├── extraction/           PDF, OCR, notes and comparatives
 ├── validation/           accounting rules and source evidence
 ├── workbook/             guarded writing, recalculation and audits
@@ -113,11 +117,16 @@ python -m unittest discover -s tests -q
 
 The Docker workflow additionally verifies the LibreOffice recalculation path. The suite covers number parsing, missing-vs-zero policy, evidence gates, conflicts, grouped premiums, OCR diagnostics, source audits and workbook preservation.
 
+The current suite has 88 tests, including synthetic alternate-company mappings
+and nonconsecutive years. GitHub Actions builds the standard Dockerfile and runs
+these tests without confidential inputs. Local full-reference regression is
+available through `scripts/verify_reference.py`; see [profile contracts](docs/PROFILES.md).
+
 ## Product roadmap
 
-1. Generalize the profile and mapping layer from STAR to every supplied company and exercise.
-2. Introduce a common financial-record schema and configurable workbook profiles.
-3. Extend the orchestrator to select validated company profiles and route unresolved mappings.
+1. Qualify a second extraction adapter on supplied documents, starting with ASTREE.
+2. Validate historical layouts and explicit unit conversions before extending company/year coverage.
+3. Establish an independently reviewed reference dataset and quantify extraction accuracy.
 4. Extend the local review interface from documented decisions to controlled, auditable resolution and workbook regeneration.
 5. Extend the optional local model from read-only user assistance to ambiguous correspondence proposals, subject to deterministic validation.
 
@@ -127,6 +136,8 @@ The Docker workflow additionally verifies the LibreOffice recalculation path. Th
 - [15-minute demonstration guide](docs/DEMO_15_MIN.md)
 - [Business logic](docs/LOGIQUE_METIER.md)
 - [Project status](docs/STATUS.md)
+- [Profile contracts](docs/PROFILES.md)
+- [Next milestones and acceptance criteria](docs/ROADMAP.md)
 - [LangGraph review workflow](docs/REVUE_LANGGRAPH.md)
 - [Local review copilot](docs/COPILOTE_LOCAL.md)
 

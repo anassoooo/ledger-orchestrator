@@ -3,22 +3,20 @@ import csv
 import hashlib
 import json
 import os
+import re
 import sqlite3
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ledger_orchestrator.extraction.core import read_pages,balance,premiums
-from ledger_orchestrator.validation.accounting import validate_balance,validate_premiums
+from ledger_orchestrator.extraction.core import read_pages,normalize
+from ledger_orchestrator.extraction.adapters import get_extractor
+from ledger_orchestrator.profiles import CompanyProfile,local_path
+from ledger_orchestrator.records import canonical_facts
 from ledger_orchestrator.workbook.writer import write_workbook
-from ledger_orchestrator.extraction.notes import asset_notes,supplement
-from ledger_orchestrator.validation.premium_evidence import corroborate_premiums
 from ledger_orchestrator.validation.coverage import measure
 from ledger_orchestrator.extraction.comparatives import supplement_comparatives
 from ledger_orchestrator.review.queue import build_review,export_review
-from ledger_orchestrator.extraction.cell_ocr import read_scanned_asset
-from ledger_orchestrator.validation.subtotal_evidence import corroborate_subtotals
-from ledger_orchestrator.extraction.presence import native_balance_presence
 from ledger_orchestrator.orchestration import Agent,AgentResult,Orchestrator
 
 
@@ -48,24 +46,21 @@ def save_json(path,data):
 
 
 def execute(root,output,config_path,years=None):
+    profile=CompanyProfile.load(config_path)
+    config=profile.config
+    years=profile.select_years(years)
+    extractor=get_extractor(profile,years)
     output.mkdir(parents=True,exist_ok=True)
-    config=json.loads(config_path.read_text(encoding='utf-8'))
-    years=sorted(set(years or config['years']))
-    if not years or any(y not in [2023,2024,2025] for y in years):
-        raise ValueError('MVP supports STAR 2023–2025 only')
-    if config['company']!='STAR':
-        raise ValueError('Only the STAR company profile is validated')
-    if config['target_unit']!='TND':
-        raise ValueError('Only confirmed TND mapping is implemented')
-    template=root/'templates'/'TAF_G1_G2_G3_G4.xlsx'
+    template=local_path(root,profile.workbook['template'])
     template_digest=hashlib.sha256(template.read_bytes()).hexdigest()
     with exclusive_lock(output):
         run_id=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')+'_'+uuid.uuid4().hex[:8]
         folder=output/run_id
         folder.mkdir()
-        report=dict(run_id=run_id,status='running',company='STAR',years=years,target_unit='TND',
+        report=dict(run_id=run_id,status='running',company=config['company'],years=years,target_unit=config['target_unit'],
                     conversion_factor=1,template_sha256=template_digest,config=config,documents={},issues=[],writes=[],
-                    orchestration_version=1,agent_trace=[])
+                    orchestration_version=1,agent_trace=[],schema_version=2,
+                    profile=dict(id=config['profile_id'],revision=config['revision'],sha256=profile.fingerprint))
         save_json(folder/'report.json',report)
 
         def event(item):
@@ -75,12 +70,15 @@ def execute(root,output,config_path,years=None):
         def document_agent(_results):
             documents={}
             for year in years:
-                source=root/'sources'/'STAR'/f'{year}.pdf'
-                print(f'STAR {year}: extraction',flush=True)
+                relative=profile.source_relative(year)
+                source=local_path(root,relative)
+                print(f"{config['company']} {year}: extraction",flush=True)
                 pages,digest=read_pages(source,output/'cache')
-                if not pages or 'STAR' not in pages[0]['text'].upper() or str(year) not in pages[0]['text']:
+                text=normalize(pages[0]['text']) if pages else ''
+                identity=any(re.search(r'\b'+re.escape(normalize(term))+r'\b',text) for term in config['identity_terms'])
+                if not pages or not identity or str(year) not in text:
                     raise ValueError(f'Source identity/year not confirmed: {source.name}')
-                documents[year]=dict(pages=pages,digest=digest,source=f'sources/STAR/{year}.pdf')
+                documents[year]=dict(pages=pages,digest=digest,source=relative)
                 report['documents'][str(year)]=dict(sha256=digest,pages=len(pages),
                     ocr_pages=[p['page'] for p in pages if p['method']=='ocr'])
             return AgentResult(documents,dict(documents=len(documents),pages=sum(len(d['pages']) for d in documents.values())))
@@ -89,28 +87,16 @@ def execute(root,output,config_path,years=None):
             annual={}
             for year,document in results['documents'].items():
                 pages,source=document['pages'],document['source']
-                records,issues=balance(pages,year,source)
-                notes,note_issues=asset_notes(pages,year,source,config['rounding_tolerance_tnd'])
-                issues+=note_issues+supplement(records,notes)
-                raw=premiums(pages,year,source)
-                issues+=corroborate_premiums(pages,raw,year,source,config['rounding_tolerance_tnd'])
-                validation=validate_balance(records,config['children'],config['rounding_tolerance_tnd'])
-                branches,branch_issues=validate_premiums(raw,config)
-                annual[year]=dict(records=records,raw_branches=raw,branches=branches,validation=validation)
-                annual[year]['presence']=native_balance_presence(pages,year,source,
-                    set(config['asset_rows'])|set(config['liability_rows']))
-                report['documents'][str(year)].update(balance_records=len(records),premium_records=len(raw))
-                report['issues'] += [dict(year=year,**{k:v for k,v in i.items() if k!='year'}) for i in issues+branch_issues]
+                data,issues=extractor.extract(pages,year,source,config)
+                annual[year]=data
+                report['documents'][str(year)].update(balance_records=len(data['records']),premium_records=len(data['raw_branches']))
+                report['issues'] += [dict(year=year,**{k:v for k,v in i.items() if k!='year'}) for i in issues]
             return AgentResult(annual,dict(balance_records=sum(len(d['records']) for d in annual.values()),
                                            premium_records=sum(len(d['raw_branches']) for d in annual.values())))
 
         def validation_agent(results):
             annual=results['extraction']
-            if 2025 in annual and 2024 in annual and 'AC33' not in annual[2025]['records']:
-                scanned=read_scanned_asset(root/'sources'/'STAR'/'2025.pdf',output/'cache')
-                accepted=corroborate_subtotals(scanned.get('records',{}),annual[2025],annual[2024],config['children'])
-                annual[2025]['records'].update(accepted)
-                annual[2025]['validation']=validate_balance(annual[2025]['records'],config['children'],config['rounding_tolerance_tnd'])
+            extractor.refine(annual,root,output/'cache',profile)
             report['source_events']=supplement_comparatives(annual,config['children'],config['rounding_tolerance_tnd'])
             for year,data in annual.items():
                 report['documents'][str(year)]['balance_records']=len(data['records'])
@@ -136,11 +122,12 @@ def execute(root,output,config_path,years=None):
                 for code in set(config['asset_rows'])|set(config['liability_rows']):
                     if code not in data['records']:
                         report['issues'].append(dict(type='not_found',year=year,code=code))
+            report['facts']=canonical_facts(annual,report['documents'],profile)
             return AgentResult(annual,dict(approved_balance_records=sum(
                 r['approved'] for d in annual.values() for r in d['records'].values()),issues=len(report['issues'])))
 
         def workbook_agent(results):
-            path=folder/'STAR_consolide.xlsx'
+            path=folder/profile.workbook['filename']
             writes,issues=write_workbook(template,path,config,results['validation'])
             report['writes']=writes
             report['issues']+=issues
@@ -164,7 +151,7 @@ def execute(root,output,config_path,years=None):
                 Agent('review',('validation','workbook'),review_agent),
             ],event).execute()
             report['status']='needs_review' if report['issues'] else 'completed'
-            report['workbook']='STAR_consolide.xlsx'
+            report['workbook']=profile.workbook['filename']
             report['written_cells']=len(report['writes'])
             if hashlib.sha256(template.read_bytes()).hexdigest()!=template_digest:
                 raise RuntimeError('Source template changed during execution')

@@ -3,8 +3,9 @@ import copy
 import re
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils import get_column_letter
+from openpyxl.utils import get_column_letter, column_index_from_string
 
+from ledger_orchestrator.profiles import CompanyProfile
 from ledger_orchestrator.workbook.recalculation import recalculate
 
 
@@ -12,9 +13,11 @@ def set_column_width(sheet,index,width):
     """Split grouped dimensions without expanding a range through column XFD."""
     dimensions=sheet.column_dimensions
     for key,dim in list(dimensions.items()):
-        if dim.min<=index<=dim.max:
+        first_column=dim.min or column_index_from_string(key)
+        last_column=dim.max or first_column
+        if first_column<=index<=last_column:
             del dimensions[key]
-            for first,last in [(dim.min,index-1),(index,index),(index+1,dim.max)]:
+            for first,last in [(first_column,index-1),(index,index),(index+1,last_column)]:
                 if first>last:
                     continue
                 clone=copy.copy(dim)
@@ -27,33 +30,44 @@ def set_column_width(sheet,index,width):
     dimensions[get_column_letter(index)].width=width
 
 
-def guarded_sum(refs):
+def guarded_sum(refs,admitted=True):
     args=','.join(refs)
-    return f'=IF(COUNT({args})={len(refs)},SUM({args}),"")'
+    condition=f'COUNT({args})={len(refs)}'
+    if not admitted:
+        condition=f'AND(FALSE,{condition})'
+    return f'=IF({condition},SUM({args}),"")'
 
 
 def write_workbook(template,path,config,annual):
+    profile=CompanyProfile.from_dict(config)
+    profile.select_years(list(annual))
+    layout=profile.workbook
+    balance_sheet,premium_sheet=layout['balance_sheet'],layout['premium_sheet']
     wb=openpyxl.load_workbook(template)
-    if wb['TAF_G1']['A51'].value!='STAR' or wb['TAF_G3']['B1'].value!='STAR':
-        raise ValueError('Unrecognized template: STAR section moved')
+    for anchor in layout['anchors']:
+        if anchor['sheet'] not in wb or wb[anchor['sheet']][anchor['cell']].value!=anchor['value']:
+            raise ValueError(f"Unrecognized template anchor: {anchor['sheet']}!{anchor['cell']}")
     original={(s.title,c.coordinate):(c.value,copy.copy(c._style)) for s in wb for row in s for c in row}
     writes=[]
     issues=[]
     allowed=set()
     addresses={}
     for year in annual:
-        set_column_width(wb['TAF_G1'],2036-year,19)
-        set_column_width(wb['TAF_G3'],year-2008,18)
+        for section,width in layout['column_widths'].items():
+            sheet=premium_sheet if section=='premium' else balance_sheet
+            set_column_width(wb[sheet],column_index_from_string(profile.column(year,section)),width)
     support=None
     if config['extend_template']:
-        if 'STAR_Details' in wb:
-            raise ValueError('Use the original template; STAR_Details already exists')
-        support=wb.create_sheet('STAR_Details')
-        support.append(['Compléments du bilan STAR (TND)','Libellé',2023,2024,2025])
+        if layout['details_sheet'] in wb:
+            raise ValueError(f"Use the original template; {layout['details_sheet']} already exists")
+        support=wb.create_sheet(layout['details_sheet'])
+        support.append([layout['details_title'],'Libellé'])
+        for year in sorted(config['years']):
+            support[f'{profile.column(year,"details")}1']=year
         support.freeze_panes='C2'
         support.column_dimensions['A'].width=25
         support.column_dimensions['B'].width=72
-        for col in 'CDE': support.column_dimensions[col].width=20
+        for year in config['years']: support.column_dimensions[profile.column(year,'details')].width=20
         for c in support[1]:
             c.font=Font(bold=True,color='FFFFFF')
             c.fill=PatternFill('solid',fgColor='17365D')
@@ -83,16 +97,17 @@ def write_workbook(template,path,config,annual):
         return True
     for year,data in annual.items():
         for code,row in config['asset_rows'].items():
-            addresses[year,code]=('TAF_G1',f'{get_column_letter(2028-year)}{row}')
+            addresses[year,code]=(balance_sheet,f'{profile.column(year,"asset")}{row}')
         for code,row in config['liability_rows'].items():
-            if code=='PA710' and not config['extend_template']:
+            exception=layout['extension_only'].get(code)
+            if exception and not config['extend_template']:
                 issues.append(dict(type='template_label_mismatch',year=year,code=code,
-                                   existing=wb['TAF_G1']['I85'].value,expected='Report de commissions reçues des réassureurs'))
+                                   existing=wb[exception['sheet']][exception['cell']].value,expected=exception['expected']))
                 continue
-            addresses[year,code]=('TAF_G1',f'{get_column_letter(2036-year)}{row}')
+            addresses[year,code]=(balance_sheet,f'{profile.column(year,"liability")}{row}')
         if support:
             for i,code in enumerate(extra,2):
-                addresses[year,code]=('STAR_Details',f'{get_column_letter(year-2020)}{i}')
+                addresses[year,code]=(layout['details_sheet'],f'{profile.column(year,"details")}{i}')
         done=set()
         def emit(code):
             if code in done:
@@ -117,22 +132,41 @@ def write_workbook(template,path,config,annual):
             return success
         for code in data['records']:
             emit(code)
+        admitted_branches=set()
         for code,record in data['branches'].items():
-            if not all(s.get('approved',False) for s in record['sources']):
+            if not record['sources'] or not all(s.get('approved',False) for s in record['sources']):
                 continue
-            coord=f'{get_column_letter(year-2008)}{config["branch_rows"][code]}'
-            put('TAF_G3',coord,record['value'],year,code,record['sources'])
-        col=get_column_letter(year-2008)
-        # Display full TND amounts instead of Excel's overflow markers (####).
-        for row,refs in [(9,[f'{col}{r}' for r in range(4,9)]),(11,[f'{col}10']),(12,[f'{col}9',f'{col}11'])]:
-            # Explicitly authorized totals: preserve formulas but add missing-input guard.
-            put('TAF_G3',f'{col}{row}',guarded_sum(refs),year,f'TOTAL_{row}',replace_formula=True)
-    # Correct only the STAR labels for which the mapping explicitly changes code.
+            coord=f'{profile.column(year,"premium")}{config["branch_rows"][code]}'
+            if put(premium_sheet,coord,record['value'],year,code,record['sources']):
+                admitted_branches.add(code)
+        col=profile.column(year,'premium')
+        premium_rows={**config['branch_rows'],**{code:t['row'] for code,t in layout['premium_totals'].items()}}
+        total_results={}
+        def emit_premium_total(code):
+            if code in admitted_branches:
+                return True
+            if code in total_results:
+                return total_results[code]
+            total=layout['premium_totals'].get(code)
+            if total is None:
+                return False
+            admission=[emit_premium_total(child) for child in total['children']]
+            admitted=all(admission)
+            refs=[f'{col}{premium_rows[child]}' for child in total['children']]
+            # Only explicitly configured totals may replace an existing formula.
+            success=put(premium_sheet,f'{col}{total["row"]}',guarded_sum(refs,admitted),year,code,replace_formula=True)
+            if not admitted:
+                issues.append(dict(type='premium_total_dependency_missing',year=year,code=code,
+                                   children=[child for child,ok in zip(total['children'],admission) if not ok]))
+            total_results[code]=admitted and success
+            return total_results[code]
+        for code in layout['premium_totals']:
+            emit_premium_total(code)
+    # Label corrections belong to the versioned template profile.
     if config['extend_template']:
-        for cell,label in [('I58',"CP6 Résultat de l'exercice"),('I71','PA360 Autres provisions techniques (vie)'),
-                           ('I85','PA710 Report de commissions reçues des réassureurs')]:
-            wb['TAF_G1'][cell]=label
-            allowed.add(('TAF_G1',cell))
+        for item in layout['label_overrides']:
+            wb[item['sheet']][item['cell']]=item['value']
+            allowed.add((item['sheet'],item['cell']))
     for (sheet,coord),(value,style) in original.items():
         if (sheet,coord) not in allowed:
             cell=wb[sheet][coord]

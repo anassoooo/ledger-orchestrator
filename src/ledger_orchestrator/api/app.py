@@ -12,6 +12,8 @@ from fastapi import FastAPI,HTTPException
 from fastapi.responses import FileResponse
 from ledger_orchestrator.api.schemas import RunRequest, ReviewDecision, CopilotQuestion
 from ledger_orchestrator.pipeline import save_json
+from ledger_orchestrator.profiles import CompanyProfile, local_path
+from ledger_orchestrator.extraction.adapters import get_extractor
 from ledger_orchestrator.review.graph import ReviewWorkflow
 from ledger_orchestrator.review.copilot import ReadOnlyCopilot, LocalModelUnavailable, _evidence, status as copilot_status
 
@@ -41,6 +43,39 @@ def copilot_graph():
 @app.get('/health')
 def health():
     return {'status':'ok','local_only':True}
+
+
+def configured_profiles():
+    profiles={}
+    for path in sorted(CONFIG.parent.glob('*.json')):
+        profile=CompanyProfile.load(path)
+        identifier=profile.config['profile_id']
+        if identifier in profiles:
+            raise ValueError('Duplicate profile identifier')
+        profiles[identifier]=(path,profile)
+    return profiles
+
+
+@app.get('/profiles')
+def list_profiles():
+    try:
+        profiles=configured_profiles()
+        default=CompanyProfile.load(CONFIG).config['profile_id']
+        rows=[]
+        for identifier,(_,profile) in profiles.items():
+            config=profile.config
+            reason=None
+            try:
+                get_extractor(profile,profile.select_years())
+            except ValueError as exc:
+                reason=str(exc)
+            rows.append(dict(id=identifier,company=config['company'],revision=config['revision'],
+                             status=config['status'],years=config['years'],runnable=reason is None,
+                             reason=reason,available_years=[y for y in config['years']
+                                 if local_path(ROOT,profile.source_relative(y)).is_file()]))
+        return {'default_profile_id':default,'profiles':rows}
+    except (ValueError,KeyError,TypeError,OSError) as exc:
+        raise HTTPException(503,'Configuration des profils invalide ou inaccessible') from exc
 
 
 @app.get('/copilot/status')
@@ -81,19 +116,38 @@ def list_runs():
 
 @app.post('/runs',status_code=202)
 def start(body:RunRequest):
-    if any(y not in (2023,2024,2025) for y in body.years):
-        raise HTTPException(422,'Exercices autorisés : 2023, 2024, 2025')
+    try:
+        if body.profile_id is None:
+            config_path,profile=CONFIG,CompanyProfile.load(CONFIG)
+        else:
+            entry=configured_profiles().get(body.profile_id)
+            if entry is None:
+                raise HTTPException(422,'Profil inconnu')
+            config_path,profile=entry
+        years=profile.select_years(body.years)
+        get_extractor(profile,years)
+        required=[profile.workbook['template'],*[profile.source_relative(y) for y in years]]
+        if any(not local_path(ROOT,path).is_file() for path in required):
+            raise HTTPException(422,'Un PDF demandé ou le modèle Excel est absent des données locales')
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from exc
+    except (OSError,KeyError,TypeError) as exc:
+        raise HTTPException(503,'Configuration du profil invalide ou inaccessible') from exc
     if not LOCK.acquire(blocking=False):
         raise HTTPException(409,'Un traitement est déjà en cours')
-    OUTPUT.mkdir(parents=True,exist_ok=True)
-    job=uuid.uuid4().hex
-    jobpath=OUTPUT/f'job_{job}.json'
-    save_json(jobpath,dict(job_id=job,status='running'))
+    try:
+        OUTPUT.mkdir(parents=True,exist_ok=True)
+        job=uuid.uuid4().hex
+        jobpath=OUTPUT/f'job_{job}.json'
+        save_json(jobpath,dict(job_id=job,status='running'))
+    except Exception:
+        LOCK.release()
+        raise
     def worker():
         try:
             with (OUTPUT/f'job_{job}.log').open('w',encoding='utf-8') as log:
                 proc=subprocess.run([sys.executable,'-m','ledger_orchestrator','--root',str(ROOT),'--output',str(OUTPUT),
-                                     '--config',str(CONFIG),'--years',*[str(y) for y in body.years]],
+                                     '--config',str(config_path),'--years',*[str(y) for y in years]],
                                     stdout=log,stderr=subprocess.STDOUT,timeout=3600)
             text=(OUTPUT/f'job_{job}.log').read_text(encoding='utf-8')
             last=text.strip().splitlines()[-1] if text.strip() else ''
@@ -103,7 +157,12 @@ def start(body:RunRequest):
             save_json(jobpath,dict(job_id=job,status='failed',message=type(exc).__name__))
         finally:
             LOCK.release()
-    threading.Thread(target=worker,daemon=True).start()
+    try:
+        threading.Thread(target=worker,daemon=True).start()
+    except Exception:
+        LOCK.release()
+        save_json(jobpath,dict(job_id=job,status='failed',message='Worker unavailable'))
+        raise
     return {'job_id':job,'status':'running','poll':f'/jobs/{job}'}
 
 
@@ -193,7 +252,13 @@ def review_detail(run_id:str,case_id:str):
 @app.get('/runs/{run_id}/review/{case_id}/source')
 def review_source(run_id:str,case_id:str):
     case=review_case(run_id,case_id)
-    path=ROOT/'sources'/'STAR'/f"{case['year']}.pdf"
+    try:
+        source=case['source']
+        if not source.startswith('sources/') or not source.endswith('.pdf'):
+            raise ValueError('Invalid source')
+        path=local_path(ROOT,source)
+    except (ValueError,TypeError,AttributeError) as exc:
+        raise HTTPException(404,'Source locale invalide') from exc
     if not path.is_file():
         raise HTTPException(404,'PDF source introuvable')
     return FileResponse(path,media_type='application/pdf',filename=path.name,
@@ -234,7 +299,16 @@ def agent_status(run_id:str):
 @app.get('/runs/{run_id}/workbook')
 def workbook(run_id:str):
     folder=run_folder(run_id)
-    status=json.loads((folder/'report.json').read_text(encoding='utf-8'))['status']
-    if status not in ('completed','needs_review'):
+    data=json.loads((folder/'report.json').read_text(encoding='utf-8'))
+    if data['status'] not in ('completed','needs_review'):
         raise HTTPException(409,'Classeur indisponible')
-    return FileResponse(folder/'STAR_consolide.xlsx',filename='STAR_consolide.xlsx')
+    name=data.get('workbook','')
+    if not isinstance(name,str) or re.fullmatch(r'[A-Za-z0-9_-]+\.xlsx',name) is None:
+        raise HTTPException(404,'Classeur inconnu')
+    try:
+        path=local_path(folder,name)
+    except ValueError as exc:
+        raise HTTPException(404,'Classeur inconnu') from exc
+    if not path.is_file():
+        raise HTTPException(404,'Classeur introuvable')
+    return FileResponse(path,filename=name)

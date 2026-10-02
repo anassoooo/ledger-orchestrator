@@ -18,7 +18,8 @@ dans les checkpoints de revue.
 Le service `ollama` est optionnel (`--profile llm`). Il communique avec le
 moteur sur le réseau Docker interne. Son accès réseau sortant sert au
 téléchargement initial des poids ; aucun port Ollama n'est publié sur l'hôte.
-Il faut d'abord rétablir l'accès au registre Docker pour télécharger son image.
+Le téléchargement initial de l'image et des poids nécessite un accès réseau.
+Le build standard du moteur a réussi le 2 octobre ; le modèle Ollama reste à installer.
 
 1. Choisir un modèle **local** adapté à la mémoire de la machine. Le nom doit
    correspondre exactement à celui retourné par `ollama list`. Les modèles

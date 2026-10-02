@@ -1,23 +1,17 @@
 """Measure target-cell coverage, not number of writes or project progress."""
 from collections import Counter
 import openpyxl
-from openpyxl.utils import get_column_letter
+from ledger_orchestrator.profiles import CompanyProfile
 
 
 def measure(path,config,years,writes,issues):
+    profile=CompanyProfile.from_dict(config)
     workbook=openpyxl.load_workbook(path,data_only=True)
     written={(w['sheet'],w['cell']) for w in writes}
     conflicts={(i['sheet'],i['cell']) for i in issues if i['type']=='existing_cell_conflict'}
     cells=[]
     for year in years:
-        targets=[]
-        for mapping,offset in [('asset_rows',2028),('liability_rows',2036)]:
-            targets.extend(('TAF_G1',f'{get_column_letter(offset-year)}{row}',code)
-                           for code,row in config[mapping].items())
-        col=get_column_letter(year-2008)
-        targets.extend(('TAF_G3',f'{col}{row}',code) for code,row in config['branch_rows'].items())
-        targets.extend(('TAF_G3',f'{col}{row}',f'TOTAL_{row}') for row in [9,11,12])
-        for sheet,cell,code in targets:
+        for sheet,cell,code in profile.targets(year):
             value=workbook[sheet][cell].value
             status=('conflict' if (sheet,cell) in conflicts else
                     'missing_or_blocked' if value in (None,'') else
@@ -25,9 +19,9 @@ def measure(path,config,years,writes,issues):
             cells.append(dict(year=year,sheet=sheet,cell=cell,code=code,status=status))
     summary=[]
     for year in years:
-        for sheet in ['TAF_G1','TAF_G3']:
+        for sheet in [profile.workbook['balance_sheet'],profile.workbook['premium_sheet']]:
             selected=[c for c in cells if c['year']==year and c['sheet']==sheet]
             counts=dict(Counter(c['status'] for c in selected))
             summary.append(dict(year=year,sheet=sheet,expected_cells=len(selected),counts=counts))
-    return dict(basis='Configured target cells including totals; no assumption that unpublished rows are zero. STAR_Details excluded.',
+    return dict(basis=f"Configured target cells including totals; no assumption that unpublished rows are zero. {profile.workbook['details_sheet']} excluded.",
                 summary=summary,cells=cells)

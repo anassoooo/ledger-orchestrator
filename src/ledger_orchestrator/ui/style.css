@@ -37,6 +37,7 @@ select, input, textarea { border: 1px solid #aebec7; border-radius: .3rem; backg
 .new-run summary { color: var(--blue); font-weight: 650; cursor: pointer; }
 .new-run form { display: flex; align-items: end; flex-wrap: wrap; gap: 1rem; padding: 1rem 0 .35rem; }
 .new-run fieldset { display: flex; gap: 1rem; border: 0; padding: 0; margin: 0; }
+#profile-years { display: flex; flex-wrap: wrap; gap: 1rem; }
 .new-run legend { color: var(--muted); font-size: .82rem; margin-bottom: .35rem; }
 .new-run label { display: inline-flex; align-items: center; gap: .25rem; font-size: .87rem; }
 .new-run button { border: 0; border-radius: .28rem; background: var(--ink); color: white; padding: .55rem .8rem; font-weight: 650; }

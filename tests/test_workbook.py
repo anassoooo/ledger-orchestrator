@@ -46,6 +46,31 @@ class WorkbookTests(unittest.TestCase):
             self.assertEqual(openpyxl.load_workbook(source)['TAF_G3']['Q9'].value,'=SUM(Q4:Q8)')
 
     @unittest.skipUnless(__import__('shutil').which('libreoffice'),'LibreOffice integration requires Docker')
+    def test_existing_premium_conflict_blocks_dependent_totals_after_recalculation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            wb=openpyxl.Workbook()
+            wb.active.title='TAF_G1'
+            wb.create_sheet('TAF_G3')
+            wb['TAF_G1']['A51']='STAR'
+            wb['TAF_G3']['B1']='STAR'
+            wb['TAF_G3']['Q4']=999
+            wb['TAF_G3']['Q9']='=SUM(Q4:Q8)'
+            source=root/'source.xlsx'
+            wb.save(source)
+            config=json.loads(Path('config/star.json').read_text())
+            branches={code:dict(value=10,sources=[dict(approved=True)]) for code in config['branch_rows']}
+            annual={2025:dict(records={},validation={'eligible':[],'dependencies':{}},branches=branches)}
+            _,issues=write_workbook(source,root/'result.xlsx',config,annual)
+            actual=openpyxl.load_workbook(root/'result.xlsx',data_only=True)
+            self.assertEqual(actual['TAF_G3']['Q4'].value,999)
+            self.assertIn(actual['TAF_G3']['Q9'].value,(None,''))
+            self.assertIn(actual['TAF_G3']['Q12'].value,(None,''))
+            self.assertEqual(actual['TAF_G3']['Q11'].value,10)
+            blocked={i['code'] for i in issues if i['type']=='premium_total_dependency_missing'}
+            self.assertEqual(blocked,{'TOTAL_9','TOTAL_12'})
+
+    @unittest.skipUnless(__import__('shutil').which('libreoffice'),'LibreOffice integration requires Docker')
     def test_real_recalculation_missing_zero_and_preservation(self):
         with tempfile.TemporaryDirectory() as temp:
             path=Path(temp)/'recalc.xlsx'

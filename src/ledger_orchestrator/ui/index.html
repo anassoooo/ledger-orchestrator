@@ -30,15 +30,15 @@
     </section>
 
     <details class="new-run">
-      <summary>Lancer une nouvelle extraction STAR</summary>
+      <summary>Lancer une nouvelle extraction</summary>
       <form id="run-form">
+        <label for="profile-select">Entreprise et profil validé</label>
+        <select id="profile-select" disabled></select>
         <fieldset>
           <legend>Exercices à traiter</legend>
-          <label><input type="checkbox" name="year" value="2023" checked> 2023</label>
-          <label><input type="checkbox" name="year" value="2024" checked> 2024</label>
-          <label><input type="checkbox" name="year" value="2025" checked> 2025</label>
+          <span id="profile-years">Chargement des profils…</span>
         </fieldset>
-        <button type="submit" id="start-run">Lancer l’extraction</button>
+        <button type="submit" id="start-run" disabled>Lancer l’extraction</button>
         <span id="job-progress" role="status" aria-live="polite"></span>
       </form>
     </details>
