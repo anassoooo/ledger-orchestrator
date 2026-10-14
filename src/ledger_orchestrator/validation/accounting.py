@@ -53,7 +53,11 @@ def validate_balance(records, children, tolerance):
 
 def validate_premiums(records, config):
     issues=[]
-    if config['premium_basis']!='before_reinsurance' or config['branch_policy'] not in ('grouped','exact'):
+    if config['premium_basis']!='before_reinsurance':
+        return {},[dict(type='premium_policy_unresolved')]
+    if config['branch_policy']=='partition':
+        return validate_premium_partition(records, config)
+    if config['branch_policy'] not in ('grouped','exact'):
         return {},[dict(type='premium_policy_unresolved')]
     expected=['GROUPE','A_TRAVAIL','INCENDIE','RISQUES_DIVERS','TRANSPORT','AVIATION','AUTOMOBILE','ACCEPTATION']
     total=records.get('TOTAL_NONVIE',{}).get('value')
@@ -82,6 +86,41 @@ def validate_premiums(records, config):
         else:
             issues.append(dict(type='premium_missing',code=key))
     excluded=[c for c in expected if not any(c in v for v in mapping.values())]
+    if any(records[c]['value'] for c in excluded):
+        issues.append(dict(type='premium_unallocated',amount=sum(records[c]['value'] for c in excluded),codes=excluded,
+                           message='Le total des cinq branches exclut ces montants et ne représente pas le total publié.'))
+    return out,issues
+
+
+def validate_premium_partition(records, config):
+    """Profile-declared partition of published categories into target branches (D-003).
+
+    Every published category must be present (a dash only when proven nil by
+    the extractor, D-002), the categories must reconcile with the published
+    non-life total, and each target branch is the sum of its declared categories.
+    """
+    spec=config['premium_mapping']
+    tolerance=config['rounding_tolerance_tnd']
+    categories=spec['categories']
+    total=records.get(spec['nonlife_total'],{}).get('value')
+    missing=[c for c in categories if c not in records]
+    if total is None or missing:
+        return {},[dict(type='premium_nonlife_incomplete',missing=missing)]
+    delta=sum(records[c]['value'] for c in categories)-total
+    if abs(delta)>tolerance:
+        return {},[dict(type='premium_source_total_mismatch',delta=delta)]
+    issues=[]
+    if delta:
+        issues.append(dict(type='premium_rounding_difference',delta=delta,tolerance=tolerance))
+    out={}
+    for branch,codes in spec['branches'].items():
+        out[branch]=dict(value=sum(records[c]['value'] for c in codes),sources=[records[c] for c in codes])
+    life=records.get(spec['life_total'])
+    if life is None:
+        issues.append(dict(type='premium_missing',code='VIE'))
+    else:
+        out['VIE']=dict(value=life['value'],sources=[life])
+    excluded=spec['excluded']
     if any(records[c]['value'] for c in excluded):
         issues.append(dict(type='premium_unallocated',amount=sum(records[c]['value'] for c in excluded),codes=excluded,
                            message='Le total des cinq branches exclut ces montants et ne représente pas le total publié.'))

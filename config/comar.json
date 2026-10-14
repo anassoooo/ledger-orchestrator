@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "profile_id": "comar",
-  "revision": 1,
-  "status": "draft",
-  "extractor": "comar_individual_candidate_v1",
+  "revision": 2,
+  "status": "validated",
+  "extractor": "comar_individual_v1",
   "identity_terms": [
     "COMAR"
   ],
@@ -12,13 +12,13 @@
   "target_unit": "TND",
   "extend_template": true,
   "premium_basis": "before_reinsurance",
-  "branch_policy": "pending_company_review",
+  "branch_policy": "partition",
   "years": [
     2023,
     2024,
     2025
   ],
-  "rounding_tolerance_tnd": 0,
+  "rounding_tolerance_tnd": 3,
   "branch_rows": {
     "AUTOMOBILE": 17,
     "INCENDIE": 18,
@@ -112,7 +112,136 @@
     "TOTAL_LIABILITY": 39,
     "TOTAL_EQUITY_LIABILITY": 40
   },
-  "children": {},
+  "children": {
+    "AC1": [
+      "AC11",
+      "AC12",
+      "AC13"
+    ],
+    "AC2": [
+      "AC21",
+      "AC22"
+    ],
+    "AC31": [
+      "AC311",
+      "AC312"
+    ],
+    "AC32": [
+      "AC321",
+      "AC322",
+      "AC323",
+      "AC324"
+    ],
+    "AC33": [
+      "AC331",
+      "AC332",
+      "AC334",
+      "AC335",
+      "AC336"
+    ],
+    "AC3": [
+      "AC31",
+      "AC32",
+      "AC33",
+      "AC34"
+    ],
+    "AC5": [
+      "AC510",
+      "AC520",
+      "AC530",
+      "AC531"
+    ],
+    "AC61": [
+      "AC611",
+      "AC612",
+      "AC613"
+    ],
+    "AC63": [
+      "AC631",
+      "AC632",
+      "AC633"
+    ],
+    "AC6": [
+      "AC61",
+      "AC62",
+      "AC63"
+    ],
+    "AC73": [
+      "AC731",
+      "AC733"
+    ],
+    "AC7": [
+      "AC71",
+      "AC72",
+      "AC73",
+      "AC75"
+    ],
+    "TOTAL_ASSET": [
+      "AC1",
+      "AC2",
+      "AC3",
+      "AC5",
+      "AC6",
+      "AC7"
+    ],
+    "EQUITY_BEFORE": [
+      "CP1",
+      "CP2",
+      "CP4"
+    ],
+    "EQUITY": [
+      "EQUITY_BEFORE",
+      "CP6"
+    ],
+    "PA3": [
+      "PA310",
+      "PA320",
+      "PA330",
+      "PA331",
+      "PA340",
+      "PA341",
+      "PA350",
+      "PA360",
+      "PA361"
+    ],
+    "PA63": [
+      "PA631",
+      "PA632",
+      "PA633",
+      "PA634"
+    ],
+    "PA6": [
+      "PA61",
+      "PA62",
+      "PA63"
+    ],
+    "PA71": [
+      "PA710",
+      "PA712"
+    ],
+    "PA7": [
+      "PA71",
+      "PA73"
+    ],
+    "TOTAL_LIABILITY": [
+      "PA2",
+      "PA3",
+      "PA5",
+      "PA6",
+      "PA7"
+    ],
+    "TOTAL_EQUITY_LIABILITY": [
+      "EQUITY",
+      "TOTAL_LIABILITY"
+    ],
+    "PA2": [
+      "PA23"
+    ],
+    "AC72": [
+      "AC721",
+      "AC722"
+    ]
+  },
   "workbook": {
     "template": "templates/TAF_G1_G2_G3_G4.xlsx",
     "filename": "COMAR_consolide.xlsx",
@@ -201,11 +330,58 @@
     "extension_only": {}
   },
   "qualification_notes": {
-    "production_enabled": false,
-    "balance_hierarchies": "Use year-specific checks in the balance candidate; no absent rows treated as zero",
-    "IRDS": "Unresolved company-specific category composition",
-    "premiums": "Direct candidate mappings only; total annex includes Acceptation, target five-branch total does not",
-    "label_overrides": "Proposals only in this draft; original template remains unchanged",
-    "rounding": "Zero tolerance for the draft; retained 1–2 TND discrepancies are unresolved, not silently accepted"
+    "readers": "extraction/comar.py: identity, period, unit, column headings and frozen row manifest (config/qualification/comar_balance_v1.json)",
+    "destinations": "config/qualification/comar_template_v1.json checked before writing",
+    "premiums": "D-001 basis; D-002 dash admitted as nil only when the published total proves it; D-003 partition, acceptations excluded",
+    "balance": "PA2 is printed directly in 2024 and as an unlabeled subtotal of PA23 in 2023/2025; D-004 tolerance 3 TND; D-005 current publication wins over later comparatives",
+    "label_overrides": "Applied to the output copy only; the original template is never modified"
+  },
+  "premium_mapping": {
+    "categories": [
+      "INCENDIE",
+      "TRAVAIL",
+      "RC",
+      "AUTOMOBILE",
+      "TRANSPORT",
+      "GROUPE",
+      "BIENS",
+      "AGRICOLES",
+      "CONSTRUCTION",
+      "PERTE_EXPLOITATION",
+      "CAUTION",
+      "ASSISTANCE",
+      "ACCIDENT_CORPOREL",
+      "ACCEPTATION"
+    ],
+    "branches": {
+      "AUTOMOBILE": [
+        "AUTOMOBILE"
+      ],
+      "INCENDIE": [
+        "INCENDIE"
+      ],
+      "TRANSPORT": [
+        "TRANSPORT"
+      ],
+      "IRDS": [
+        "TRAVAIL",
+        "RC",
+        "BIENS",
+        "AGRICOLES",
+        "CONSTRUCTION",
+        "PERTE_EXPLOITATION",
+        "CAUTION",
+        "ASSISTANCE",
+        "ACCIDENT_CORPOREL"
+      ],
+      "GROUPE": [
+        "GROUPE"
+      ]
+    },
+    "excluded": [
+      "ACCEPTATION"
+    ],
+    "nonlife_total": "TOTAL_NONVIE",
+    "life_total": "TOTAL_VIE"
   }
 }

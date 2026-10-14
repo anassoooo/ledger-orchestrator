@@ -38,7 +38,7 @@ def guarded_sum(refs,admitted=True):
     return f'=IF({condition},SUM({args}),"")'
 
 
-def write_workbook(template,path,config,annual):
+def write_workbook(template,path,config,annual,confirmations=None):
     profile=CompanyProfile.from_dict(config)
     profile.select_years(list(annual))
     layout=profile.workbook
@@ -83,12 +83,20 @@ def write_workbook(template,path,config,annual):
             support.cell(i,2,label[:120])
             support.cell(i,2).alignment=Alignment(wrap_text=True)
             support.row_dimensions[i].height=30
-    def put(sheet,coord,value,year,code,sources=None,replace_formula=False):
+    def put(sheet,coord,value,year,code,sources=None,replace_formula=False,computed=None):
         cell=wb[sheet][coord]
         old=cell.value
+        # An existing typed total equal to the published or computed total (both
+        # reconciled within tolerance) is confirmed, not overwritten and not a conflict.
+        if computed is not None and type(old) in (int,float) and old in computed:
+            if confirmations is not None:
+                confirmations.append(dict(sheet=sheet,cell=coord,year=year,code=code,value=old,sources=sources or []))
+            return True
         if old is not None and old!=value and not (replace_formula and cell.data_type=='f'):
             issues.append(dict(type='existing_cell_conflict',sheet=sheet,cell=coord,year=year,code=code,existing=old,proposed=value))
             return False
+        if old==value and confirmations is not None:
+            confirmations.append(dict(sheet=sheet,cell=coord,year=year,code=code,value=old,sources=sources or []))
         if old!=value:
             cell.value=value
             cell.number_format='#,##0;[Red](#,##0);0'
@@ -125,9 +133,12 @@ def write_workbook(template,path,config,annual):
                     return False
                 refs=[f"'{addresses[year,c][0]}'!{addresses[year,c][1]}" for c in deps]
                 value=guarded_sum(refs)
+                # The published total or the sum of its validated details.
+                computed={record['value'],data['validation']['computed'].get(code)}
             else:
                 value=record['value']
-            success=put(sheet,coord,value,year,code,[record])
+                computed=None
+            success=put(sheet,coord,value,year,code,[record],computed=computed)
             if success: done.add(code)
             return success
         for code in data['records']:

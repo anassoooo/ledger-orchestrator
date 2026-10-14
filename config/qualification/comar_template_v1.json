@@ -2,7 +2,7 @@
   "schema_version": 1,
   "contract_id": "comar_template_v1",
   "company": "COMAR",
-  "production_enabled": false,
+  "production_enabled": true,
   "reference_template_sha256": "4ebd54e37529a0452c4018ea7509231eaccfea89900e321dc1e0e5c6ffec4a67",
   "notes": "Inspected 2023-2025 layout. Only the three explicit label proposals have alternative values. Premium year formula chain is frozen from its starting year. Financial input amounts are not frozen.",
   "cells": [

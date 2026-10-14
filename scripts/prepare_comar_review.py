@@ -101,8 +101,8 @@ def comparative_conflicts(facts):
 def prepare(root, profile_path, output):
     if output.exists():raise ValueError('Use a new output directory')
     profile=CompanyProfile.load(profile_path)
-    if profile.config['profile_id']!='comar' or profile.config['status']!='draft':
-        raise ValueError('This command requires the COMAR draft profile')
+    if profile.config['profile_id']!='comar':
+        raise ValueError('This command requires the COMAR profile')
     template=local_path(root,profile.workbook['template'])
     template_hash=hashlib.sha256(template.read_bytes()).hexdigest()
     workbook=openpyxl.load_workbook(template,data_only=False)

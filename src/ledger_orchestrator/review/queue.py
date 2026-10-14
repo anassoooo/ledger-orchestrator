@@ -6,7 +6,7 @@ def build_review(coverage,annual,config,issues):
     rows=[]
     target_status={(c['year'],c['code']):c['status'] for c in coverage['cells']}
     for cell in coverage['cells']:
-        if cell['status']=='populated_this_run':
+        if cell['status'] in ('populated_this_run','existing_confirmed'):
             continue
         year,code=cell['year'],cell['code']
         data=annual[year]
@@ -18,7 +18,7 @@ def build_review(coverage,annual,config,issues):
         premium_total=config.get('workbook',{}).get('premium_totals',{}).get(code)
         if premium_total:
             children=premium_total['children']
-            blocked=[c for c in children if target_status.get((year,c))!='populated_this_run']
+            blocked=[c for c in children if target_status.get((year,c)) not in ('populated_this_run','existing_confirmed')]
         if cell['status']=='conflict':
             reason='Valeur existante différente, conservée'
             action='Arbitrer le conflit entre les deux montants du rapport'

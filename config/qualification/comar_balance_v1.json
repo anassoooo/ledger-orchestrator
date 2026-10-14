@@ -2,8 +2,8 @@
   "schema_version": 1,
   "layout_id": "comar_individual_balance_2023_2025_v1",
   "company": "COMAR",
-  "status": "qualification_candidate",
-  "production_enabled": false,
+  "status": "qualified",
+  "production_enabled": true,
   "review_method": "Agent visual inspection of all six balance pages; not independent human accounting approval",
   "pages": {
     "asset": 2,

@@ -87,7 +87,8 @@ def execute(root,output,config_path,years=None):
             annual={}
             for year,document in results['documents'].items():
                 pages,source=document['pages'],document['source']
-                data,issues=extractor.extract(pages,year,source,config)
+                data,issues=extractor.extract(pages,year,source,config,path=local_path(root,source),
+                                              digest=document['digest'])
                 annual[year]=data
                 report['documents'][str(year)].update(balance_records=len(data['records']),premium_records=len(data['raw_branches']))
                 report['issues'] += [dict(year=year,**{k:v for k,v in i.items() if k!='year'}) for i in issues]
@@ -128,8 +129,10 @@ def execute(root,output,config_path,years=None):
 
         def workbook_agent(results):
             path=folder/profile.workbook['filename']
-            writes,issues=write_workbook(template,path,config,results['validation'])
+            confirmations=[]
+            writes,issues=write_workbook(template,path,config,results['validation'],confirmations)
             report['writes']=writes
+            report['confirmations']=confirmations
             report['issues']+=issues
             return AgentResult(path,dict(written_cells=len(writes),workbook_issues=len(issues)))
 
@@ -137,7 +140,7 @@ def execute(root,output,config_path,years=None):
             annual=results['validation']
             path=results['workbook']
             report['data']=annual
-            report['coverage']=measure(path,config,years,report['writes'],report['issues'])
+            report['coverage']=measure(path,config,years,report['writes'],report['issues'],report['confirmations'])
             report['review']=build_review(report['coverage'],annual,config,report['issues'])
             export_review(folder/'cellules_a_revoir.csv',report['review'])
             return AgentResult(report['review'],dict(review_cells=len(report['review'])))

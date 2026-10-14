@@ -30,6 +30,28 @@ def _cell(address):
         raise ValueError(f'Excel cell out of bounds: {address}')
 
 
+def _premium_partition(config):
+    """Every published category is assigned exactly once: to a branch or excluded (D-003)."""
+    spec = config.get('premium_mapping')
+    if not isinstance(spec, dict) or set(spec) != {'categories', 'branches', 'excluded', 'nonlife_total', 'life_total'}:
+        raise ValueError('A partition policy requires a complete premium_mapping')
+    categories = spec['categories']
+    if (not isinstance(categories, list) or not categories or len(set(categories)) != len(categories)
+            or any(not isinstance(c, str) or not c for c in categories)):
+        raise ValueError('Premium categories must be unique names')
+    branches, excluded = spec['branches'], spec['excluded']
+    if not isinstance(branches, dict) or set(branches) != set(config['branch_rows']) - {'VIE'}:
+        raise ValueError('Premium branches must match the non-life target rows')
+    if not isinstance(excluded, list):
+        raise ValueError('Excluded premium categories must be a list')
+    assigned = [c for codes in branches.values() for c in codes] + excluded
+    if sorted(assigned) != sorted(categories) or any(not codes for codes in branches.values()):
+        raise ValueError('Premium categories must be partitioned exactly once')
+    totals = {spec['nonlife_total'], spec['life_total']}
+    if len(totals) != 2 or totals & set(categories):
+        raise ValueError('Premium totals must be distinct from categories')
+
+
 @dataclass(frozen=True)
 class CompanyProfile:
     config: dict
@@ -112,6 +134,8 @@ class CompanyProfile:
                 raise ValueError(f'Invalid {section} code')
         if set(config['asset_rows']) & set(config['liability_rows']):
             raise ValueError('Balance code appears in both asset and liability mappings')
+        if config['branch_policy'] == 'partition':
+            _premium_partition(config)
         if set(workbook['columns']) != {str(y) for y in years}:
             raise ValueError('Every profile year must have explicit Excel columns')
         for year in years:

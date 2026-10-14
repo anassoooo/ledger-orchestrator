@@ -17,19 +17,23 @@ confirmation; `confirmed` means confirmed by the business owner.
   includes acceptations.
 - **Status.** confirmed (STAR rule) — corroborated for COMAR.
 
-## D-002 — A printed dash in a premium annex may be admitted as zero only by proof
+## D-002 — A printed dash may be admitted as zero only by proof
 
-- **Rule.** A dash is missing by default. It is admitted as a zero only when the
-  published total of the same row reconciles with the other categories with the
-  dash taken as zero, within the profile rounding tolerance. The reconciliation
-  delta and the source total are stored with the record.
+- **Rule.** A dash is missing by default. It is admitted as a zero only when a
+  published total reconciles with the dash taken as zero, within the profile
+  rounding tolerance: the row total of a premium annex (other categories vs
+  published total), or the parent total of a balance-sheet hierarchy (a detail
+  is written only under a reconciled parent). The proof is stored with the
+  record. A blank cell (nothing printed) stays missing.
 - **Rationale.** In financial statements a dash conventionally means "nil". The
   identity turns that convention into evidence instead of an assumption. Accident
   du travail is essentially a run-off line for Tunisian insurers since the
   compensation regime moved to social security (law 94-28), so nil issued
   premiums are also economically expected (COMAR prints 0 for it in 2023).
 - **Evidence.** COMAR 2024/2025: Travail is a dash; the other 13 categories
-  reconcile with the published total at +1 / −1 TND.
+  reconcile with the published total at +1 / −1 TND. COMAR balance 2024/2025:
+  AC322, AC520, AC530, PA340, PA360 are dashes; for the asset rows the prefilled template
+  holds 0 for each of them in 2024/2025, i.e. the same convention.
 - **Status.** default.
 
 ## D-003 — TAF_G3 branch partition: the five target branches partition direct non-life business

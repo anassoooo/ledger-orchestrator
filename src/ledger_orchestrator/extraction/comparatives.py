@@ -16,6 +16,9 @@ def supplement_comparatives(annual,children,tolerance):
                     code not in following['validation']['eligible']):
                 continue
             record=deepcopy(source)
+            # Row-level figures (gross, provisions, checks) describe year N+1 only.
+            for key in ('gross','provisions','row_checks','printed_parent_checks'):
+                record.pop(key,None)
             record.update(year=year,value=source['previous'],previous=None,
                           source_kind='native_comparative',source_year=year+1,
                           source_column='previous',comparative_evidence=deepcopy(source))
