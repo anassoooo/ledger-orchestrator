@@ -108,3 +108,30 @@ class PremiumAnnexTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class LayoutVariantTests(unittest.TestCase):
+    def test_typographic_minus_and_leading_dash_labels(self):
+        from ledger_orchestrator.extraction.premium_annex import _row_label, _signed
+        self.assertEqual([w['text'] for w in _signed([dict(text='‐50'), dict(text='‐')])], ['-50', '‐'])
+        self.assertEqual(_row_label([dict(text='‐Primes'), dict(text='Emises')]), 'PRIMES EMISES')
+        self.assertEqual(_row_label([dict(text='PRNV11'), dict(text='Primes')]), 'PRIMES')
+
+    def test_note_reference_is_skipped_but_a_short_leading_group_is_kept(self):
+        page = statement_page(4, 'PRNV11', '1 000 000', False)
+        page['words'] += words(120, [('9.1', 200)])
+        from ledger_orchestrator.extraction.premium_annex import statement_gross
+        self.assertEqual(statement_gross([page], 'PRNV11', 2020)['value'], 1000000)
+
+    def test_policy_unit_needs_no_thousands_anywhere(self):
+        from ledger_orchestrator.extraction.premium_annex import _policy_unit
+        policy = dict(page=9, text='Les positions comptables sont exprimées en dinar tunisien.')
+        self.assertEqual(_policy_unit([policy]), ('TND', 9))
+        thousands = dict(page=10, text='Tableau (en milliers de dinars)')
+        self.assertEqual(_policy_unit([policy, thousands]), (None, None))
+
+    def test_reconciliation_tables_are_not_category_annexes(self):
+        case = pages()
+        case[3]['text'] += ' TABLEAU DE RACCORDEMENT'
+        with self.assertRaises(AnnexError):
+            annex_row(case, 2020, NONLIFE, life=False)

@@ -377,3 +377,13 @@ pas de document source. Évaluation sur 2024, où le lecteur de production est c
 14/14 valeurs identiques ; 2023 et 2025 (états scannés) rejetés plutôt que devinés.
 Classeur consolidé STAR + COMAR + historique STAR : TAF_G3 102/312, aucune erreur.
 Vérification : 137 tests, non-régression STAR 14/14, rejeu COMAR 14/14.
+
+## Historique des primes COMAR — 14 octobre
+
+COMAR 2019–2022 admis (en-têtes sur plusieurs lignes, signes moins typographiques,
+unité déclarée dans les principes comptables). 2011–2016 ne publient pas l'annexe 13 :
+la ventilation par branche n'a pas de source. 2016 et 2018 sont scannés ; 2017 est
+rejeté (une colonne ne contient qu'un petit montant). TAF_G3 COMAR 42/96.
+Classeur consolidé à quatre profils : TAF_G1 446/1 245, TAF_G3 126/312 (40,4 %).
+Essai du modèle local qwen2.5:7b sur l'annexe ASTREE 2020 : libellés inventés et
+montants coupés ; rejeté par les contrôles d'ancrage, non utilisé comme lecteur.

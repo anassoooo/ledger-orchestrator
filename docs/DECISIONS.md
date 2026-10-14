@@ -115,4 +115,9 @@ confirmation; `confirmed` means confirmed by the business owner.
   on 2023 and 2025 (scanned statements) it rejects rather than guessing. The
   2018→2019 life growth (12.7 → 30.0 M TND) is printed on three pages and the
   2019 comparative column confirms the 2018 level.
+- **Amendments (COMAR).** Typographic minus signs (U+2010…) before digits are
+  minus signs; reconciliation tables (annexes 15/16) are never read as category
+  annexes; a document-wide policy sentence ("les positions comptables sont
+  exprimées en dinar tunisien") is accepted as unit evidence only when no page of
+  the document declares thousands. Without annex 13 no branch value is admitted.
 - **Status.** default.

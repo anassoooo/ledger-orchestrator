@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "profile_id": "comar_premium_history",
+  "kind": "premium_history",
+  "revision": 1,
+  "status": "validated",
+  "company": "COMAR",
+  "identity_terms": [
+    "COMAR",
+    "COMPAGNIE MEDITERRANEENNE"
+  ],
+  "source_directory": "sources/COMAR",
+  "years": [
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "target_unit": "TND",
+  "rounding_tolerance_tnd": 3,
+  "premium_basis": "before_reinsurance",
+  "taxonomy": {
+    "nonlife": {
+      "aliases": {
+        "INCENDIE": [
+          "INCENDIE"
+        ],
+        "A_TRAVAIL": [
+          "A T",
+          "ACCIDENT TRAVAIL"
+        ],
+        "RISQUES_DIVERS": [
+          "RISQUES DIVERS"
+        ],
+        "RC": [
+          "RC"
+        ],
+        "AUTOMOBILE": [
+          "AUTOMOBILE"
+        ],
+        "TRANSPORT": [
+          "TRANSPORT"
+        ],
+        "AVIATION": [
+          "AVIATION"
+        ],
+        "GROUPE": [
+          "GROUPE"
+        ],
+        "BIENS": [
+          "DOMMAGES AUX BIENS"
+        ],
+        "AGRICOLES": [
+          "RISQUES AGRICOLES"
+        ],
+        "CONSTRUCTION": [
+          "CONSTRUCTION"
+        ],
+        "PERTE_EXPLOITATION": [
+          "PERTE D'EPLOITATION",
+          "PERTE D'EXPLOITATION"
+        ],
+        "CAUTION": [
+          "CAUTION"
+        ],
+        "ASSISTANCE": [
+          "ASSISTANCE"
+        ],
+        "ACCIDENT_CORPOREL": [
+          "ACCIDENT CORPOREL"
+        ],
+        "ACCEPTATION": [
+          "ACCEPTATION"
+        ],
+        "TOTAL": [
+          "TOTAL",
+          "T O T A L"
+        ]
+      }
+    },
+    "life": {
+      "aliases": {
+        "VIE": [
+          "VIE"
+        ],
+        "TOTAL": [
+          "TOTAL"
+        ]
+      }
+    },
+    "branches": {
+      "AUTOMOBILE": [
+        "AUTOMOBILE"
+      ],
+      "INCENDIE": [
+        "INCENDIE"
+      ],
+      "TRANSPORT": [
+        "TRANSPORT",
+        "AVIATION"
+      ],
+      "IRDS": [
+        "A_TRAVAIL",
+        "RISQUES_DIVERS",
+        "RC",
+        "BIENS",
+        "AGRICOLES",
+        "CONSTRUCTION",
+        "PERTE_EXPLOITATION",
+        "CAUTION",
+        "ASSISTANCE",
+        "ACCIDENT_CORPOREL"
+      ],
+      "GROUPE": [
+        "GROUPE"
+      ]
+    },
+    "excluded": [
+      "ACCEPTATION"
+    ]
+  },
+  "workbook": {
+    "template": "templates/TAF_G1_G2_G3_G4.xlsx",
+    "filename": "COMAR_historique.xlsx",
+    "sheet": "TAF_G3",
+    "anchor": {
+      "cell": "B14",
+      "value": "COMAR"
+    },
+    "year_row": 2,
+    "first_year": 2010,
+    "first_year_column": "B",
+    "branch_rows": {
+      "AUTOMOBILE": 17,
+      "INCENDIE": 18,
+      "TRANSPORT": 19,
+      "IRDS": 20,
+      "GROUPE": 21,
+      "VIE": 23
+    },
+    "totals": {
+      "TOTAL_22": {
+        "row": 22,
+        "children": [
+          "AUTOMOBILE",
+          "INCENDIE",
+          "TRANSPORT",
+          "IRDS",
+          "GROUPE"
+        ]
+      },
+      "TOTAL_24": {
+        "row": 24,
+        "children": [
+          "VIE"
+        ]
+      },
+      "TOTAL_25": {
+        "row": 25,
+        "children": [
+          "TOTAL_22",
+          "TOTAL_24"
+        ]
+      }
+    }
+  }
+}

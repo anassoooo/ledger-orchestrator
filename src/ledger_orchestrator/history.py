@@ -90,19 +90,24 @@ def execute_history(root, output, config_path, years=None, base_workbook=None):
                     if present:
                         branches[branch] = dict(value=sum(r['value'] for r in present), sources=present)
                 excluded = sum(records[c]['value'] for c in taxonomy['excluded'] if c in records)
-                partition = sum(b['value'] for b in branches.values()) + excluded - records['TOTAL_NONVIE']['value']
-                if abs(partition) > tolerance or set(branches) != set(taxonomy['branches']):
-                    report['issues'].append(dict(type='premium_partition_failed', year=year, delta=partition))
+                if 'TOTAL_NONVIE' not in records:
+                    report['issues'].append(dict(type='premium_nonlife_annex_not_published', year=year))
                     branches = {}
                 else:
-                    branches['VIE'] = dict(value=records['TOTAL_VIE']['value'], sources=[records['TOTAL_VIE']])
-                    if excluded:
+                    partition = sum(b['value'] for b in branches.values()) + excluded - records['TOTAL_NONVIE']['value']
+                    if abs(partition) > tolerance or set(branches) != set(taxonomy['branches']):
+                        report['issues'].append(dict(type='premium_partition_failed', year=year, delta=partition))
+                        branches = {}
+                    elif excluded:
                         report['issues'].append(dict(type='premium_unallocated', year=year, amount=excluded,
                                                      codes=taxonomy['excluded']))
+                if 'TOTAL_VIE' in records:
+                    branches['VIE'] = dict(value=records['TOTAL_VIE']['value'], sources=[records['TOTAL_VIE']])
+                admitted = {id(s) for b in branches.values() for s in b['sources']}
                 for record in records.values():
                     # OCR is admitted only when a native page prints the same amount.
                     corroborated = any(p['method'] == 'native' for p in record.get('corroborating_pages', []))
-                    record['approved'] = bool(branches) and (record['method'] == 'native' or corroborated)
+                    record['approved'] = id(record) in admitted and (record['method'] == 'native' or corroborated)
                 for branch in branches.values():
                     if not all(s['approved'] for s in branch['sources']):
                         report['issues'].append(dict(type='premium_review_required', year=year))

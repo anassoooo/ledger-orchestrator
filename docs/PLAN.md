@@ -90,6 +90,16 @@ config/history/star_premiums.json`. Generic NC 26 annex reader
 history: TAF_G3 102/312 (32.7 %). Next: ASTREE (kTND years need D-008 exact
 conversion) and COMAR history.
 
+🟡 COMAR delivered for 2019–2022 (multi-line headers, typographic minus signs,
+policy-level unit declaration). 2011–2016 publish no category annex 13, so the
+branch split has no source; 2016/2018 are scanned; 2017 is rejected because one
+column holds only a small amount. Consolidated (4 profiles): TAF_G3 126/312 (40.4 %).
+
+M5 finding (14 Oct): `qwen2.5:7b` (local, RTX 3050) on the ASTREE 2020 annex
+invented category labels and split amounts (27 s per page). Its output fails the
+grounding checks, so a 7B text model is not used as a table reader. Model
+assistance is re-scoped to proposing alias-table entries for human review.
+
 ## M5 — Model-assisted extraction, verified by identities
 
 A local model (Ollama, Qwen 2.5 7B on the RTX 3050) proposes table readings as

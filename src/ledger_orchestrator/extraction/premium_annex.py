@@ -20,7 +20,9 @@ import re
 
 from ledger_orchestrator.extraction.core import lines, normalize, numeric_groups
 
-DINAR_UNIT = re.compile(r'(EN|ARRONDIS EN|EXPRIME[S]? EN)\s+(DINARS?|DT)\b')
+DINAR_UNIT = re.compile(r'(EN|ARRONDIS EN|EXPRIMEE?S? EN)\s+(DINARS?|DT)\b')
+# Accounting-policy declaration covering every statement of the document.
+POLICY_UNIT = re.compile(r'(ETATS FINANCIERS|POSITIONS COMPTABLES|COMPTES)[^.]{0,80}EXPRIMEE?S?\s+EN\s+DINARS?\s+TUNISIENS?')
 # "MD" means millions of dinars in Tunisian usage; it is never read as thousands.
 THOUSAND_UNIT = re.compile(r'MILLIERS?\s+DE\s+DINARS|EN\s+MILLE\s+DINARS|\bEN\s+(KDT|MDT)\b')
 YEARS = re.compile(r'\b(20\d\d)\b')
@@ -29,6 +31,14 @@ DASHES = {'-', '‐', '‑', '‒', '–', '—'}
 
 class AnnexError(ValueError):
     """The disclosure does not match a qualified reading; nothing is admitted."""
+
+
+MINUS = re.compile(r'^[‐‑‒–−](?=\d)')
+
+
+def _signed(words):
+    """Typographic minus signs before digits ("‐50") become ASCII; a lone dash stays a dash."""
+    return [dict(w, text=MINUS.sub('-', w['text'])) for w in words]
 
 
 def _key(text):
@@ -83,7 +93,7 @@ def statement_gross(pages, code, year):
             if start is None:
                 continue
             amounts = [w for w in row[start:] if not re.search(r'[A-Za-z]', w['text'])]
-            values = numeric_groups(amounts, page['width'])
+            values = numeric_groups(_signed(amounts), page['width'])
             # A note reference ("9.1") is its own column group, never part of an
             # amount; a company's gross premium is never below 100 TND.
             if len(values) > 1 and abs(values[0][0]) < 100:
@@ -99,7 +109,17 @@ def statement_gross(pages, code, year):
     reading = found[0]
     if reading['unit'] is None:
         reading['unit'], reading['unit_page'] = _unit_by_amount(pages, reading['value'])
+    if reading['unit'] is None:
+        reading['unit'], reading['unit_page'] = _policy_unit(pages)
     return reading
+
+
+def _policy_unit(pages):
+    """A document-wide policy sentence, accepted only if no page declares thousands."""
+    policy = [p['page'] for p in pages if POLICY_UNIT.search(' '.join(normalize(p['text']).split()))]
+    if not policy or any(THOUSAND_UNIT.search(normalize(p['text'])) for p in pages):
+        return None, None
+    return 'TND', policy[0]
 
 
 def _formatted(value):
@@ -151,6 +171,62 @@ def _header_labels(row, aliases):
     return labels
 
 
+def _row_label(row):
+    """Row label without its code or a leading dash: "PRNV11 Primes", "-Primes"."""
+    label = normalize(' '.join(w['text'] for w in row))
+    return re.sub(r'^(PRNV11|PRV11)?[\s\-\u2010\u2011.]*', '', label)
+
+
+def _letters(text):
+    return re.sub(r'[^A-Z]', '', normalize(text))
+
+
+def _band_labels(rows, header_rows, first_data, aliases, width):
+    """Multi-line headers: columns from amount right edges, labels from header words above.
+
+    Column right edges are clustered over every numeric row of the table, so a
+    column that is blank on the "Primes émises" row is still located. Each
+    column's label is the concatenation, line by line, of the header words whose
+    centre falls in its band; it must equal one alias exactly (letters only).
+    """
+    # Only amounts >= 1,000 locate columns: they are right-aligned, while small
+    # values such as 0 are often centred and would create phantom columns.
+    ends = sorted(x1 for r in rows[first_data:first_data + 40]
+                  for value, _, x1 in numeric_groups(_signed([w for w in r if not re.search(r'[A-Za-z]', w['text'])]), width)
+                  if abs(value) >= 1000)
+    clusters = []
+    for x in ends:
+        # Right edges in one column vary by up to ~12 pt (centred amounts, minus
+        # signs); columns are at least ~30 pt apart. A cluster spans at most 14 pt.
+        if clusters and x - clusters[-1][0] <= 14:
+            clusters[-1].append(x)
+        else:
+            clusters.append([x])
+    rights = [max(c) for c in clusters if len(c) >= 3]
+    if len(rights) < 2:
+        raise AnnexError('Too few amount columns to locate category headers')
+    index = {alias_key: code for code, names in aliases.items() for alias_key in (_letters(n) for n in names)}
+    words = [w for r in header_rows for w in r]
+    labels, previous, texts = [], None, []
+    for right in rights:
+        left = previous if previous is not None else right - 60
+        band = [w for w in words if left + 2 < (w['x0'] + w['x1']) / 2 <= right + 8]
+        by_line = {}
+        for w in band:
+            by_line.setdefault(round(w['top']), []).append(w)
+        text = ''.join(_letters(''.join(x['text'] for x in sorted(ws, key=lambda w: w['x0'])))
+                       for _, ws in sorted(by_line.items()))
+        texts.append(text)
+        if text not in index:
+            raise AnnexError(f'Unknown category header: {text!r} in {texts}')
+        labels.append(dict(code=index[text], x0=right - (right - left) * 0.8, x1=right, text=text))
+        previous = right
+    codes = [l['code'] for l in labels]
+    if len(codes) != len(set(codes)):
+        raise AnnexError('Duplicate category header')
+    return labels
+
+
 def _column(labels, x0, x1):
     """Assign an amount to its header column.
 
@@ -175,7 +251,8 @@ def annex_row(pages, year, aliases, life):
     candidates = []
     for page in pages:
         text = normalize(page['text'])
-        if 'CATEGORIE' not in text or 'PRIMES EMISES' not in text:
+        # Reconciliation tables (annexes 15/16) repeat the total, not the categories.
+        if 'CATEGORIE' not in text or 'PRIMES EMISES' not in text or 'RACCORDEMENT' in text:
             continue
         # The year is proven by the identity with the year-N statement; a page
         # printed for another year only is still rejected here.
@@ -185,19 +262,27 @@ def annex_row(pages, year, aliases, life):
             continue
         rows = lines(page['words'])
         header_index = next((i for i, r in enumerate(rows) if _key(r[0]['text']) == 'CATEGORIES'), None)
-        if header_index is None:
-            continue
-        labels = _header_labels(rows[header_index][1:], aliases)
-        premium_rows = [r for r in rows[header_index + 1:]
-                        if normalize(' '.join(w['text'] for w in r)).startswith('PRIMES EMISES')]
-        if len(premium_rows) != 1:
+        premium_index = [i for i, r in enumerate(rows) if _row_label(r).startswith('PRIMES EMISES')]
+        if header_index is not None:
+            labels = _header_labels(rows[header_index][1:], aliases)
+            premium_index = [i for i in premium_index if i > header_index]
+        else:
+            # Multi-line headers: the block between the title and the first data row.
+            title = next((i for i, r in enumerate(rows)
+                          if 'PAR CATEGORIE' in normalize(' '.join(w['text'] for w in r))), None)
+            first_data = next((i for i, r in enumerate(rows) if title is not None and i > title
+                               and _row_label(r).startswith('PRIMES')), None)
+            if title is None or first_data is None or not premium_index:
+                continue
+            labels = _band_labels(rows, rows[title + 1:first_data], first_data, aliases, page['width'])
+        if len(premium_index) != 1:
             raise AnnexError('Expected one "Primes émises" row in the category annex')
-        candidates.append((page, labels, premium_rows[0]))
+        candidates.append((page, labels, rows[premium_index[0]]))
     if len(candidates) != 1:
         raise AnnexError(f"Expected one {'life' if life else 'non-life'} category annex, found {len(candidates)}")
     page, labels, row = candidates[0]
     label_end = max(w['x1'] for w in row if re.search(r'[A-Za-z]', w['text']))
-    values = numeric_groups([w for w in row if w['x0'] > label_end], page['width'])
+    values = numeric_groups(_signed([w for w in row if w['x0'] > label_end]), page['width'])
     dashes = [w for w in row if w['text'].strip() in DASHES and w['x0'] > label_end]
     cells = {l['code']: None for l in labels}
     for value, x0, x1 in values:
@@ -224,8 +309,13 @@ def read_premiums(pages, year, taxonomy, tolerance):
         try:
             annex = annex_row(pages, year, spec['aliases'], life)
         except AnnexError as exc:
-            if not life or 'found 0' not in str(exc):
+            if 'found 0' not in str(exc):
                 raise
+            if not life:
+                # Without annex 13 the branch split is not published: nothing non-life
+                # is admitted, but the life total keeps its own evidence.
+                checks.append(dict(identity='non-life category annex', status='not_published'))
+                continue
             pages_seen = corroborated_life_total(pages, statement)
             if statement['unit'] != 'TND':
                 raise AnnexError(f"Statement unit not qualified: {statement['unit']}")
