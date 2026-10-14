@@ -229,8 +229,9 @@ class ProfileApiTests(unittest.TestCase):
             with TestClient(api.app) as client:
                 catalog = client.get('/profiles').json()
                 self.assertEqual(catalog['default_profile_id'], 'star')
-                self.assertEqual(catalog['profiles'][0]['available_years'], [])
-                self.assertTrue(catalog['profiles'][0]['runnable'])
+                star = next(p for p in catalog['profiles'] if p['id'] == 'star')
+                self.assertEqual(star['available_years'], [])
+                self.assertTrue(star['runnable'])
                 for body in ({'profile_id': 'unknown'}, {'years': [2018]}, {'years': []},
                              {'profile_id': '../star'}, {'years': [2025]}):
                     self.assertEqual(client.post('/runs', json=body).status_code, 422)
