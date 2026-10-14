@@ -54,8 +54,15 @@ confirmation; `confirmed` means confirmed by the business owner.
   would need a sixth row that the template does not have.
 - **Evidence.** COMAR: the five-branch sum equals the published total minus
   acceptations exactly in 2023 and within ±1 TND in 2024/2025 (rounding).
-- **Status.** default — to confirm with the supervisor, in particular whether
-  Crédit/Caution should be reported elsewhere by the CMF.
+- **Caveat (FTUSA).** FTUSA's seven statistical branches also partition COMAR's
+  direct total exactly (2023, 2024), but reallocate business between branches:
+  FTUSA Automobile exceeds the accounting annex by 14.2 M TND. The template is
+  sourced from the CMF, i.e. the published statements, so the accounting-annex
+  categories are used. If the CMF expects the FTUSA statistical taxonomy, the
+  branch split (not the total) changes.
+- **Status.** default — to confirm with the supervisor: (1) accounting annex vs
+  FTUSA statistical branches; (2) whether Crédit/Caution and Risques agricoles
+  belong in IRDS.
 
 ## D-004 — Rounding tolerance
 

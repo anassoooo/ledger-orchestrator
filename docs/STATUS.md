@@ -333,3 +333,24 @@ Cette observation visuelle sert à orienter l'adaptateur historique ; aucune
 coordonnée, ligne ou valeur 2021 n'est encore qualifiée par machine. Aucun fichier
 financier ni classeur n'a été modifié. Prochaine étape : vérifier bandes et
 manifestes 2021, puis contrôles ligne à ligne.
+
+## COMAR en production et mesure de précision — 14 octobre
+
+Gouvernance : [constitution](CONSTITUTION.md), [décisions](DECISIONS.md) et
+[plan](PLAN.md). Les lecteurs COMAR qualifiés sont déplacés sans modification
+dans `extraction/comar.py` (sorties identiques vérifiées sur 2023–2025) et
+enregistrés comme `comar_individual_v1`. Le profil COMAR est validé.
+
+Run `20261014T011312_02d71100` : TAF_G1 81/81 en 2024 et 2025, 78/81 en 2023
+(trois rubriques non publiées), TAF_G3 27/27, aucun conflit. Les 94 valeurs
+saisies dans le modèle pour 2024/2025 servent de référence indépendante :
+92/92 comparables concordent. TAF_G4 (CGA 2024) : 5/5 indicateurs définis
+concordent pour COMAR comme pour STAR (D-006).
+
+Règles appliquées : partition des branches (D-003, Acceptations exclues), tiret
+admis comme zéro seulement si un total publié le prouve (D-002), tolérance 3 TND
+(D-004), publication de l'exercice prioritaire sur le comparatif ultérieur (D-005).
+Un total saisi égal au total publié est « confirmé » et non plus signalé en conflit.
+
+Vérification : 123 tests Docker réussis, non-régression STAR 14/14, rejeu COMAR 14/14.
+Outil de mesure : `python -m ledger_orchestrator.evaluation coverage|benchmark`.

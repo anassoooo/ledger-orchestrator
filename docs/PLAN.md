@@ -41,7 +41,7 @@ TAF_G3 18 / 312 (5.8 %). STAR against CGA 2024: 5 / 5 defined metrics agree
 (premiums, capital, result, equity before result, placements); technical
 provisions differ by 7,697 kTND (CGA basis unknown, D-006).
 
-## M2 — COMAR 2023–2025 in production
+## M2 — COMAR 2023–2025 in production ✅
 
 Move the guarded COMAR readers from `scripts/` into the package; register
 `comar_individual_v1`; apply D-002/D-003/D-004; validated profile with explicit
@@ -51,6 +51,12 @@ balance hierarchy. Values that pass identities are written; conflicts preserved.
 has full evidence; benchmark against the prefilled COMAR 2024/2025 balance and
 CGA 2024 premiums reported; STAR replay unchanged; rejection tests for wrong
 year, unit, header and corrupted totals.
+
+✅ Delivered. Reference run `20261014T011312_02d71100` (deterministic replay
+passes 14/14). TAF_G1 81/81 cells for 2024 and 2025, 78/81 for 2023 (three rows
+not published that year); TAF_G3 27/27. Accuracy: 92/92 prefilled template values
+agree; CGA 2024: 5/5 defined metrics agree. No conflicts; 12 comparative
+restatements of 1–2 TND retained (D-005). STAR replay unchanged.
 
 ## M3 — One consolidated workbook
 
