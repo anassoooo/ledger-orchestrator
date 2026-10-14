@@ -70,3 +70,16 @@ confirmation; `confirmed` means confirmed by the business owner.
   date. A restated comparative is a different measurement and must be flagged
   for review (it may reflect an accounting-policy change).
 - **Status.** default.
+
+## D-006 — Reading the CGA aggregates of TAF_G4 (kTND)
+
+- **Rule.** Used as an independent accuracy reference, not as a source:
+  Primes nettes = published non-life total (acceptations included) + life total;
+  Capital social = CP1; Résultat comptable = CP6; Fonds propres (2) = equity
+  *before* the result of the year; Placements nets cumulés (3) = AC3 + AC71
+  (investments plus bank and cash). Provisions techniques (1) remain indicative.
+- **Evidence.** STAR 2024: every listed metric matches to the kTND
+  (fonds propres 400,085 = 429,898 − 29,813; placements 1,140,463 = 1,112,770
+  + 27,693). Technical provisions differ by 7,697 kTND from PA3 and from every
+  simple combination of published lines, so the CGA basis is unknown.
+- **Status.** corroborated on STAR 2024; to recheck on each new company.

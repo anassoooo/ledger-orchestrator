@@ -24,7 +24,7 @@ in the template are independent references nobody had used to measure accuracy y
 Commit pending work; fix the order-dependent profile test; record the Docker
 baseline (107 tests, STAR replay 14/14); write the constitution, decisions and plan.
 
-## M1 — Evaluation harness
+## M1 — Evaluation harness ✅
 
 `ledger_orchestrator.evaluation`: (a) template coverage matrix — every target
 cell of TAF_G1/G2/G3 by company and year, with source availability and filled
@@ -33,6 +33,13 @@ the template and with CGA TAF_G4 aggregates (kTND, rounded).
 
 **Acceptance:** one command prints coverage and accuracy for any run; tests on
 synthetic workbooks; the benchmark never treats an absent reference as agreement.
+
+✅ Delivered. `python -m ledger_orchestrator.evaluation coverage|benchmark`.
+Baseline with the STAR reference run: sourced input cells filled — TAF_G1
+300 / 1,245 (24.1 %, of which 94 prefilled COMAR values), TAF_G2 0 / 96,
+TAF_G3 18 / 312 (5.8 %). STAR against CGA 2024: 5 / 5 defined metrics agree
+(premiums, capital, result, equity before result, placements); technical
+provisions differ by 7,697 kTND (CGA basis unknown, D-006).
 
 ## M2 — COMAR 2023–2025 in production
 
