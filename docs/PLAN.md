@@ -58,13 +58,20 @@ not published that year); TAF_G3 27/27. Accuracy: 92/92 prefilled template value
 agree; CGA 2024: 5/5 defined metrics agree. No conflicts; 12 comparative
 restatements of 1–2 TND retained (D-005). STAR replay unchanged.
 
-## M3 — One consolidated workbook
+## M3 — One consolidated workbook ✅
 
 Run several profiles into a single copy of the template (STAR then COMAR, …),
 each writer checking that it only touches its own cells.
 
 **Acceptance:** consolidated workbook equals the union of single-company runs;
 cross-company write attempts rejected; LibreOffice recalculation clean.
+
+✅ Delivered. `python -m ledger_orchestrator.consolidate --configs config/star.json
+config/comar.json` → `outputs/consolidated_*/TAF_consolide.xlsx`, checked for
+preserved writes, disjoint cells and distinct companies; no formula errors after
+recalculation. Template-wide: TAF_G1 446 / 1,245 sourced cells (35.8 %),
+TAF_G3 36 / 312 (11.5 %). COMAR reference run is now `20261014T011713_cc31123a`
+(no empty details sheet).
 
 ## M4 — Premium history 2010–2022 (TAF_G3)
 

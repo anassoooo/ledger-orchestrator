@@ -341,7 +341,7 @@ Gouvernance : [constitution](CONSTITUTION.md), [décisions](DECISIONS.md) et
 dans `extraction/comar.py` (sorties identiques vérifiées sur 2023–2025) et
 enregistrés comme `comar_individual_v1`. Le profil COMAR est validé.
 
-Run `20261014T011312_02d71100` : TAF_G1 81/81 en 2024 et 2025, 78/81 en 2023
+Run de référence `20261014T011713_cc31123a` : TAF_G1 81/81 en 2024 et 2025, 78/81 en 2023
 (trois rubriques non publiées), TAF_G3 27/27, aucun conflit. Les 94 valeurs
 saisies dans le modèle pour 2024/2025 servent de référence indépendante :
 92/92 comparables concordent. TAF_G4 (CGA 2024) : 5/5 indicateurs définis
@@ -354,3 +354,12 @@ Un total saisi égal au total publié est « confirmé » et non plus signalé e
 
 Vérification : 123 tests Docker réussis, non-régression STAR 14/14, rejeu COMAR 14/14.
 Outil de mesure : `python -m ledger_orchestrator.evaluation coverage|benchmark`.
+
+## Classeur consolidé — 14 octobre
+
+`python -m ledger_orchestrator.consolidate --configs config/star.json config/comar.json`
+exécute chaque profil à la suite sur la même copie du modèle et vérifie que toutes
+les écritures sont conservées, qu'aucune cellule n'est écrite deux fois et que les
+sociétés sont distinctes. Couverture du modèle complet : TAF_G1 446 / 1 245 cellules
+disposant d'une source (35,8 %), TAF_G3 36 / 312 (11,5 %). Aucune erreur de formule.
+Une feuille de compléments n'est créée que si des rubriques publiées n'ont pas de ligne.

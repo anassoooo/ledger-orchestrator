@@ -45,14 +45,17 @@ def save_json(path,data):
     temp.replace(path)
 
 
-def execute(root,output,config_path,years=None):
+def execute(root,output,config_path,years=None,base_workbook=None):
+    """Run one profile. base_workbook continues a consolidated copy of the template."""
     profile=CompanyProfile.load(config_path)
     config=profile.config
     years=profile.select_years(years)
     extractor=get_extractor(profile,years)
     output.mkdir(parents=True,exist_ok=True)
-    template=local_path(root,profile.workbook['template'])
-    template_digest=hashlib.sha256(template.read_bytes()).hexdigest()
+    original_template=local_path(root,profile.workbook['template'])
+    template=Path(base_workbook) if base_workbook else original_template
+    template_digest=hashlib.sha256(original_template.read_bytes()).hexdigest()
+    base_digest=hashlib.sha256(template.read_bytes()).hexdigest()
     with exclusive_lock(output):
         run_id=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')+'_'+uuid.uuid4().hex[:8]
         folder=output/run_id
@@ -61,6 +64,8 @@ def execute(root,output,config_path,years=None):
                     conversion_factor=1,template_sha256=template_digest,config=config,documents={},issues=[],writes=[],
                     orchestration_version=1,agent_trace=[],schema_version=2,
                     profile=dict(id=config['profile_id'],revision=config['revision'],sha256=profile.fingerprint))
+        if base_workbook:
+            report['base_workbook']=dict(path=str(template),sha256=base_digest)
         save_json(folder/'report.json',report)
 
         def event(item):
@@ -156,7 +161,8 @@ def execute(root,output,config_path,years=None):
             report['status']='needs_review' if report['issues'] else 'completed'
             report['workbook']=profile.workbook['filename']
             report['written_cells']=len(report['writes'])
-            if hashlib.sha256(template.read_bytes()).hexdigest()!=template_digest:
+            if (hashlib.sha256(original_template.read_bytes()).hexdigest()!=template_digest or
+                    hashlib.sha256(template.read_bytes()).hexdigest()!=base_digest):
                 raise RuntimeError('Source template changed during execution')
             save_json(folder/'report.json',report)
             with (folder/'anomalies.csv').open('w',encoding='utf-8-sig',newline='') as stream:

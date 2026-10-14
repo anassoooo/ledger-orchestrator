@@ -57,7 +57,10 @@ def write_workbook(template,path,config,annual,confirmations=None):
             sheet=premium_sheet if section=='premium' else balance_sheet
             set_column_width(wb[sheet],column_index_from_string(profile.column(year,section)),width)
     support=None
-    if config['extend_template']:
+    known=set(config['asset_rows'])|set(config['liability_rows'])
+    extra=sorted({k for data in annual.values() for k in data['records'] if k not in known})
+    # A details sheet is created only when published rows have no template row.
+    if config['extend_template'] and extra:
         if layout['details_sheet'] in wb:
             raise ValueError(f"Use the original template; {layout['details_sheet']} already exists")
         support=wb.create_sheet(layout['details_sheet'])
@@ -73,8 +76,6 @@ def write_workbook(template,path,config,annual,confirmations=None):
             c.fill=PatternFill('solid',fgColor='17365D')
             c.alignment=Alignment(wrap_text=True)
         support.row_dimensions[1].height=34
-    known=set(config['asset_rows'])|set(config['liability_rows'])
-    extra=sorted({k for data in annual.values() for k in data['records'] if k not in known})
     if support:
         for i,code in enumerate(extra,2):
             record=next(d['records'][code] for d in annual.values() if code in d['records'])
