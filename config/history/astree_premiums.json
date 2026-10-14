@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "profile_id": "astree_premium_history",
+  "kind": "premium_history",
+  "revision": 1,
+  "status": "validated",
+  "company": "ASTREE",
+  "identity_terms": [
+    "ASTREE"
+  ],
+  "source_directory": "sources/ASTREE",
+  "years": [
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "target_unit": "TND",
+  "rounding_tolerance_tnd": 3,
+  "premium_basis": "before_reinsurance",
+  "taxonomy": {
+    "nonlife": {
+      "aliases": {
+        "AUTO": [
+          "AUTO"
+        ],
+        "TRANSPORT": [
+          "TRANSPORT"
+        ],
+        "AVIATION": [
+          "AVIATION"
+        ],
+        "INCENDIE": [
+          "INCENDIE"
+        ],
+        "RC_DECENNALE": [
+          "RESPONSABILITE DECENNALE"
+        ],
+        "RC_CIVILE": [
+          "RESPONSABILITE CIVILE"
+        ],
+        "AGRICOLES": [
+          "RISQUES AGRICOLES"
+        ],
+        "BIENS": [
+          "AUTRES DOMMAGES AUX BIENS"
+        ],
+        "ASSISTANCE": [
+          "ASSISTANCE A.E.A"
+        ],
+        "CREDIT": [
+          "ASSURANCE CREDIT"
+        ],
+        "MALADIE": [
+          "MALADIE"
+        ],
+        "INVALIDITE": [
+          "INVALIDITE"
+        ],
+        "INDIVIDUELLE": [
+          "INDIVIDUELLE"
+        ],
+        "LOI": [
+          "LOI"
+        ],
+        "PERTES_PECUNIAIRES": [
+          "PERTE PECUNIAIRES"
+        ],
+        "TOTAL_DIRECT": [
+          "TOTAL DIRECT"
+        ],
+        "ACCEPTATION": [
+          "ACCEPTATIONS"
+        ],
+        "TOTAL": [
+          "TOTAL"
+        ]
+      },
+      "families": [
+        {
+          "name": "annex13_2011_2023",
+          "columns": [
+            {
+              "code": "AUTO",
+              "expect": "AUTO"
+            },
+            {
+              "code": "TRANSPORT",
+              "expect": "TRANSPORT"
+            },
+            {
+              "code": "AVIATION",
+              "expect": "AVIATION"
+            },
+            {
+              "code": "INCENDIE",
+              "expect": "INCENDIE"
+            },
+            {
+              "code": "RC_DECENNALE",
+              "expect": null
+            },
+            {
+              "code": "RC_CIVILE",
+              "expect": null
+            },
+            {
+              "code": "AGRICOLES",
+              "expect": null
+            },
+            {
+              "code": "BIENS",
+              "expect": null
+            },
+            {
+              "code": "ASSISTANCE",
+              "expect": null
+            },
+            {
+              "code": "CREDIT",
+              "expect": null
+            },
+            {
+              "code": "MALADIE",
+              "expect": "MALADIE"
+            },
+            {
+              "code": "INVALIDITE",
+              "expect": "INVALIDITE"
+            },
+            {
+              "code": "INDIVIDUELLE",
+              "expect": null
+            },
+            {
+              "code": "LOI",
+              "expect": null
+            },
+            {
+              "code": "TOTAL_DIRECT",
+              "expect": "TOTAL"
+            },
+            {
+              "code": "ACCEPTATION",
+              "expect": "ACCEPTATION"
+            },
+            {
+              "code": "TOTAL",
+              "expect": "TOTAL"
+            }
+          ]
+        },
+        {
+          "name": "annex13_2024",
+          "columns": [
+            {
+              "code": "AUTO",
+              "expect": "AUTO"
+            },
+            {
+              "code": "TRANSPORT",
+              "expect": "TRANSPORT"
+            },
+            {
+              "code": "AVIATION",
+              "expect": "AVIATION"
+            },
+            {
+              "code": "INCENDIE",
+              "expect": "INCENDIE"
+            },
+            {
+              "code": "RC_DECENNALE",
+              "expect": null
+            },
+            {
+              "code": "RC_CIVILE",
+              "expect": null
+            },
+            {
+              "code": "AGRICOLES",
+              "expect": null
+            },
+            {
+              "code": "BIENS",
+              "expect": null
+            },
+            {
+              "code": "ASSISTANCE",
+              "expect": null
+            },
+            {
+              "code": "CREDIT",
+              "expect": null
+            },
+            {
+              "code": "MALADIE",
+              "expect": "MALADIE"
+            },
+            {
+              "code": "INVALIDITE",
+              "expect": "INVALIDITE"
+            },
+            {
+              "code": "INDIVIDUELLE",
+              "expect": null
+            },
+            {
+              "code": "LOI",
+              "expect": null
+            },
+            {
+              "code": "PERTES_PECUNIAIRES",
+              "expect": "PECUNIAIRES"
+            },
+            {
+              "code": "TOTAL_DIRECT",
+              "expect": "TOTAL"
+            },
+            {
+              "code": "ACCEPTATION",
+              "expect": "ACCEPTATION"
+            },
+            {
+              "code": "TOTAL",
+              "expect": "TOTAL"
+            }
+          ]
+        }
+      ],
+      "subtotals": {
+        "TOTAL_DIRECT": [
+          "AUTO",
+          "TRANSPORT",
+          "AVIATION",
+          "INCENDIE",
+          "RC_DECENNALE",
+          "RC_CIVILE",
+          "AGRICOLES",
+          "BIENS",
+          "ASSISTANCE",
+          "CREDIT",
+          "MALADIE",
+          "INVALIDITE",
+          "INDIVIDUELLE",
+          "LOI",
+          "PERTES_PECUNIAIRES"
+        ]
+      }
+    },
+    "life": {
+      "aliases": {
+        "VIE": [
+          "VIE"
+        ],
+        "TOTAL": [
+          "TOTAL"
+        ]
+      }
+    },
+    "branches": {
+      "AUTOMOBILE": [
+        "AUTO"
+      ],
+      "INCENDIE": [
+        "INCENDIE"
+      ],
+      "TRANSPORT": [
+        "TRANSPORT",
+        "AVIATION"
+      ],
+      "IRDS": [
+        "RC_DECENNALE",
+        "RC_CIVILE",
+        "AGRICOLES",
+        "BIENS",
+        "ASSISTANCE",
+        "CREDIT",
+        "INDIVIDUELLE",
+        "LOI",
+        "PERTES_PECUNIAIRES"
+      ],
+      "GROUPE": [
+        "MALADIE",
+        "INVALIDITE"
+      ]
+    },
+    "excluded": [
+      "ACCEPTATION"
+    ]
+  },
+  "workbook": {
+    "template": "templates/TAF_G1_G2_G3_G4.xlsx",
+    "filename": "ASTREE_historique.xlsx",
+    "sheet": "TAF_G3",
+    "anchor": {
+      "cell": "B53",
+      "value": "ASTREE"
+    },
+    "year_row": 54,
+    "first_year": 2010,
+    "first_year_column": "B",
+    "branch_rows": {
+      "AUTOMOBILE": 56,
+      "INCENDIE": 57,
+      "TRANSPORT": 58,
+      "IRDS": 59,
+      "GROUPE": 60,
+      "VIE": 62
+    },
+    "totals": {
+      "TOTAL_61": {
+        "row": 61,
+        "children": [
+          "AUTOMOBILE",
+          "INCENDIE",
+          "TRANSPORT",
+          "IRDS",
+          "GROUPE"
+        ]
+      },
+      "TOTAL_63": {
+        "row": 63,
+        "children": [
+          "VIE"
+        ]
+      },
+      "TOTAL_64": {
+        "row": 64,
+        "children": [
+          "TOTAL_61",
+          "TOTAL_63"
+        ]
+      }
+    }
+  }
+}

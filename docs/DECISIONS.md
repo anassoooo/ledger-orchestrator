@@ -121,3 +121,29 @@ confirmation; `confirmed` means confirmed by the business owner.
   exprimées en dinar tunisien") is accepted as unit evidence only when no page of
   the document declares thousands. Without annex 13 no branch value is admitted.
 - **Status.** default.
+
+## D-008 — Exact unit conversion and annex units proven by identity
+
+- **Rule.** Thousands of dinars are converted to TND only when every amount has
+  at most three decimals, so the result is exact; the printed amount, the source
+  unit and the factor 1000 are kept in the evidence. A category annex may use a
+  different unit from its statement: among TND and kTND, exactly one must make the
+  annex total equal the statement's gross premium in TND, and a declared annex
+  unit must agree.
+- **Evidence.** ASTREE 2012–2015 print statements in TND and annex 13 in kTND
+  (84 404 579 TND = 84 404,579 kTND in 2012).
+- **Status.** default.
+
+## D-009 — ASTREE branch mapping
+
+- **Rule.** Groupe = Maladie + Invalidité; Transport = Transport + Aviation; IRDS =
+  RC décennale, RC civile, Risques agricoles, Autres dommages aux biens, Assistance,
+  Assurance crédit, Individuelle accidents, Loi (accidents du travail), Pertes
+  pécuniaires (from 2024); Acceptations excluded (D-003).
+- **Evidence.** FTUSA 2024 Groupe maladie for ASTREE = 34 503 323 TND = Maladie
+  31 661 853 + Invalidité 2 841 470 (prior review, outputs/astree_classification_20261010).
+  CGA 2024 ASTREE primes nettes 253 411 kTND = published non-life 176 216 228 +
+  life 77 194 873. Annex 13 is read through ordered layout families: columns that
+  change a branch (Auto, Transport, Aviation, Incendie, Maladie, Invalidité, totals,
+  Acceptations) must show their header key; IRDS-internal columns are positional.
+- **Status.** default — same supervisor question as D-003 for Crédit/Agricoles.

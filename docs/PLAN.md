@@ -95,6 +95,11 @@ policy-level unit declaration). 2011–2016 publish no category annex 13, so the
 branch split has no source; 2016/2018 are scanned; 2017 is rejected because one
 column holds only a small amount. Consolidated (4 profiles): TAF_G3 126/312 (40.4 %).
 
+🟡 ASTREE delivered: premiums 2012, 2013, 2015, 2017–2021, 2025 complete; life only
+for 2022–2024 (annex 13 not found — partly scanned pages). Rejected with reasons:
+2011 (statement unit undeclared), 2014 (PRV11 row not found), 2016 (row does not
+reconcile). Consolidated (5 profiles): TAF_G3 183/312 (58.7 %).
+
 M5 finding (14 Oct): `qwen2.5:7b` (local, RTX 3050) on the ASTREE 2020 annex
 invented category labels and split amounts (27 s per page). Its output fails the
 grounding checks, so a 7B text model is not used as a table reader. Model

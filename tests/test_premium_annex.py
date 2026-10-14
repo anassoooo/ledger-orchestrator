@@ -146,3 +146,32 @@ class LayoutVariantTests(unittest.TestCase):
         case[3]['text'] += ' TABLEAU DE RACCORDEMENT'
         with self.assertRaises(AnnexError):
             annex_row(case, 2020, dict(aliases=NONLIFE), life=False)
+
+
+class FamilyAndUnitTests(unittest.TestCase):
+    SPEC = dict(aliases={'AUTO': ['AUTO'], 'INCENDIE': ['INCENDIE'], 'RC': ['RC'], 'TOTAL': ['TOTAL']},
+                families=[dict(name='f', columns=[dict(code='AUTO', expect='AUTO'), dict(code='INCENDIE', expect='INCENDIE'),
+                                                  dict(code='RC', expect=None), dict(code='TOTAL', expect='TOTAL')])])
+
+    def columns(self, texts):
+        return [dict(left=100 * i, right=100 * i + 90, text=t) for i, t in enumerate(texts)]
+
+    def test_interleaved_headers_need_one_family_with_checked_keys(self):
+        from ledger_orchestrator.extraction.premium_annex import _band_labels
+        labels = _band_labels(self.columns(['AUTO', 'REINCENDIE', 'SPONSABILITE', 'TOTAL']), self.SPEC)
+        self.assertEqual([l['code'] for l in labels], ['AUTO', 'INCENDIE', 'RC', 'TOTAL'])
+        # Interleaved texts: a swapped key column, or a wrong column count, fits no family.
+        for texts in (['AUTO', 'SPONSABILITE', 'REINCENDIE', 'TOTAL'], ['AUTO', 'REINCENDIE', 'TOTAL']):
+            with self.subTest(texts=texts), self.assertRaises(AnnexError):
+                _band_labels(self.columns(texts), self.SPEC)
+
+    def test_annex_unit_is_proven_by_the_statement_identity(self):
+        from ledger_orchestrator.extraction.premium_annex import annex_factor
+        annex = dict(unit=None, cells=dict(TOTAL=dict(value=84404.579)))
+        self.assertEqual(annex_factor(annex, [84404.579], 84404579, 3), 1000)
+        annex = dict(unit=None, cells=dict(TOTAL=dict(value=84404579)))
+        self.assertEqual(annex_factor(annex, [84404579], 84404579, 3), 1)
+        with self.assertRaises(AnnexError):        # matches in no unit
+            annex_factor(dict(unit=None, cells=dict(TOTAL=dict(value=84404.0))), [84404.0], 84404579, 3)
+        with self.assertRaises(AnnexError):        # a declared unit must agree
+            annex_factor(dict(unit='TND', cells=dict(TOTAL=dict(value=84404.579))), [84404.579], 84404579, 3)

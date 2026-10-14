@@ -143,7 +143,7 @@ def corroborated_life_total(pages, statement):
     printed = _formatted(statement['value'])
     others = [dict(page=p['page'], method=p['method']) for p in pages
               if p['page'] != statement['page'] and printed in p['text']
-              and re.search(r'PRIMES EMISES (VIE|PRV1)', normalize(p['text']))]
+              and re.search(r'PRIMES EMISES (VIE|PRV1)|\bPRV11\b', normalize(p['text']))]
     if not others:
         raise AnnexError('No life category annex and no second reading of the life total')
     return others
@@ -179,6 +179,13 @@ def _row_label(row):
     return re.sub(r'^(PRNV11|PRV11)?[\s\-\u2010\u2011.]*', '', label)
 
 
+LABEL_YEAR = re.compile(r'^\(?(19|20)\d\d\)?:?$')
+
+
+def _digits(value):
+    return len(re.sub(r'\D', '', format(Decimal(str(value)).normalize(), 'f')))
+
+
 def _letters(text):
     return re.sub(r'[^A-Z]', '', normalize(text))
 
@@ -192,11 +199,14 @@ def _band_columns(rows, header_rows, first_data, width):
     column's label is the concatenation, line by line, of the header words whose
     centre falls in its band; it must equal one alias exactly (letters only).
     """
-    # Only amounts >= 1,000 locate columns: they are right-aligned, while small
-    # values such as 0 are often centred and would create phantom columns.
-    ends = sorted(x1 for r in rows[first_data:first_data + 40]
-                  for value, _, x1 in numeric_groups(_signed([w for w in r if not re.search(r'[A-Za-z]', w['text'])]), width)
-                  if abs(value) >= 1000)
+    # Only amounts of at least four digits locate columns (in TND or kTND): they
+    # are right-aligned, while small values such as 0 are often centred. Years
+    # printed in row labels, e.g. "Résultat technique (2016)", are not amounts.
+    # Only the top of the table is used: lower provision sub-rows add extra columns.
+    ends = sorted(x1 for r in rows[first_data:first_data + 15]
+                  for value, _, x1 in numeric_groups(_signed([w for w in r if not re.search(r'[A-Za-z]', w['text'])
+                                                              and not LABEL_YEAR.match(w['text'])]), width)
+                  if _digits(value) >= 4)
     clusters = []
     for x in ends:
         # Right edges in one column vary by up to ~12 pt (centred amounts, minus
@@ -232,8 +242,9 @@ def _band_labels(columns, spec):
     """
     texts = [c['text'] for c in columns]
     index = {key: code for code, names in spec['aliases'].items() for key in (_letters(n) for n in names)}
-    if all(t in index for t in texts):
-        codes = [index[t] for t in texts]
+    exact = [index.get(t) for t in texts]
+    if None not in exact and len(set(exact)) == len(exact):
+        codes = exact
         how = 'aliases'
     else:
         fits = [f for f in spec.get('families', []) if len(f['columns']) == len(columns) and all(
@@ -257,6 +268,8 @@ def _by_bands(words, labels):
         if not band:
             continue
         raw = ''.join(w['text'] for w in band)
+        if raw[:1] in ',.' or raw[:2] in ('-,', '-.'):
+            raw = raw.replace(',', '0,', 1) if ',' in raw[:2] else raw.replace('.', '0.', 1)   # ",000" is zero
         try:
             value = number(raw)
         except ValueError as exc:
@@ -342,6 +355,30 @@ def annex_row(pages, year, spec, life):
                 source_label=' '.join(w['text'] for w in row))
 
 
+def annex_factor(annex, printed, statement_tnd, tolerance):
+    """The annex unit is proven by its total matching the statement in exactly one unit.
+
+    Some reports print the statements in dinars and the category annex in
+    thousands with three decimals; a declared annex unit must agree.
+    """
+    total = annex['cells'].get('TOTAL')
+    if total is None or total['value'] is None:
+        raise AnnexError('Missing annex total')
+    fits = []
+    for factor, unit in ((1, 'TND'), (1000, 'kTND')):
+        if annex['unit'] not in (None, unit):
+            continue
+        try:
+            exact_factor(unit, printed)
+        except AnnexError:
+            continue
+        if abs(total['value'] * factor - statement_tnd) <= tolerance:
+            fits.append(factor)
+    if len(fits) != 1:
+        raise AnnexError(f"Annex total {total['value']} matches the statement {statement_tnd} in {len(fits)} units")
+    return fits[0]
+
+
 def exact_factor(unit, values):
     """D-008: kTND is converted only when every amount has at most three decimals."""
     if unit == 'TND':
@@ -376,9 +413,9 @@ def read_premiums(pages, year, taxonomy, tolerance):
             if 'found 0' not in str(exc):
                 raise
             if not life:
-                # Without annex 13 the branch split is not published: nothing non-life
+                # Annex 13 not found (absent or unreadable): nothing non-life
                 # is admitted, but the life total keeps its own evidence.
-                checks.append(dict(identity='non-life category annex', status='not_published'))
+                checks.append(dict(identity='non-life category annex', status='not_found'))
                 continue
             pages_seen = corroborated_life_total(pages, statement)
             factor = exact_factor(statement['unit'], [statement['value']])
@@ -388,18 +425,17 @@ def read_premiums(pages, year, taxonomy, tolerance):
                                        source_label=statement['source_label'], statement=statement,
                                        corroborating_pages=pages_seen), factor)
             continue
-        if annex['unit'] not in (None, statement['unit']):
-            raise AnnexError('Annex unit contradicts the statement')
+        statement_tnd = statement['value'] * exact_factor(statement['unit'], [statement['value']])
         printed = [c['value'] for c in annex['cells'].values() if c and c['value'] is not None]
-        factor = exact_factor(statement['unit'], printed + [statement['value']])
+        factor = annex_factor(annex, printed, statement_tnd, tolerance)
         # Identities are checked in the printed unit; tolerance is in TND.
         tolerance_printed = tolerance / factor
         cells = annex['cells']
         total = cells.get('TOTAL')
         if total is None or total['value'] is None:
             raise AnnexError('Missing annex total')
-        if abs(total['value'] - statement['value']) > tolerance_printed:
-            raise AnnexError(f"Annex total differs from {statement['code']}: {total['value'] - statement['value']}")
+        if abs(total['value'] * factor - statement_tnd) > tolerance:
+            raise AnnexError(f"Annex total differs from {statement['code']}: {total['value'] * factor - statement_tnd}")
         subtotals = spec.get('subtotals', {})
         categories = [c for c in cells if c != 'TOTAL' and c not in subtotals]
         unknown = [c for c in categories if cells[c] is None or cells[c]['value'] is None]
@@ -425,7 +461,8 @@ def read_premiums(pages, year, taxonomy, tolerance):
                 raise AnnexError(f'Subtotal {name} does not reconcile: {sub_delta}')
             checks.append(dict(identity=f'{name} = sum of members', delta=sub_delta))
         checks.append(dict(identity=f"{'life' if life else 'non-life'} categories = annex total", delta=delta))
-        checks.append(dict(identity=f"annex total = {statement['code']} gross", delta=total['value'] - statement['value']))
+        checks.append(dict(identity=f"annex total = {statement['code']} gross", delta=total['value'] * factor - statement_tnd,
+                           annex_factor=factor))
         prefix = 'VIE_' if life else ''
         for code in categories:
             cell = cells[code]

@@ -91,7 +91,7 @@ def execute_history(root, output, config_path, years=None, base_workbook=None):
                         branches[branch] = dict(value=sum(r['value'] for r in present), sources=present)
                 excluded = sum(records[c]['value'] for c in taxonomy['excluded'] if c in records)
                 if 'TOTAL_NONVIE' not in records:
-                    report['issues'].append(dict(type='premium_nonlife_annex_not_published', year=year))
+                    report['issues'].append(dict(type='premium_nonlife_annex_not_found', year=year))
                     branches = {}
                 else:
                     partition = sum(b['value'] for b in branches.values()) + excluded - records['TOTAL_NONVIE']['value']

@@ -387,3 +387,13 @@ rejeté (une colonne ne contient qu'un petit montant). TAF_G3 COMAR 42/96.
 Classeur consolidé à quatre profils : TAF_G1 446/1 245, TAF_G3 126/312 (40,4 %).
 Essai du modèle local qwen2.5:7b sur l'annexe ASTREE 2020 : libellés inventés et
 montants coupés ; rejeté par les contrôles d'ancrage, non utilisé comme lecteur.
+
+## Historique des primes ASTREE — 14 octobre
+
+Annexe 13 lue par familles de mise en page ordonnées (en-têtes entrelacés) ; montants
+découpés par colonne ; unité de l'annexe prouvée par l'égalité avec l'état (TND ou
+milliers exacts, D-008) ; Groupe = Maladie + Invalidité (D-009, corroboré FTUSA 2024).
+Primes complètes : 2012, 2013, 2015, 2017–2021, 2025 ; vie seule 2022–2024. Rejets
+motivés : 2011, 2014, 2016. CGA 2024 : non-vie publiée + vie = 253 411 kTND, identique.
+Classeur consolidé à cinq profils : TAF_G1 446/1 245, TAF_G3 183/312 (58,7 %).
+Vérification : 144 tests, non-régression STAR 14/14, rejeu COMAR 14/14.
