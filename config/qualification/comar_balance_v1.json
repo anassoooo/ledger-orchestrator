@@ -1,0 +1,1622 @@
+{
+  "schema_version": 1,
+  "layout_id": "comar_individual_balance_2023_2025_v1",
+  "company": "COMAR",
+  "status": "qualification_candidate",
+  "production_enabled": false,
+  "review_method": "Agent visual inspection of all six balance pages; not independent human accounting approval",
+  "pages": {
+    "asset": 2,
+    "liability": 3
+  },
+  "layouts": {
+    "2023": {
+      "asset": [
+        {
+          "code": "AC1",
+          "role": "heading",
+          "label": "AC1 Actifs incorporels",
+          "label_key": "AC1ACTIFSINCORPORELS"
+        },
+        {
+          "code": "AC11",
+          "role": "record",
+          "label": "AC11 Investissements de recherche et développement",
+          "label_key": "AC11INVESTISSEMENTSDERECHERCHEETDEVELOPPEMENT"
+        },
+        {
+          "code": "AC12",
+          "role": "record",
+          "label": "AC12 Concessions,Brevets,licences,Marques",
+          "label_key": "AC12CONCESSIONSBREVETSLICENCESMARQUES"
+        },
+        {
+          "code": "AC13",
+          "role": "record",
+          "label": "AC13 Fonds commercial",
+          "label_key": "AC13FONDSCOMMERCIAL"
+        },
+        {
+          "code": "AC1",
+          "role": "record",
+          "label": "AC1",
+          "label_key": "AC1"
+        },
+        {
+          "code": "AC2",
+          "role": "heading",
+          "label": "AC2 Actifs corporels d'exploitation",
+          "label_key": "AC2ACTIFSCORPORELSDEXPLOITATION"
+        },
+        {
+          "code": "AC21",
+          "role": "record",
+          "label": "AC21 Installations techniques et machines",
+          "label_key": "AC21INSTALLATIONSTECHNIQUESETMACHINES"
+        },
+        {
+          "code": "AC22",
+          "role": "record",
+          "label": "AC22 Autres installations, outillage et mobilier",
+          "label_key": "AC22AUTRESINSTALLATIONSOUTILLAGEETMOBILIER"
+        },
+        {
+          "code": "AC2",
+          "role": "record",
+          "label": "AC2",
+          "label_key": "AC2"
+        },
+        {
+          "code": "AC3",
+          "role": "heading",
+          "label": "AC3 Placements",
+          "label_key": "AC3PLACEMENTS"
+        },
+        {
+          "code": "AC31",
+          "role": "record",
+          "label": "AC31 Terrains et constructions",
+          "label_key": "AC31TERRAINSETCONSTRUCTIONS"
+        },
+        {
+          "code": "AC311",
+          "role": "record",
+          "label": "AC311 Terrains et constructions d'exploitation",
+          "label_key": "AC311TERRAINSETCONSTRUCTIONSDEXPLOITATION"
+        },
+        {
+          "code": "AC312",
+          "role": "record",
+          "label": "AC312 Terrains et constructions hors exploitation",
+          "label_key": "AC312TERRAINSETCONSTRUCTIONSHORSEXPLOITATION"
+        },
+        {
+          "code": "AC32",
+          "role": "record",
+          "label": "AC32 Placements dans les entreprises liées et participations",
+          "label_key": "AC32PLACEMENTSDANSLESENTREPRISESLIEESETPARTICIPATIONS"
+        },
+        {
+          "code": "AC321",
+          "role": "record",
+          "label": "AC321 Parts dans les entreprises liées",
+          "label_key": "AC321PARTSDANSLESENTREPRISESLIEES"
+        },
+        {
+          "code": "AC323",
+          "role": "record",
+          "label": "AC323 Parts dans les entreprises avec un lien de participation",
+          "label_key": "AC323PARTSDANSLESENTREPRISESAVECUNLIENDEPARTICIPATION"
+        },
+        {
+          "code": "AC324",
+          "role": "record",
+          "label": "AC324 Bons et obligations émis par les entreprises avec lien de participation",
+          "label_key": "AC324BONSETOBLIGATIONSEMISPARLESENTREPRISESAVECLIENDEPARTICIPATION"
+        },
+        {
+          "code": "AC33",
+          "role": "record",
+          "label": "AC33 Autres placements financiers",
+          "label_key": "AC33AUTRESPLACEMENTSFINANCIERS"
+        },
+        {
+          "code": "AC331",
+          "role": "record",
+          "label": "AC331 Actions, autres titres à revenu variable et part dans des FCP",
+          "label_key": "AC331ACTIONSAUTRESTITRESAREVENUVARIABLEETPARTDANSDESFCP"
+        },
+        {
+          "code": "AC332",
+          "role": "record",
+          "label": "AC332 Obligations et autres titres à revenu fixe",
+          "label_key": "AC332OBLIGATIONSETAUTRESTITRESAREVENUFIXE"
+        },
+        {
+          "code": "AC334",
+          "role": "record",
+          "label": "AC334 Autres prêts",
+          "label_key": "AC334AUTRESPRETS"
+        },
+        {
+          "code": "AC335",
+          "role": "record",
+          "label": "AC335 Dépots auprés des établissements bancaire et financiers",
+          "label_key": "AC335DEPOTSAUPRESDESETABLISSEMENTSBANCAIREETFINANCIERS"
+        },
+        {
+          "code": "AC336",
+          "role": "record",
+          "label": "AC336 Autres",
+          "label_key": "AC336AUTRES"
+        },
+        {
+          "code": "AC34",
+          "role": "record",
+          "label": "AC34 Créances pour espèces déposées auprés des entreprises cédantes",
+          "label_key": "AC34CREANCESPOURESPECESDEPOSEESAUPRESDESENTREPRISESCEDANTES"
+        },
+        {
+          "code": "AC3",
+          "role": "record",
+          "label": "AC3",
+          "label_key": "AC3"
+        },
+        {
+          "code": "AC5",
+          "role": "heading",
+          "label": "AC5 Parts des réassureurs dans les provisions techniques",
+          "label_key": "AC5PARTSDESREASSUREURSDANSLESPROVISIONSTECHNIQUES"
+        },
+        {
+          "code": "AC510",
+          "role": "record",
+          "label": "AC510 Provisions pour primes non acquises",
+          "label_key": "AC510PROVISIONSPOURPRIMESNONACQUISES"
+        },
+        {
+          "code": "AC530",
+          "role": "record",
+          "label": "AC530 Provisions pour sinistres ( vie)",
+          "label_key": "AC530PROVISIONSPOURSINISTRESVIE"
+        },
+        {
+          "code": "AC531",
+          "role": "record",
+          "label": "AC531 Provisions pour sinistres (non vie)",
+          "label_key": "AC531PROVISIONSPOURSINISTRESNONVIE"
+        },
+        {
+          "code": "AC5",
+          "role": "record",
+          "label": "AC5",
+          "label_key": "AC5"
+        },
+        {
+          "code": "AC6",
+          "role": "heading",
+          "label": "AC6 Créances",
+          "label_key": "AC6CREANCES"
+        },
+        {
+          "code": "AC61",
+          "role": "record",
+          "label": "AC61 Créances nées d'opérations d'assurance directe",
+          "label_key": "AC61CREANCESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "AC611",
+          "role": "record",
+          "label": "AC611 Primes acquises et non émises et primes à annuler",
+          "label_key": "AC611PRIMESACQUISESETNONEMISESETPRIMESAANNULER"
+        },
+        {
+          "code": "AC612",
+          "role": "record",
+          "label": "AC612 Autres créances nées d'opérations d'assurance directe",
+          "label_key": "AC612AUTRESCREANCESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "AC613",
+          "role": "record",
+          "label": "AC613 Créances indemnisées subrogées à l'entreprise d'assurance",
+          "label_key": "AC613CREANCESINDEMNISEESSUBROGEESALENTREPRISEDASSURANCE"
+        },
+        {
+          "code": "AC62",
+          "role": "record",
+          "label": "AC62 Créances nées d'opérations de réassurance",
+          "label_key": "AC62CREANCESNEESDOPERATIONSDEREASSURANCE"
+        },
+        {
+          "code": "AC63",
+          "role": "record",
+          "label": "AC63 Autres créances",
+          "label_key": "AC63AUTRESCREANCES"
+        },
+        {
+          "code": "AC631",
+          "role": "record",
+          "label": "AC631 Personnel",
+          "label_key": "AC631PERSONNEL"
+        },
+        {
+          "code": "AC632",
+          "role": "record",
+          "label": "AC632 Etat, organismes de sécurité sociale, collectivités publiques",
+          "label_key": "AC632ETATORGANISMESDESECURITESOCIALECOLLECTIVITESPUBLIQUES"
+        },
+        {
+          "code": "AC633",
+          "role": "record",
+          "label": "AC633 Débiteurs divers",
+          "label_key": "AC633DEBITEURSDIVERS"
+        },
+        {
+          "code": "AC6",
+          "role": "record",
+          "label": "AC6",
+          "label_key": "AC6"
+        },
+        {
+          "code": "AC7",
+          "role": "heading",
+          "label": "AC7 Autres éléments d'actifs",
+          "label_key": "AC7AUTRESELEMENTSDACTIFS"
+        },
+        {
+          "code": "AC71",
+          "role": "record",
+          "label": "AC71 Avoirs en banque, CCP, chèques et caisse",
+          "label_key": "AC71AVOIRSENBANQUECCPCHEQUESETCAISSE"
+        },
+        {
+          "code": "AC72",
+          "role": "record",
+          "label": "AC72 Charges reportées",
+          "label_key": "AC72CHARGESREPORTEES"
+        },
+        {
+          "code": "AC721",
+          "role": "record",
+          "label": "AC721 Frais d'acquisitions reportés",
+          "label_key": "AC721FRAISDACQUISITIONSREPORTES"
+        },
+        {
+          "code": "AC73",
+          "role": "record",
+          "label": "AC73 Comptes de régularisation Actif",
+          "label_key": "AC73COMPTESDEREGULARISATIONACTIF"
+        },
+        {
+          "code": "AC731",
+          "role": "record",
+          "label": "AC731 Intérêts et loyers acquis non échus",
+          "label_key": "AC731INTERETSETLOYERSACQUISNONECHUS"
+        },
+        {
+          "code": "AC733",
+          "role": "record",
+          "label": "AC733 Autres comptes de régularisation",
+          "label_key": "AC733AUTRESCOMPTESDEREGULARISATION"
+        },
+        {
+          "code": "AC75",
+          "role": "record",
+          "label": "AC75 Autres",
+          "label_key": "AC75AUTRES"
+        },
+        {
+          "code": "AC7",
+          "role": "record",
+          "label": "AC7",
+          "label_key": "AC7"
+        },
+        {
+          "code": "TOTAL_ASSET",
+          "role": "record",
+          "label": "TOTAL DE L'ACTIF",
+          "label_key": "TOTALDELACTIF"
+        }
+      ],
+      "liability": [
+        {
+          "code": "CP1",
+          "role": "record",
+          "label": "CP1 Capital social ou fonds équivalent",
+          "label_key": "CP1CAPITALSOCIALOUFONDSEQUIVALENT"
+        },
+        {
+          "code": "CP2",
+          "role": "record",
+          "label": "CP2 Réserves et primes liées au capital",
+          "label_key": "CP2RESERVESETPRIMESLIEESAUCAPITAL"
+        },
+        {
+          "code": "CP4",
+          "role": "record",
+          "label": "CP4 Autres capitaux propres",
+          "label_key": "CP4AUTRESCAPITAUXPROPRES"
+        },
+        {
+          "code": "EQUITY_BEFORE",
+          "role": "record",
+          "label": "Total capitaux propres avant résultat de l'exercice",
+          "label_key": "TOTALCAPITAUXPROPRESAVANTRESULTATDELEXERCICE"
+        },
+        {
+          "code": "CP6",
+          "role": "record",
+          "label": "CP6 Résultat de l'exercice",
+          "label_key": "CP6RESULTATDELEXERCICE"
+        },
+        {
+          "code": "EQUITY",
+          "role": "record",
+          "label": "Total Capitaux propres avant affectation CP1",
+          "label_key": "TOTALCAPITAUXPROPRESAVANTAFFECTATIONCP1"
+        },
+        {
+          "code": "PA2",
+          "role": "heading",
+          "label": "PA2 Provisions pour autres risques et charges",
+          "label_key": "PA2PROVISIONSPOURAUTRESRISQUESETCHARGES"
+        },
+        {
+          "code": "PA23",
+          "role": "record",
+          "label": "PA23 Autres provisions",
+          "label_key": "PA23AUTRESPROVISIONS"
+        },
+        {
+          "code": "PA2_PUBLISHED_SUBTOTAL",
+          "role": "corroboration",
+          "label": "",
+          "label_key": ""
+        },
+        {
+          "code": "PA3",
+          "role": "heading",
+          "label": "PA3 Provisions techniques brutes",
+          "label_key": "PA3PROVISIONSTECHNIQUESBRUTES"
+        },
+        {
+          "code": "PA310",
+          "role": "record",
+          "label": "PA310 Provisions pour primes non acquises",
+          "label_key": "PA310PROVISIONSPOURPRIMESNONACQUISES"
+        },
+        {
+          "code": "PA320",
+          "role": "record",
+          "label": "PA320 Provisions d'assurance vie",
+          "label_key": "PA320PROVISIONSDASSURANCEVIE"
+        },
+        {
+          "code": "PA330",
+          "role": "record",
+          "label": "PA330 Provision pour sinistres (vie)",
+          "label_key": "PA330PROVISIONPOURSINISTRESVIE"
+        },
+        {
+          "code": "PA331",
+          "role": "record",
+          "label": "PA331 Provision pour sinistres (non vie)",
+          "label_key": "PA331PROVISIONPOURSINISTRESNONVIE"
+        },
+        {
+          "code": "PA340",
+          "role": "record",
+          "label": "PA340 Provisions pour participations aux bénéfices et ristournes (vie)",
+          "label_key": "PA340PROVISIONSPOURPARTICIPATIONSAUXBENEFICESETRISTOURNESVIE"
+        },
+        {
+          "code": "PA341",
+          "role": "record",
+          "label": "PA341 Provisions pour participations aux bénéfices et ristournes (non vie)",
+          "label_key": "PA341PROVISIONSPOURPARTICIPATIONSAUXBENEFICESETRISTOURNESNONVIE"
+        },
+        {
+          "code": "PA350",
+          "role": "record",
+          "label": "PA350 Provisions pour égalisation et équilibrage",
+          "label_key": "PA350PROVISIONSPOUREGALISATIONETEQUILIBRAGE"
+        },
+        {
+          "code": "PA361",
+          "role": "record",
+          "label": "PA361 Autres povisions techniques (non vie)",
+          "label_key": "PA361AUTRESPOVISIONSTECHNIQUESNONVIE"
+        },
+        {
+          "code": "PA3",
+          "role": "record",
+          "label": "PA3",
+          "label_key": "PA3"
+        },
+        {
+          "code": "PA5",
+          "role": "record",
+          "label": "PA5 Dettes pour dépôts en espèces reçus des cessionnaires",
+          "label_key": "PA5DETTESPOURDEPOTSENESPECESRECUSDESCESSIONNAIRES"
+        },
+        {
+          "code": "PA5_PUBLISHED_SUBTOTAL",
+          "role": "corroboration",
+          "label": "",
+          "label_key": ""
+        },
+        {
+          "code": "PA6",
+          "role": "heading",
+          "label": "PA6 Autres dettes",
+          "label_key": "PA6AUTRESDETTES"
+        },
+        {
+          "code": "PA61",
+          "role": "record",
+          "label": "PA61 Dettes nées d'opérations d'assurance directe",
+          "label_key": "PA61DETTESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "PA62",
+          "role": "record",
+          "label": "PA62 Dettes nées d'opérations de réassurance",
+          "label_key": "PA62DETTESNEESDOPERATIONSDEREASSURANCE"
+        },
+        {
+          "code": "PA63",
+          "role": "record",
+          "label": "PA63 Autres dettes",
+          "label_key": "PA63AUTRESDETTES"
+        },
+        {
+          "code": "PA631",
+          "role": "record",
+          "label": "PA631 Dépôts et cautionnements reçus",
+          "label_key": "PA631DEPOTSETCAUTIONNEMENTSRECUS"
+        },
+        {
+          "code": "PA632",
+          "role": "record",
+          "label": "PA632 Personnel",
+          "label_key": "PA632PERSONNEL"
+        },
+        {
+          "code": "PA633",
+          "role": "record",
+          "label": "PA633 Etat, organismes de sécurité sociale, collectivités publiques",
+          "label_key": "PA633ETATORGANISMESDESECURITESOCIALECOLLECTIVITESPUBLIQUES"
+        },
+        {
+          "code": "PA634",
+          "role": "record",
+          "label": "PA634 Créditeurs divers",
+          "label_key": "PA634CREDITEURSDIVERS"
+        },
+        {
+          "code": "PA6",
+          "role": "record",
+          "label": "PA6",
+          "label_key": "PA6"
+        },
+        {
+          "code": "PA7",
+          "role": "heading",
+          "label": "PA7 Autres passifs",
+          "label_key": "PA7AUTRESPASSIFS"
+        },
+        {
+          "code": "PA71",
+          "role": "record",
+          "label": "PA71 Compte de régularisation Passif",
+          "label_key": "PA71COMPTEDEREGULARISATIONPASSIF"
+        },
+        {
+          "code": "PA710",
+          "role": "record",
+          "label": "PA710 Report de commissions reçues des réassureurs",
+          "label_key": "PA710REPORTDECOMMISSIONSRECUESDESREASSUREURS"
+        },
+        {
+          "code": "PA712",
+          "role": "record",
+          "label": "PA712 Autres comptes de régularisation Passif",
+          "label_key": "PA712AUTRESCOMPTESDEREGULARISATIONPASSIF"
+        },
+        {
+          "code": "PA73",
+          "role": "record",
+          "label": "PA73 Autres passifs financiers",
+          "label_key": "PA73AUTRESPASSIFSFINANCIERS"
+        },
+        {
+          "code": "PA7",
+          "role": "record",
+          "label": "PA7",
+          "label_key": "PA7"
+        },
+        {
+          "code": "TOTAL_LIABILITY",
+          "role": "record",
+          "label": "Total du Passif",
+          "label_key": "TOTALDUPASSIF"
+        },
+        {
+          "code": "TOTAL_EQUITY_LIABILITY",
+          "role": "record",
+          "label": "TOTAL DES CAPITAUX PROPRES ET DU PASSIF",
+          "label_key": "TOTALDESCAPITAUXPROPRESETDUPASSIF"
+        }
+      ]
+    },
+    "2024": {
+      "asset": [
+        {
+          "code": "AC1",
+          "role": "heading",
+          "label": "AC1 Actifs incorporels",
+          "label_key": "AC1ACTIFSINCORPORELS"
+        },
+        {
+          "code": "AC11",
+          "role": "record",
+          "label": "AC11 Investissements de recherche et développement",
+          "label_key": "AC11INVESTISSEMENTSDERECHERCHEETDEVELOPPEMENT"
+        },
+        {
+          "code": "AC12",
+          "role": "record",
+          "label": "AC12 Concessions,Brevets,licences,Marques",
+          "label_key": "AC12CONCESSIONSBREVETSLICENCESMARQUES"
+        },
+        {
+          "code": "AC13",
+          "role": "record",
+          "label": "AC13 Fonds commercial",
+          "label_key": "AC13FONDSCOMMERCIAL"
+        },
+        {
+          "code": "AC1",
+          "role": "record",
+          "label": "AC1",
+          "label_key": "AC1"
+        },
+        {
+          "code": "AC2",
+          "role": "heading",
+          "label": "AC2 Actifs corporels d'exploitation",
+          "label_key": "AC2ACTIFSCORPORELSDEXPLOITATION"
+        },
+        {
+          "code": "AC21",
+          "role": "record",
+          "label": "AC21 Installations techniques et machines",
+          "label_key": "AC21INSTALLATIONSTECHNIQUESETMACHINES"
+        },
+        {
+          "code": "AC22",
+          "role": "record",
+          "label": "AC22 Autres installations, outillage et mobilier",
+          "label_key": "AC22AUTRESINSTALLATIONSOUTILLAGEETMOBILIER"
+        },
+        {
+          "code": "AC2",
+          "role": "record",
+          "label": "AC2",
+          "label_key": "AC2"
+        },
+        {
+          "code": "AC3",
+          "role": "heading",
+          "label": "AC3 Placements",
+          "label_key": "AC3PLACEMENTS"
+        },
+        {
+          "code": "AC31",
+          "role": "record",
+          "label": "AC31 Terrains et constructions",
+          "label_key": "AC31TERRAINSETCONSTRUCTIONS"
+        },
+        {
+          "code": "AC311",
+          "role": "record",
+          "label": "AC311 Terrains et constructions d'exploitation",
+          "label_key": "AC311TERRAINSETCONSTRUCTIONSDEXPLOITATION"
+        },
+        {
+          "code": "AC312",
+          "role": "record",
+          "label": "AC312 Terrains et constructions hors exploitation",
+          "label_key": "AC312TERRAINSETCONSTRUCTIONSHORSEXPLOITATION"
+        },
+        {
+          "code": "AC32",
+          "role": "record",
+          "label": "AC32 Placements dans les entreprises liées et participations",
+          "label_key": "AC32PLACEMENTSDANSLESENTREPRISESLIEESETPARTICIPATIONS"
+        },
+        {
+          "code": "AC321",
+          "role": "record",
+          "label": "AC321 Parts dans les entreprises liées",
+          "label_key": "AC321PARTSDANSLESENTREPRISESLIEES"
+        },
+        {
+          "code": "AC323",
+          "role": "record",
+          "label": "AC323 Parts dans les entreprises avec un lien de participation",
+          "label_key": "AC323PARTSDANSLESENTREPRISESAVECUNLIENDEPARTICIPATION"
+        },
+        {
+          "code": "AC324",
+          "role": "record",
+          "label": "AC324 Bons et obligations émis par les entreprises avec lien de participation",
+          "label_key": "AC324BONSETOBLIGATIONSEMISPARLESENTREPRISESAVECLIENDEPARTICIPATION"
+        },
+        {
+          "code": "AC33",
+          "role": "record",
+          "label": "AC33 Autres placements financiers",
+          "label_key": "AC33AUTRESPLACEMENTSFINANCIERS"
+        },
+        {
+          "code": "AC331",
+          "role": "record",
+          "label": "AC331 Actions, autres titres à revenu variable et part dans des FCP",
+          "label_key": "AC331ACTIONSAUTRESTITRESAREVENUVARIABLEETPARTDANSDESFCP"
+        },
+        {
+          "code": "AC332",
+          "role": "record",
+          "label": "AC332 Obligations et autres titres à revenu fixe",
+          "label_key": "AC332OBLIGATIONSETAUTRESTITRESAREVENUFIXE"
+        },
+        {
+          "code": "AC334",
+          "role": "record",
+          "label": "AC334 Autres prêts",
+          "label_key": "AC334AUTRESPRETS"
+        },
+        {
+          "code": "AC335",
+          "role": "record",
+          "label": "AC335 Dépots auprés des établissements bancaire et financiers",
+          "label_key": "AC335DEPOTSAUPRESDESETABLISSEMENTSBANCAIREETFINANCIERS"
+        },
+        {
+          "code": "AC336",
+          "role": "record",
+          "label": "AC336 Autres",
+          "label_key": "AC336AUTRES"
+        },
+        {
+          "code": "AC34",
+          "role": "record",
+          "label": "AC34 Créances pour espèces déposées auprés des entreprises cédantes",
+          "label_key": "AC34CREANCESPOURESPECESDEPOSEESAUPRESDESENTREPRISESCEDANTES"
+        },
+        {
+          "code": "AC3",
+          "role": "record",
+          "label": "AC3",
+          "label_key": "AC3"
+        },
+        {
+          "code": "AC5",
+          "role": "heading",
+          "label": "AC5 Parts des réassureurs dans les provisions techniques",
+          "label_key": "AC5PARTSDESREASSUREURSDANSLESPROVISIONSTECHNIQUES"
+        },
+        {
+          "code": "AC510",
+          "role": "record",
+          "label": "AC510 Provisions pour primes non acquises",
+          "label_key": "AC510PROVISIONSPOURPRIMESNONACQUISES"
+        },
+        {
+          "code": "AC530",
+          "role": "record",
+          "label": "AC530 Provisions pour sinistres ( vie)",
+          "label_key": "AC530PROVISIONSPOURSINISTRESVIE"
+        },
+        {
+          "code": "AC531",
+          "role": "record",
+          "label": "AC531 Provisions pour sinistres (non vie)",
+          "label_key": "AC531PROVISIONSPOURSINISTRESNONVIE"
+        },
+        {
+          "code": "AC5",
+          "role": "record",
+          "label": "AC5",
+          "label_key": "AC5"
+        },
+        {
+          "code": "AC6",
+          "role": "heading",
+          "label": "AC6 Créances",
+          "label_key": "AC6CREANCES"
+        },
+        {
+          "code": "AC61",
+          "role": "record",
+          "label": "AC61 Créances nées d'opérations d'assurance directe",
+          "label_key": "AC61CREANCESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "AC611",
+          "role": "record",
+          "label": "AC611 Primes acquises et non émises et primes à annuler",
+          "label_key": "AC611PRIMESACQUISESETNONEMISESETPRIMESAANNULER"
+        },
+        {
+          "code": "AC612",
+          "role": "record",
+          "label": "AC612 Autres créances nées d'opérations d'assurance directe",
+          "label_key": "AC612AUTRESCREANCESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "AC613",
+          "role": "record",
+          "label": "AC613 Créances indemnisées subrogées à l'entreprise d'assurance",
+          "label_key": "AC613CREANCESINDEMNISEESSUBROGEESALENTREPRISEDASSURANCE"
+        },
+        {
+          "code": "AC62",
+          "role": "record",
+          "label": "AC62 Créances nées d'opérations de réassurance",
+          "label_key": "AC62CREANCESNEESDOPERATIONSDEREASSURANCE"
+        },
+        {
+          "code": "AC63",
+          "role": "record",
+          "label": "AC63 Autres créances",
+          "label_key": "AC63AUTRESCREANCES"
+        },
+        {
+          "code": "AC631",
+          "role": "record",
+          "label": "AC631 Personnel",
+          "label_key": "AC631PERSONNEL"
+        },
+        {
+          "code": "AC632",
+          "role": "record",
+          "label": "AC632 Etat, organismes de sécurité sociale, collectivités publiques",
+          "label_key": "AC632ETATORGANISMESDESECURITESOCIALECOLLECTIVITESPUBLIQUES"
+        },
+        {
+          "code": "AC633",
+          "role": "record",
+          "label": "AC633 Débiteurs divers",
+          "label_key": "AC633DEBITEURSDIVERS"
+        },
+        {
+          "code": "AC6",
+          "role": "record",
+          "label": "AC6",
+          "label_key": "AC6"
+        },
+        {
+          "code": "AC7",
+          "role": "heading",
+          "label": "AC7 Autres éléments d'actifs",
+          "label_key": "AC7AUTRESELEMENTSDACTIFS"
+        },
+        {
+          "code": "AC71",
+          "role": "record",
+          "label": "AC71 Avoirs en banque, CCP, chèques et caisse",
+          "label_key": "AC71AVOIRSENBANQUECCPCHEQUESETCAISSE"
+        },
+        {
+          "code": "AC72",
+          "role": "record",
+          "label": "AC72 Charges reportées",
+          "label_key": "AC72CHARGESREPORTEES"
+        },
+        {
+          "code": "AC73",
+          "role": "record",
+          "label": "AC73 Comptes de régularisation Actif",
+          "label_key": "AC73COMPTESDEREGULARISATIONACTIF"
+        },
+        {
+          "code": "AC731",
+          "role": "record",
+          "label": "AC731 Intérêts et loyers acquis non échus",
+          "label_key": "AC731INTERETSETLOYERSACQUISNONECHUS"
+        },
+        {
+          "code": "AC733",
+          "role": "record",
+          "label": "AC733 Autres comptes de régularisation",
+          "label_key": "AC733AUTRESCOMPTESDEREGULARISATION"
+        },
+        {
+          "code": "AC75",
+          "role": "record",
+          "label": "AC75 Autres",
+          "label_key": "AC75AUTRES"
+        },
+        {
+          "code": "AC7",
+          "role": "record",
+          "label": "AC7",
+          "label_key": "AC7"
+        },
+        {
+          "code": "TOTAL_ASSET",
+          "role": "record",
+          "label": "TOTAL DE L'ACTIF",
+          "label_key": "TOTALDELACTIF"
+        }
+      ],
+      "liability": [
+        {
+          "code": "CP1",
+          "role": "record",
+          "label": "CP1 Capital social ou fonds équivalent",
+          "label_key": "CP1CAPITALSOCIALOUFONDSEQUIVALENT"
+        },
+        {
+          "code": "CP2",
+          "role": "record",
+          "label": "CP2 Réserves et primes liées au capital",
+          "label_key": "CP2RESERVESETPRIMESLIEESAUCAPITAL"
+        },
+        {
+          "code": "CP4",
+          "role": "record",
+          "label": "CP4 Autres capitaux propres",
+          "label_key": "CP4AUTRESCAPITAUXPROPRES"
+        },
+        {
+          "code": "EQUITY_BEFORE",
+          "role": "record",
+          "label": "Total capitaux propres avant résultat de l'exercice",
+          "label_key": "TOTALCAPITAUXPROPRESAVANTRESULTATDELEXERCICE"
+        },
+        {
+          "code": "CP6",
+          "role": "record",
+          "label": "CP6 Résultat de l'exercice",
+          "label_key": "CP6RESULTATDELEXERCICE"
+        },
+        {
+          "code": "EQUITY",
+          "role": "record",
+          "label": "Total Capitaux propres avant affectation CP1",
+          "label_key": "TOTALCAPITAUXPROPRESAVANTAFFECTATIONCP1"
+        },
+        {
+          "code": "PA2",
+          "role": "record",
+          "label": "PA2 Provisions pour autres risques et charges",
+          "label_key": "PA2PROVISIONSPOURAUTRESRISQUESETCHARGES"
+        },
+        {
+          "code": "PA3",
+          "role": "heading",
+          "label": "PA3 Provisions techniques brutes",
+          "label_key": "PA3PROVISIONSTECHNIQUESBRUTES"
+        },
+        {
+          "code": "PA310",
+          "role": "record",
+          "label": "PA310 Provisions pour primes non acquises",
+          "label_key": "PA310PROVISIONSPOURPRIMESNONACQUISES"
+        },
+        {
+          "code": "PA320",
+          "role": "record",
+          "label": "PA320 Provisions d'assurance vie",
+          "label_key": "PA320PROVISIONSDASSURANCEVIE"
+        },
+        {
+          "code": "PA330",
+          "role": "record",
+          "label": "PA330 Provision pour sinistres (vie)",
+          "label_key": "PA330PROVISIONPOURSINISTRESVIE"
+        },
+        {
+          "code": "PA331",
+          "role": "record",
+          "label": "PA331 Provision pour sinistres (non vie)",
+          "label_key": "PA331PROVISIONPOURSINISTRESNONVIE"
+        },
+        {
+          "code": "PA341",
+          "role": "record",
+          "label": "PA341 Provisions pour participations aux bénéfices et ristournes (non vie)",
+          "label_key": "PA341PROVISIONSPOURPARTICIPATIONSAUXBENEFICESETRISTOURNESNONVIE"
+        },
+        {
+          "code": "PA350",
+          "role": "record",
+          "label": "PA350 Provisions pour égalisation et équilibrage",
+          "label_key": "PA350PROVISIONSPOUREGALISATIONETEQUILIBRAGE"
+        },
+        {
+          "code": "PA361",
+          "role": "record",
+          "label": "PA361 Autres povisions techniques (non vie)",
+          "label_key": "PA361AUTRESPOVISIONSTECHNIQUESNONVIE"
+        },
+        {
+          "code": "PA3",
+          "role": "record",
+          "label": "PA3",
+          "label_key": "PA3"
+        },
+        {
+          "code": "PA5",
+          "role": "record",
+          "label": "PA5 Dettes pour dépôts en espèces reçus des cessionnaires",
+          "label_key": "PA5DETTESPOURDEPOTSENESPECESRECUSDESCESSIONNAIRES"
+        },
+        {
+          "code": "PA6",
+          "role": "heading",
+          "label": "PA6 Autres dettes",
+          "label_key": "PA6AUTRESDETTES"
+        },
+        {
+          "code": "PA61",
+          "role": "record",
+          "label": "PA61 Dettes nées d'opérations d'assurance directe",
+          "label_key": "PA61DETTESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "PA62",
+          "role": "record",
+          "label": "PA62 Dettes nées d'opérations de réassurance",
+          "label_key": "PA62DETTESNEESDOPERATIONSDEREASSURANCE"
+        },
+        {
+          "code": "PA63",
+          "role": "record",
+          "label": "PA63 Autres dettes",
+          "label_key": "PA63AUTRESDETTES"
+        },
+        {
+          "code": "PA631",
+          "role": "record",
+          "label": "PA631 Dépôts et cautionnements reçus",
+          "label_key": "PA631DEPOTSETCAUTIONNEMENTSRECUS"
+        },
+        {
+          "code": "PA632",
+          "role": "record",
+          "label": "PA632 Personnel",
+          "label_key": "PA632PERSONNEL"
+        },
+        {
+          "code": "PA633",
+          "role": "record",
+          "label": "PA633 Etat, organismes de sécurité sociale, collectivités publiques",
+          "label_key": "PA633ETATORGANISMESDESECURITESOCIALECOLLECTIVITESPUBLIQUES"
+        },
+        {
+          "code": "PA634",
+          "role": "record",
+          "label": "PA634 Créditeurs divers",
+          "label_key": "PA634CREDITEURSDIVERS"
+        },
+        {
+          "code": "PA6",
+          "role": "record",
+          "label": "PA6",
+          "label_key": "PA6"
+        },
+        {
+          "code": "PA7",
+          "role": "heading",
+          "label": "PA7 Autres passifs",
+          "label_key": "PA7AUTRESPASSIFS"
+        },
+        {
+          "code": "PA71",
+          "role": "record",
+          "label": "PA71 Compte de régularisation Passif",
+          "label_key": "PA71COMPTEDEREGULARISATIONPASSIF"
+        },
+        {
+          "code": "PA710",
+          "role": "record",
+          "label": "PA710 Report de commissions reçues des réassureurs",
+          "label_key": "PA710REPORTDECOMMISSIONSRECUESDESREASSUREURS"
+        },
+        {
+          "code": "PA712",
+          "role": "record",
+          "label": "PA712 Autres comptes de régularisation Passif",
+          "label_key": "PA712AUTRESCOMPTESDEREGULARISATIONPASSIF"
+        },
+        {
+          "code": "PA73",
+          "role": "record",
+          "label": "PA73 Autres passifs financiers",
+          "label_key": "PA73AUTRESPASSIFSFINANCIERS"
+        },
+        {
+          "code": "PA7",
+          "role": "record",
+          "label": "PA7",
+          "label_key": "PA7"
+        },
+        {
+          "code": "TOTAL_LIABILITY",
+          "role": "record",
+          "label": "Total du Passif",
+          "label_key": "TOTALDUPASSIF"
+        },
+        {
+          "code": "TOTAL_EQUITY_LIABILITY",
+          "role": "record",
+          "label": "TOTAL DES CAPITAUX PROPRES ET DU PASSIF",
+          "label_key": "TOTALDESCAPITAUXPROPRESETDUPASSIF"
+        }
+      ]
+    },
+    "2025": {
+      "asset": [
+        {
+          "code": "AC1",
+          "role": "heading",
+          "label": "AC1 Actifs incorporels",
+          "label_key": "AC1ACTIFSINCORPORELS"
+        },
+        {
+          "code": "AC11",
+          "role": "record",
+          "label": "AC11 Investissements de recherche et développement",
+          "label_key": "AC11INVESTISSEMENTSDERECHERCHEETDEVELOPPEMENT"
+        },
+        {
+          "code": "AC12",
+          "role": "record",
+          "label": "AC12 Concessions,Brevets,licences,Marques",
+          "label_key": "AC12CONCESSIONSBREVETSLICENCESMARQUES"
+        },
+        {
+          "code": "AC13",
+          "role": "record",
+          "label": "AC13 Fonds commercial",
+          "label_key": "AC13FONDSCOMMERCIAL"
+        },
+        {
+          "code": "AC1",
+          "role": "record",
+          "label": "AC1",
+          "label_key": "AC1"
+        },
+        {
+          "code": "AC2",
+          "role": "heading",
+          "label": "AC2 Actifs corporels d'exploitation",
+          "label_key": "AC2ACTIFSCORPORELSDEXPLOITATION"
+        },
+        {
+          "code": "AC21",
+          "role": "record",
+          "label": "AC21 Installations techniques et machines",
+          "label_key": "AC21INSTALLATIONSTECHNIQUESETMACHINES"
+        },
+        {
+          "code": "AC22",
+          "role": "record",
+          "label": "AC22 Autres installations, outillage et mobilier",
+          "label_key": "AC22AUTRESINSTALLATIONSOUTILLAGEETMOBILIER"
+        },
+        {
+          "code": "AC2",
+          "role": "record",
+          "label": "AC2",
+          "label_key": "AC2"
+        },
+        {
+          "code": "AC3",
+          "role": "heading",
+          "label": "AC3 Placements",
+          "label_key": "AC3PLACEMENTS"
+        },
+        {
+          "code": "AC31",
+          "role": "record",
+          "label": "AC31 Terrains et constructions",
+          "label_key": "AC31TERRAINSETCONSTRUCTIONS"
+        },
+        {
+          "code": "AC311",
+          "role": "record",
+          "label": "AC311 Terrains et constructions d'exploitation",
+          "label_key": "AC311TERRAINSETCONSTRUCTIONSDEXPLOITATION"
+        },
+        {
+          "code": "AC312",
+          "role": "record",
+          "label": "AC312 Terrains et constructions hors exploitation",
+          "label_key": "AC312TERRAINSETCONSTRUCTIONSHORSEXPLOITATION"
+        },
+        {
+          "code": "AC32",
+          "role": "record",
+          "label": "AC32 Placements dans les entreprises liées et participations",
+          "label_key": "AC32PLACEMENTSDANSLESENTREPRISESLIEESETPARTICIPATIONS"
+        },
+        {
+          "code": "AC321",
+          "role": "record",
+          "label": "AC321 Parts dans les entreprises liées",
+          "label_key": "AC321PARTSDANSLESENTREPRISESLIEES"
+        },
+        {
+          "code": "AC322",
+          "role": "record",
+          "label": "AC322 Bons et obligations émis par les entreprises liées et créances sur ces entreprises",
+          "label_key": "AC322BONSETOBLIGATIONSEMISPARLESENTREPRISESLIEESETCREANCESSURCESENTREPRISES"
+        },
+        {
+          "code": "AC323",
+          "role": "record",
+          "label": "AC323 Parts dans les entreprises avec un lien de participation",
+          "label_key": "AC323PARTSDANSLESENTREPRISESAVECUNLIENDEPARTICIPATION"
+        },
+        {
+          "code": "AC324",
+          "role": "record",
+          "label": "AC324 Bons et obligations émis par les entreprises avec lien de participation",
+          "label_key": "AC324BONSETOBLIGATIONSEMISPARLESENTREPRISESAVECLIENDEPARTICIPATION"
+        },
+        {
+          "code": "AC33",
+          "role": "record",
+          "label": "AC33 Autres placements financiers",
+          "label_key": "AC33AUTRESPLACEMENTSFINANCIERS"
+        },
+        {
+          "code": "AC331",
+          "role": "record",
+          "label": "AC331 Actions, autres titres à revenu variable et part dans des FCP",
+          "label_key": "AC331ACTIONSAUTRESTITRESAREVENUVARIABLEETPARTDANSDESFCP"
+        },
+        {
+          "code": "AC332",
+          "role": "record",
+          "label": "AC332 Obligations et autres titres à revenu fixe",
+          "label_key": "AC332OBLIGATIONSETAUTRESTITRESAREVENUFIXE"
+        },
+        {
+          "code": "AC334",
+          "role": "record",
+          "label": "AC334 Autres prêts",
+          "label_key": "AC334AUTRESPRETS"
+        },
+        {
+          "code": "AC335",
+          "role": "record",
+          "label": "AC335 Dépots auprés des établissements bancaire et financiers",
+          "label_key": "AC335DEPOTSAUPRESDESETABLISSEMENTSBANCAIREETFINANCIERS"
+        },
+        {
+          "code": "AC336",
+          "role": "record",
+          "label": "AC336 Autres",
+          "label_key": "AC336AUTRES"
+        },
+        {
+          "code": "AC34",
+          "role": "record",
+          "label": "AC34 Créances pour espèces déposées auprés des entreprises cédantes",
+          "label_key": "AC34CREANCESPOURESPECESDEPOSEESAUPRESDESENTREPRISESCEDANTES"
+        },
+        {
+          "code": "AC3",
+          "role": "record",
+          "label": "AC3",
+          "label_key": "AC3"
+        },
+        {
+          "code": "AC5",
+          "role": "heading",
+          "label": "AC5 Parts des réassureurs dans les provisions techniques",
+          "label_key": "AC5PARTSDESREASSUREURSDANSLESPROVISIONSTECHNIQUES"
+        },
+        {
+          "code": "AC510",
+          "role": "record",
+          "label": "AC510 Provisions pour primes non acquises",
+          "label_key": "AC510PROVISIONSPOURPRIMESNONACQUISES"
+        },
+        {
+          "code": "AC520",
+          "role": "record",
+          "label": "AC520 Provisions d'assurance vie",
+          "label_key": "AC520PROVISIONSDASSURANCEVIE"
+        },
+        {
+          "code": "AC530",
+          "role": "record",
+          "label": "AC530 Provisions pour sinistres ( vie)",
+          "label_key": "AC530PROVISIONSPOURSINISTRESVIE"
+        },
+        {
+          "code": "AC531",
+          "role": "record",
+          "label": "AC531 Provisions pour sinistres (non vie)",
+          "label_key": "AC531PROVISIONSPOURSINISTRESNONVIE"
+        },
+        {
+          "code": "AC5",
+          "role": "record",
+          "label": "AC5",
+          "label_key": "AC5"
+        },
+        {
+          "code": "AC6",
+          "role": "heading",
+          "label": "AC6 Créances",
+          "label_key": "AC6CREANCES"
+        },
+        {
+          "code": "AC61",
+          "role": "record",
+          "label": "AC61 Créances nées d'opérations d'assurance directe",
+          "label_key": "AC61CREANCESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "AC611",
+          "role": "record",
+          "label": "AC611 Primes acquises et non émises et primes à annuler",
+          "label_key": "AC611PRIMESACQUISESETNONEMISESETPRIMESAANNULER"
+        },
+        {
+          "code": "AC612",
+          "role": "record",
+          "label": "AC612 Autres créances nées d'opérations d'assurance directe",
+          "label_key": "AC612AUTRESCREANCESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "AC613",
+          "role": "record",
+          "label": "AC613 Créances indemnisées subrogées à l'entreprise d'assurance",
+          "label_key": "AC613CREANCESINDEMNISEESSUBROGEESALENTREPRISEDASSURANCE"
+        },
+        {
+          "code": "AC62",
+          "role": "record",
+          "label": "AC62 Créances nées d'opérations de réassurance",
+          "label_key": "AC62CREANCESNEESDOPERATIONSDEREASSURANCE"
+        },
+        {
+          "code": "AC63",
+          "role": "record",
+          "label": "AC63 Autres créances",
+          "label_key": "AC63AUTRESCREANCES"
+        },
+        {
+          "code": "AC631",
+          "role": "record",
+          "label": "AC631 Personnel",
+          "label_key": "AC631PERSONNEL"
+        },
+        {
+          "code": "AC632",
+          "role": "record",
+          "label": "AC632 Etat, organismes de sécurité sociale, collectivités publiques",
+          "label_key": "AC632ETATORGANISMESDESECURITESOCIALECOLLECTIVITESPUBLIQUES"
+        },
+        {
+          "code": "AC633",
+          "role": "record",
+          "label": "AC633 Débiteurs divers",
+          "label_key": "AC633DEBITEURSDIVERS"
+        },
+        {
+          "code": "AC6",
+          "role": "record",
+          "label": "AC6",
+          "label_key": "AC6"
+        },
+        {
+          "code": "AC7",
+          "role": "heading",
+          "label": "AC7 Autres éléments d'actifs",
+          "label_key": "AC7AUTRESELEMENTSDACTIFS"
+        },
+        {
+          "code": "AC71",
+          "role": "record",
+          "label": "AC71 Avoirs en banque, CCP, chèques et caisse",
+          "label_key": "AC71AVOIRSENBANQUECCPCHEQUESETCAISSE"
+        },
+        {
+          "code": "AC72",
+          "role": "record",
+          "label": "AC72 Charges reportées",
+          "label_key": "AC72CHARGESREPORTEES"
+        },
+        {
+          "code": "AC721",
+          "role": "record",
+          "label": "AC721 Frais d'acquisitions reportés",
+          "label_key": "AC721FRAISDACQUISITIONSREPORTES"
+        },
+        {
+          "code": "AC73",
+          "role": "record",
+          "label": "AC73 Comptes de régularisation Actif",
+          "label_key": "AC73COMPTESDEREGULARISATIONACTIF"
+        },
+        {
+          "code": "AC731",
+          "role": "record",
+          "label": "AC731 Intérêts et loyers acquis non échus",
+          "label_key": "AC731INTERETSETLOYERSACQUISNONECHUS"
+        },
+        {
+          "code": "AC733",
+          "role": "record",
+          "label": "AC733 Autres comptes de régularisation",
+          "label_key": "AC733AUTRESCOMPTESDEREGULARISATION"
+        },
+        {
+          "code": "AC75",
+          "role": "record",
+          "label": "AC75 Autres",
+          "label_key": "AC75AUTRES"
+        },
+        {
+          "code": "AC7",
+          "role": "record",
+          "label": "AC7",
+          "label_key": "AC7"
+        },
+        {
+          "code": "TOTAL_ASSET",
+          "role": "record",
+          "label": "TOTAL DE L'ACTIF",
+          "label_key": "TOTALDELACTIF"
+        }
+      ],
+      "liability": [
+        {
+          "code": "CP1",
+          "role": "record",
+          "label": "CP1 Capital social ou fonds équivalent",
+          "label_key": "CP1CAPITALSOCIALOUFONDSEQUIVALENT"
+        },
+        {
+          "code": "CP2",
+          "role": "record",
+          "label": "CP2 Réserves et primes liées au capital",
+          "label_key": "CP2RESERVESETPRIMESLIEESAUCAPITAL"
+        },
+        {
+          "code": "CP4",
+          "role": "record",
+          "label": "CP4 Autres capitaux propres",
+          "label_key": "CP4AUTRESCAPITAUXPROPRES"
+        },
+        {
+          "code": "EQUITY_BEFORE",
+          "role": "record",
+          "label": "Total capitaux propres avant résultat de l'exercice",
+          "label_key": "TOTALCAPITAUXPROPRESAVANTRESULTATDELEXERCICE"
+        },
+        {
+          "code": "CP6",
+          "role": "record",
+          "label": "CP6 Résultat de l'exercice",
+          "label_key": "CP6RESULTATDELEXERCICE"
+        },
+        {
+          "code": "EQUITY",
+          "role": "record",
+          "label": "Total Capitaux propres avant affectation CP1",
+          "label_key": "TOTALCAPITAUXPROPRESAVANTAFFECTATIONCP1"
+        },
+        {
+          "code": "PA2",
+          "role": "heading",
+          "label": "PA2 Provisions pour autres risques et charges",
+          "label_key": "PA2PROVISIONSPOURAUTRESRISQUESETCHARGES"
+        },
+        {
+          "code": "PA23",
+          "role": "record",
+          "label": "PA23 Autres provisions",
+          "label_key": "PA23AUTRESPROVISIONS"
+        },
+        {
+          "code": "PA2_PUBLISHED_SUBTOTAL",
+          "role": "corroboration",
+          "label": "",
+          "label_key": ""
+        },
+        {
+          "code": "PA3",
+          "role": "heading",
+          "label": "PA3 Provisions techniques brutes",
+          "label_key": "PA3PROVISIONSTECHNIQUESBRUTES"
+        },
+        {
+          "code": "PA310",
+          "role": "record",
+          "label": "PA310 Provisions pour primes non acquises",
+          "label_key": "PA310PROVISIONSPOURPRIMESNONACQUISES"
+        },
+        {
+          "code": "PA320",
+          "role": "record",
+          "label": "PA320 Provisions d'assurance vie",
+          "label_key": "PA320PROVISIONSDASSURANCEVIE"
+        },
+        {
+          "code": "PA330",
+          "role": "record",
+          "label": "PA330 Provision pour sinistres (vie)",
+          "label_key": "PA330PROVISIONPOURSINISTRESVIE"
+        },
+        {
+          "code": "PA331",
+          "role": "record",
+          "label": "PA331 Provision pour sinistres (non vie)",
+          "label_key": "PA331PROVISIONPOURSINISTRESNONVIE"
+        },
+        {
+          "code": "PA340",
+          "role": "record",
+          "label": "PA340 Provisions pour participations aux bénéfices et ristournes (vie)",
+          "label_key": "PA340PROVISIONSPOURPARTICIPATIONSAUXBENEFICESETRISTOURNESVIE"
+        },
+        {
+          "code": "PA341",
+          "role": "record",
+          "label": "PA341 Provisions pour participations aux bénéfices et ristournes (non vie)",
+          "label_key": "PA341PROVISIONSPOURPARTICIPATIONSAUXBENEFICESETRISTOURNESNONVIE"
+        },
+        {
+          "code": "PA350",
+          "role": "record",
+          "label": "PA350 Provisions pour égalisation et équilibrage",
+          "label_key": "PA350PROVISIONSPOUREGALISATIONETEQUILIBRAGE"
+        },
+        {
+          "code": "PA360",
+          "role": "record",
+          "label": "PA360 Autres povisions techniques (vie)",
+          "label_key": "PA360AUTRESPOVISIONSTECHNIQUESVIE"
+        },
+        {
+          "code": "PA361",
+          "role": "record",
+          "label": "PA361 Autres povisions techniques (non vie)",
+          "label_key": "PA361AUTRESPOVISIONSTECHNIQUESNONVIE"
+        },
+        {
+          "code": "PA3",
+          "role": "record",
+          "label": "PA3",
+          "label_key": "PA3"
+        },
+        {
+          "code": "PA5",
+          "role": "record",
+          "label": "PA5 Dettes pour dépôts en espèces reçus des cessionnaires",
+          "label_key": "PA5DETTESPOURDEPOTSENESPECESRECUSDESCESSIONNAIRES"
+        },
+        {
+          "code": "PA5_PUBLISHED_SUBTOTAL",
+          "role": "corroboration",
+          "label": "",
+          "label_key": ""
+        },
+        {
+          "code": "PA6",
+          "role": "heading",
+          "label": "PA6 Autres dettes",
+          "label_key": "PA6AUTRESDETTES"
+        },
+        {
+          "code": "PA61",
+          "role": "record",
+          "label": "PA61 Dettes nées d'opérations d'assurance directe",
+          "label_key": "PA61DETTESNEESDOPERATIONSDASSURANCEDIRECTE"
+        },
+        {
+          "code": "PA62",
+          "role": "record",
+          "label": "PA62 Dettes nées d'opérations de réassurance",
+          "label_key": "PA62DETTESNEESDOPERATIONSDEREASSURANCE"
+        },
+        {
+          "code": "PA63",
+          "role": "record",
+          "label": "PA63 Autres dettes",
+          "label_key": "PA63AUTRESDETTES"
+        },
+        {
+          "code": "PA631",
+          "role": "record",
+          "label": "PA631 Dépôts et cautionnements reçus",
+          "label_key": "PA631DEPOTSETCAUTIONNEMENTSRECUS"
+        },
+        {
+          "code": "PA632",
+          "role": "record",
+          "label": "PA632 Personnel",
+          "label_key": "PA632PERSONNEL"
+        },
+        {
+          "code": "PA633",
+          "role": "record",
+          "label": "PA633 Etat, organismes de sécurité sociale, collectivités publiques",
+          "label_key": "PA633ETATORGANISMESDESECURITESOCIALECOLLECTIVITESPUBLIQUES"
+        },
+        {
+          "code": "PA634",
+          "role": "record",
+          "label": "PA634 Créditeurs divers",
+          "label_key": "PA634CREDITEURSDIVERS"
+        },
+        {
+          "code": "PA6",
+          "role": "record",
+          "label": "PA6",
+          "label_key": "PA6"
+        },
+        {
+          "code": "PA7",
+          "role": "heading",
+          "label": "PA7 Autres passifs",
+          "label_key": "PA7AUTRESPASSIFS"
+        },
+        {
+          "code": "PA71",
+          "role": "record",
+          "label": "PA71 Compte de régularisation Passif",
+          "label_key": "PA71COMPTEDEREGULARISATIONPASSIF"
+        },
+        {
+          "code": "PA710",
+          "role": "record",
+          "label": "PA710 Report de commissions reçues des réassureurs",
+          "label_key": "PA710REPORTDECOMMISSIONSRECUESDESREASSUREURS"
+        },
+        {
+          "code": "PA712",
+          "role": "record",
+          "label": "PA712 Autres comptes de régularisation Passif",
+          "label_key": "PA712AUTRESCOMPTESDEREGULARISATIONPASSIF"
+        },
+        {
+          "code": "PA73",
+          "role": "record",
+          "label": "PA73 Concours Bancaires et autres passifs financiers",
+          "label_key": "PA73CONCOURSBANCAIRESETAUTRESPASSIFSFINANCIERS"
+        },
+        {
+          "code": "PA7",
+          "role": "record",
+          "label": "PA7",
+          "label_key": "PA7"
+        },
+        {
+          "code": "TOTAL_LIABILITY",
+          "role": "record",
+          "label": "Total du Passif",
+          "label_key": "TOTALDUPASSIF"
+        },
+        {
+          "code": "TOTAL_EQUITY_LIABILITY",
+          "role": "record",
+          "label": "TOTAL DES CAPITAUX PROPRES ET DU PASSIF",
+          "label_key": "TOTALDESCAPITAUXPROPRESETDUPASSIF"
+        }
+      ]
+    }
+  }
+}

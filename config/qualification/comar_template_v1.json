@@ -1,0 +1,2797 @@
+{
+  "schema_version": 1,
+  "contract_id": "comar_template_v1",
+  "company": "COMAR",
+  "production_enabled": false,
+  "reference_template_sha256": "4ebd54e37529a0452c4018ea7509231eaccfea89900e321dc1e0e5c6ffec4a67",
+  "notes": "Inspected 2023-2025 layout. Only the three explicit label proposals have alternative values. Premium year formula chain is frozen from its starting year. Financial input amounts are not frozen.",
+  "cells": [
+    {
+      "sheet": "TAF_G1",
+      "cell": "A1",
+      "allowed_values": [
+        "COMAR"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "B14",
+      "allowed_values": [
+        "COMAR"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A2",
+      "allowed_values": [
+        "Code"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B2",
+      "allowed_values": [
+        "Libellé"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I2",
+      "allowed_values": [
+        "CAPITAUX PROPRES ET PASSIFS"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "J2",
+      "allowed_values": [
+        "Note"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "C2",
+      "allowed_values": [
+        "Montant Net 31/12/2025"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "D2",
+      "allowed_values": [
+        "Montant Net 31/12/2024"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "E2",
+      "allowed_values": [
+        "Montant Net 31/12/2023"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "K2",
+      "allowed_values": [
+        "31/12/2025\nMontant Net"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "L2",
+      "allowed_values": [
+        "31/12/2024\nMontant Net"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "M2",
+      "allowed_values": [
+        "Montant Net 31/12/2023"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A3",
+      "allowed_values": [
+        "AC11"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B3",
+      "allowed_values": [
+        "Investissements de recherche et développement"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A4",
+      "allowed_values": [
+        "AC12"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B4",
+      "allowed_values": [
+        "Concessions, Brevets, licences, Marques"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A5",
+      "allowed_values": [
+        "AC13"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B5",
+      "allowed_values": [
+        "Fonds commercial"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A6",
+      "allowed_values": [
+        "AC1"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B6",
+      "allowed_values": [
+        "TOTAL Actifs incorporels"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A7",
+      "allowed_values": [
+        "AC21"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B7",
+      "allowed_values": [
+        "Installations techniques et machines"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A8",
+      "allowed_values": [
+        "AC22"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B8",
+      "allowed_values": [
+        "Autres installations, outillage et mobilier"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A9",
+      "allowed_values": [
+        "AC2"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B9",
+      "allowed_values": [
+        "TOTAL Actifs corporels d'exploitation"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A10",
+      "allowed_values": [
+        "AC31"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B10",
+      "allowed_values": [
+        "Terrains et constructions"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A11",
+      "allowed_values": [
+        "AC311"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B11",
+      "allowed_values": [
+        "Terrains et constructions d'exploitation"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A12",
+      "allowed_values": [
+        "AC312"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B12",
+      "allowed_values": [
+        "Terrains et constructions hors exploitation"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A13",
+      "allowed_values": [
+        "AC32"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B13",
+      "allowed_values": [
+        "Placements dans les entreprises liées et participations"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A14",
+      "allowed_values": [
+        "AC321"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B14",
+      "allowed_values": [
+        "Parts dans les entreprises liées"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A15",
+      "allowed_values": [
+        "AC322"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B15",
+      "allowed_values": [
+        "Bons et obligations émis par les entreprises liées et créances sur ces entreprises"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A16",
+      "allowed_values": [
+        "AC323"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B16",
+      "allowed_values": [
+        "Parts dans les entreprises avec un lien de participation"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A17",
+      "allowed_values": [
+        "AC324"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B17",
+      "allowed_values": [
+        "Bons et obligations émis par les entreprises avec lien de participation"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A18",
+      "allowed_values": [
+        "AC33"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B18",
+      "allowed_values": [
+        "Autres placements financiers"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A19",
+      "allowed_values": [
+        "AC331"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B19",
+      "allowed_values": [
+        "Actions, autres titres à revenu variable et part dans des FCP"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A20",
+      "allowed_values": [
+        "AC332"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B20",
+      "allowed_values": [
+        "Obligations et autres titres à revenu fixe"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A21",
+      "allowed_values": [
+        "AC334"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B21",
+      "allowed_values": [
+        "Autres prêts"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A22",
+      "allowed_values": [
+        "AC335"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B22",
+      "allowed_values": [
+        "Dépôts auprès des établissements bancaires et financiers"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A23",
+      "allowed_values": [
+        "AC336"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B23",
+      "allowed_values": [
+        "Autres"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A24",
+      "allowed_values": [
+        "AC34"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B24",
+      "allowed_values": [
+        "Créances pour espèces déposées auprès des entreprises cédantes"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A25",
+      "allowed_values": [
+        "AC3"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B25",
+      "allowed_values": [
+        "TOTAL Placements"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A26",
+      "allowed_values": [
+        "AC510"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B26",
+      "allowed_values": [
+        "Provisions pour primes non acquises"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A27",
+      "allowed_values": [
+        "AC520"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B27",
+      "allowed_values": [
+        "Provisions d'assurance vie"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A28",
+      "allowed_values": [
+        "AC530"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B28",
+      "allowed_values": [
+        "Provisions pour sinistres (vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A29",
+      "allowed_values": [
+        "AC531"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B29",
+      "allowed_values": [
+        "Provisions pour sinistres (non vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A30",
+      "allowed_values": [
+        "AC5"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B30",
+      "allowed_values": [
+        "TOTAL Parts des réassureurs"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A31",
+      "allowed_values": [
+        "AC61"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B31",
+      "allowed_values": [
+        "Créances nées d'opérations d'assurance directe"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A32",
+      "allowed_values": [
+        "AC611"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B32",
+      "allowed_values": [
+        "Primes acquises et non émises et primes à annuler"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A33",
+      "allowed_values": [
+        "AC612"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B33",
+      "allowed_values": [
+        "Autres créances nées d'opérations d'assurance directe"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A34",
+      "allowed_values": [
+        "AC613"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B34",
+      "allowed_values": [
+        "Créances indemnisées subrogées à l'entreprise d'assurance"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A35",
+      "allowed_values": [
+        "AC62"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B35",
+      "allowed_values": [
+        "Créances nées d'opérations de réassurance"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A36",
+      "allowed_values": [
+        "AC63"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B36",
+      "allowed_values": [
+        "Autres créances"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A37",
+      "allowed_values": [
+        "AC631"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B37",
+      "allowed_values": [
+        "Personnel"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A38",
+      "allowed_values": [
+        "AC632"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B38",
+      "allowed_values": [
+        "Etat, organismes de sécurité sociale, collectivités publiques"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A39",
+      "allowed_values": [
+        "AC633"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B39",
+      "allowed_values": [
+        "Débiteurs divers"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A40",
+      "allowed_values": [
+        "AC6"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B40",
+      "allowed_values": [
+        "TOTAL Créances"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A41",
+      "allowed_values": [
+        "AC71"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B41",
+      "allowed_values": [
+        "Avoirs en banque, CCP, chèques et caisse"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A42",
+      "allowed_values": [
+        "AC72"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B42",
+      "allowed_values": [
+        "Charges reportées"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A43",
+      "allowed_values": [
+        "AC721"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B43",
+      "allowed_values": [
+        "Frais d'acquisitions reportés"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A44",
+      "allowed_values": [
+        "AC73"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B44",
+      "allowed_values": [
+        "Comptes de régularisation Actif"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A45",
+      "allowed_values": [
+        "AC731"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B45",
+      "allowed_values": [
+        "Intérêts et loyers acquis non échus"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A46",
+      "allowed_values": [
+        "AC733"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B46",
+      "allowed_values": [
+        "Autres comptes de régularisation"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A47",
+      "allowed_values": [
+        "AC75"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B47",
+      "allowed_values": [
+        "Autres"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A48",
+      "allowed_values": [
+        "AC7"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B48",
+      "allowed_values": [
+        "TOTAL Autres éléments d'actifs"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "A49",
+      "allowed_values": [
+        "TOTAL ACTIF"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "B49",
+      "allowed_values": [
+        null
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I4",
+      "allowed_values": [
+        "CP1 Capital social ou fonds équivalent"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I5",
+      "allowed_values": [
+        "CP2 Réserves et primes liées au capital"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I6",
+      "allowed_values": [
+        "CP4 Autres capitaux propres"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I7",
+      "allowed_values": [
+        "Total capitaux propres avant résultat de l'exercice"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I8",
+      "allowed_values": [
+        "CP5 Résultat de l'exercice",
+        "CP6 Résultat de l'exercice"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I9",
+      "allowed_values": [
+        "Total Capitaux propres avant affectation"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I11",
+      "allowed_values": [
+        "PA2 Provisions pour autres risques et charges"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I12",
+      "allowed_values": [
+        "PA23 Autres provisions"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I13",
+      "allowed_values": [
+        "PA3 Provisions techniques brutes"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I14",
+      "allowed_values": [
+        "PA310 Provisions pour primes non acquises"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I15",
+      "allowed_values": [
+        "PA320 Provisions d'assurance vie"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I16",
+      "allowed_values": [
+        "PA330 Provisions pour sinistres (vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I17",
+      "allowed_values": [
+        "PA331 Provisions pour sinistres (non vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I18",
+      "allowed_values": [
+        "PA340 Provision pour participation aux bénéfices et ristournes (vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I19",
+      "allowed_values": [
+        "PA341 Provision pour participation aux bénéfices et ristournes (non vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I20",
+      "allowed_values": [
+        "PA350 Provision pour égalisation et équilibrage"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I21",
+      "allowed_values": [
+        "PA380 Autres provisions techniques (vie)",
+        "PA360 Autres provisions techniques (vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I22",
+      "allowed_values": [
+        "PA361 Autres provisions techniques (non vie)"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I23",
+      "allowed_values": [
+        "PA5 Dettes pour dépôts en espèces reçus des cessionnaires"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I32",
+      "allowed_values": [
+        "PA6 Total autres dettes"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I25",
+      "allowed_values": [
+        "PA61 Dettes des opérations d'assurance directe"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I26",
+      "allowed_values": [
+        "PA62 Dettes des opérations de réassurance"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I27",
+      "allowed_values": [
+        "PA63 Autres dettes"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I28",
+      "allowed_values": [
+        "PA631 Dépôts et cautionnements reçus"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I29",
+      "allowed_values": [
+        "PA632 Personnel"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I30",
+      "allowed_values": [
+        "PA633 Etat, organismes de sécurité sociale, collectivités publiques"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I31",
+      "allowed_values": [
+        "PA634 Créanciers divers"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I34",
+      "allowed_values": [
+        "PA71 Compte de régularisation Passif"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I35",
+      "allowed_values": [
+        "PA710 Report à nouveau des provisions techniques des réassureurs",
+        "PA710 Report de commissions reçues des réassureurs"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I36",
+      "allowed_values": [
+        "PA712 Autres comptes de régularisation Passif"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I37",
+      "allowed_values": [
+        "PA73 Concours bancaires et autres passifs financiers"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I38",
+      "allowed_values": [
+        "PA7 Total autres passifs"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I39",
+      "allowed_values": [
+        "Total du Passif"
+      ]
+    },
+    {
+      "sheet": "TAF_G1",
+      "cell": "I40",
+      "allowed_values": [
+        "TOTAL DES CAPITAUX PROPRES ET DU PASSIF"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "B15",
+      "allowed_values": [
+        2010
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "C15",
+      "allowed_values": [
+        "=+B15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "D15",
+      "allowed_values": [
+        "=+C15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "E15",
+      "allowed_values": [
+        "=+D15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "F15",
+      "allowed_values": [
+        "=+E15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "G15",
+      "allowed_values": [
+        "=+F15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "H15",
+      "allowed_values": [
+        "=+G15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "I15",
+      "allowed_values": [
+        "=+H15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "J15",
+      "allowed_values": [
+        "=+I15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "K15",
+      "allowed_values": [
+        "=+J15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "L15",
+      "allowed_values": [
+        "=+K15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "M15",
+      "allowed_values": [
+        "=+L15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "N15",
+      "allowed_values": [
+        "=+M15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "O15",
+      "allowed_values": [
+        "=+N15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "P15",
+      "allowed_values": [
+        "=+O15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "Q15",
+      "allowed_values": [
+        "=+P15+1"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A16",
+      "allowed_values": [
+        "Primes émises Nettes"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A17",
+      "allowed_values": [
+        "Automobile"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A18",
+      "allowed_values": [
+        "Incendie"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A19",
+      "allowed_values": [
+        "Transport"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A20",
+      "allowed_values": [
+        "IRDS"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A21",
+      "allowed_values": [
+        "Groupe"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A22",
+      "allowed_values": [
+        "Emissions Non Vie"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A23",
+      "allowed_values": [
+        "Vie"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A24",
+      "allowed_values": [
+        "Emissions Vie"
+      ]
+    },
+    {
+      "sheet": "TAF_G3",
+      "cell": "A25",
+      "allowed_values": [
+        "Primes émises nettes vie et non vie"
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E3",
+      "code": "AC11"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E4",
+      "code": "AC12"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E5",
+      "code": "AC13"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E6",
+      "code": "AC1"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E7",
+      "code": "AC21"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E8",
+      "code": "AC22"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E9",
+      "code": "AC2"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E10",
+      "code": "AC31"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E11",
+      "code": "AC311"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E12",
+      "code": "AC312"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E13",
+      "code": "AC32"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E14",
+      "code": "AC321"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E15",
+      "code": "AC322"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E16",
+      "code": "AC323"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E17",
+      "code": "AC324"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E18",
+      "code": "AC33"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E19",
+      "code": "AC331"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E20",
+      "code": "AC332"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E21",
+      "code": "AC334"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E22",
+      "code": "AC335"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E23",
+      "code": "AC336"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E24",
+      "code": "AC34"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E25",
+      "code": "AC3"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E26",
+      "code": "AC510"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E27",
+      "code": "AC520"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E28",
+      "code": "AC530"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E29",
+      "code": "AC531"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E30",
+      "code": "AC5"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E31",
+      "code": "AC61"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E32",
+      "code": "AC611"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E33",
+      "code": "AC612"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E34",
+      "code": "AC613"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E35",
+      "code": "AC62"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E36",
+      "code": "AC63"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E37",
+      "code": "AC631"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E38",
+      "code": "AC632"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E39",
+      "code": "AC633"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E40",
+      "code": "AC6"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E41",
+      "code": "AC71"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E42",
+      "code": "AC72"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E43",
+      "code": "AC721"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E44",
+      "code": "AC73"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E45",
+      "code": "AC731"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E46",
+      "code": "AC733"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E47",
+      "code": "AC75"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E48",
+      "code": "AC7"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "E49",
+      "code": "TOTAL_ASSET"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M4",
+      "code": "CP1"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M5",
+      "code": "CP2"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M6",
+      "code": "CP4"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M7",
+      "code": "EQUITY_BEFORE"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M8",
+      "code": "CP6"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M9",
+      "code": "EQUITY"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M11",
+      "code": "PA2"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M12",
+      "code": "PA23"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M13",
+      "code": "PA3"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M14",
+      "code": "PA310"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M15",
+      "code": "PA320"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M16",
+      "code": "PA330"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M17",
+      "code": "PA331"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M18",
+      "code": "PA340"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M19",
+      "code": "PA341"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M20",
+      "code": "PA350"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M21",
+      "code": "PA360"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M22",
+      "code": "PA361"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M23",
+      "code": "PA5"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M32",
+      "code": "PA6"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M25",
+      "code": "PA61"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M26",
+      "code": "PA62"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M27",
+      "code": "PA63"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M28",
+      "code": "PA631"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M29",
+      "code": "PA632"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M30",
+      "code": "PA633"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M31",
+      "code": "PA634"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M34",
+      "code": "PA71"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M35",
+      "code": "PA710"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M36",
+      "code": "PA712"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M37",
+      "code": "PA73"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M38",
+      "code": "PA7"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M39",
+      "code": "TOTAL_LIABILITY"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G1",
+      "cell": "M40",
+      "code": "TOTAL_EQUITY_LIABILITY"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O17",
+      "code": "AUTOMOBILE"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O18",
+      "code": "INCENDIE"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O19",
+      "code": "TRANSPORT"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O20",
+      "code": "IRDS"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O21",
+      "code": "GROUPE"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O23",
+      "code": "VIE"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O22",
+      "code": "TOTAL_22"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O24",
+      "code": "TOTAL_24"
+    },
+    {
+      "year": 2023,
+      "sheet": "TAF_G3",
+      "cell": "O25",
+      "code": "TOTAL_25"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D3",
+      "code": "AC11"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D4",
+      "code": "AC12"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D5",
+      "code": "AC13"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D6",
+      "code": "AC1"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D7",
+      "code": "AC21"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D8",
+      "code": "AC22"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D9",
+      "code": "AC2"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D10",
+      "code": "AC31"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D11",
+      "code": "AC311"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D12",
+      "code": "AC312"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D13",
+      "code": "AC32"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D14",
+      "code": "AC321"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D15",
+      "code": "AC322"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D16",
+      "code": "AC323"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D17",
+      "code": "AC324"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D18",
+      "code": "AC33"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D19",
+      "code": "AC331"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D20",
+      "code": "AC332"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D21",
+      "code": "AC334"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D22",
+      "code": "AC335"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D23",
+      "code": "AC336"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D24",
+      "code": "AC34"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D25",
+      "code": "AC3"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D26",
+      "code": "AC510"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D27",
+      "code": "AC520"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D28",
+      "code": "AC530"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D29",
+      "code": "AC531"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D30",
+      "code": "AC5"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D31",
+      "code": "AC61"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D32",
+      "code": "AC611"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D33",
+      "code": "AC612"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D34",
+      "code": "AC613"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D35",
+      "code": "AC62"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D36",
+      "code": "AC63"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D37",
+      "code": "AC631"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D38",
+      "code": "AC632"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D39",
+      "code": "AC633"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D40",
+      "code": "AC6"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D41",
+      "code": "AC71"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D42",
+      "code": "AC72"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D43",
+      "code": "AC721"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D44",
+      "code": "AC73"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D45",
+      "code": "AC731"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D46",
+      "code": "AC733"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D47",
+      "code": "AC75"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D48",
+      "code": "AC7"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "D49",
+      "code": "TOTAL_ASSET"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L4",
+      "code": "CP1"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L5",
+      "code": "CP2"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L6",
+      "code": "CP4"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L7",
+      "code": "EQUITY_BEFORE"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L8",
+      "code": "CP6"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L9",
+      "code": "EQUITY"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L11",
+      "code": "PA2"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L12",
+      "code": "PA23"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L13",
+      "code": "PA3"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L14",
+      "code": "PA310"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L15",
+      "code": "PA320"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L16",
+      "code": "PA330"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L17",
+      "code": "PA331"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L18",
+      "code": "PA340"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L19",
+      "code": "PA341"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L20",
+      "code": "PA350"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L21",
+      "code": "PA360"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L22",
+      "code": "PA361"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L23",
+      "code": "PA5"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L32",
+      "code": "PA6"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L25",
+      "code": "PA61"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L26",
+      "code": "PA62"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L27",
+      "code": "PA63"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L28",
+      "code": "PA631"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L29",
+      "code": "PA632"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L30",
+      "code": "PA633"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L31",
+      "code": "PA634"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L34",
+      "code": "PA71"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L35",
+      "code": "PA710"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L36",
+      "code": "PA712"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L37",
+      "code": "PA73"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L38",
+      "code": "PA7"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L39",
+      "code": "TOTAL_LIABILITY"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G1",
+      "cell": "L40",
+      "code": "TOTAL_EQUITY_LIABILITY"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P17",
+      "code": "AUTOMOBILE"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P18",
+      "code": "INCENDIE"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P19",
+      "code": "TRANSPORT"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P20",
+      "code": "IRDS"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P21",
+      "code": "GROUPE"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P23",
+      "code": "VIE"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P22",
+      "code": "TOTAL_22"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P24",
+      "code": "TOTAL_24"
+    },
+    {
+      "year": 2024,
+      "sheet": "TAF_G3",
+      "cell": "P25",
+      "code": "TOTAL_25"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C3",
+      "code": "AC11"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C4",
+      "code": "AC12"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C5",
+      "code": "AC13"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C6",
+      "code": "AC1"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C7",
+      "code": "AC21"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C8",
+      "code": "AC22"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C9",
+      "code": "AC2"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C10",
+      "code": "AC31"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C11",
+      "code": "AC311"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C12",
+      "code": "AC312"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C13",
+      "code": "AC32"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C14",
+      "code": "AC321"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C15",
+      "code": "AC322"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C16",
+      "code": "AC323"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C17",
+      "code": "AC324"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C18",
+      "code": "AC33"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C19",
+      "code": "AC331"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C20",
+      "code": "AC332"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C21",
+      "code": "AC334"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C22",
+      "code": "AC335"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C23",
+      "code": "AC336"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C24",
+      "code": "AC34"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C25",
+      "code": "AC3"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C26",
+      "code": "AC510"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C27",
+      "code": "AC520"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C28",
+      "code": "AC530"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C29",
+      "code": "AC531"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C30",
+      "code": "AC5"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C31",
+      "code": "AC61"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C32",
+      "code": "AC611"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C33",
+      "code": "AC612"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C34",
+      "code": "AC613"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C35",
+      "code": "AC62"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C36",
+      "code": "AC63"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C37",
+      "code": "AC631"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C38",
+      "code": "AC632"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C39",
+      "code": "AC633"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C40",
+      "code": "AC6"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C41",
+      "code": "AC71"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C42",
+      "code": "AC72"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C43",
+      "code": "AC721"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C44",
+      "code": "AC73"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C45",
+      "code": "AC731"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C46",
+      "code": "AC733"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C47",
+      "code": "AC75"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C48",
+      "code": "AC7"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "C49",
+      "code": "TOTAL_ASSET"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K4",
+      "code": "CP1"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K5",
+      "code": "CP2"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K6",
+      "code": "CP4"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K7",
+      "code": "EQUITY_BEFORE"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K8",
+      "code": "CP6"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K9",
+      "code": "EQUITY"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K11",
+      "code": "PA2"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K12",
+      "code": "PA23"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K13",
+      "code": "PA3"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K14",
+      "code": "PA310"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K15",
+      "code": "PA320"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K16",
+      "code": "PA330"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K17",
+      "code": "PA331"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K18",
+      "code": "PA340"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K19",
+      "code": "PA341"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K20",
+      "code": "PA350"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K21",
+      "code": "PA360"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K22",
+      "code": "PA361"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K23",
+      "code": "PA5"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K32",
+      "code": "PA6"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K25",
+      "code": "PA61"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K26",
+      "code": "PA62"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K27",
+      "code": "PA63"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K28",
+      "code": "PA631"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K29",
+      "code": "PA632"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K30",
+      "code": "PA633"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K31",
+      "code": "PA634"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K34",
+      "code": "PA71"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K35",
+      "code": "PA710"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K36",
+      "code": "PA712"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K37",
+      "code": "PA73"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K38",
+      "code": "PA7"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K39",
+      "code": "TOTAL_LIABILITY"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G1",
+      "cell": "K40",
+      "code": "TOTAL_EQUITY_LIABILITY"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q17",
+      "code": "AUTOMOBILE"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q18",
+      "code": "INCENDIE"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q19",
+      "code": "TRANSPORT"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q20",
+      "code": "IRDS"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q21",
+      "code": "GROUPE"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q23",
+      "code": "VIE"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q22",
+      "code": "TOTAL_22"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q24",
+      "code": "TOTAL_24"
+    },
+    {
+      "year": 2025,
+      "sheet": "TAF_G3",
+      "cell": "Q25",
+      "code": "TOTAL_25"
+    }
+  ]
+}

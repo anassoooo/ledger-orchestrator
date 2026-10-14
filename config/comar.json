@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "profile_id": "comar",
+  "revision": 1,
+  "status": "draft",
+  "extractor": "comar_individual_candidate_v1",
+  "identity_terms": [
+    "COMAR"
+  ],
+  "source_directory": "sources/COMAR",
+  "company": "COMAR",
+  "target_unit": "TND",
+  "extend_template": true,
+  "premium_basis": "before_reinsurance",
+  "branch_policy": "pending_company_review",
+  "years": [
+    2023,
+    2024,
+    2025
+  ],
+  "rounding_tolerance_tnd": 0,
+  "branch_rows": {
+    "AUTOMOBILE": 17,
+    "INCENDIE": 18,
+    "TRANSPORT": 19,
+    "IRDS": 20,
+    "GROUPE": 21,
+    "VIE": 23
+  },
+  "asset_rows": {
+    "AC11": 3,
+    "AC12": 4,
+    "AC13": 5,
+    "AC1": 6,
+    "AC21": 7,
+    "AC22": 8,
+    "AC2": 9,
+    "AC31": 10,
+    "AC311": 11,
+    "AC312": 12,
+    "AC32": 13,
+    "AC321": 14,
+    "AC322": 15,
+    "AC323": 16,
+    "AC324": 17,
+    "AC33": 18,
+    "AC331": 19,
+    "AC332": 20,
+    "AC334": 21,
+    "AC335": 22,
+    "AC336": 23,
+    "AC34": 24,
+    "AC3": 25,
+    "AC510": 26,
+    "AC520": 27,
+    "AC530": 28,
+    "AC531": 29,
+    "AC5": 30,
+    "AC61": 31,
+    "AC611": 32,
+    "AC612": 33,
+    "AC613": 34,
+    "AC62": 35,
+    "AC63": 36,
+    "AC631": 37,
+    "AC632": 38,
+    "AC633": 39,
+    "AC6": 40,
+    "AC71": 41,
+    "AC72": 42,
+    "AC721": 43,
+    "AC73": 44,
+    "AC731": 45,
+    "AC733": 46,
+    "AC75": 47,
+    "AC7": 48,
+    "TOTAL_ASSET": 49
+  },
+  "liability_rows": {
+    "CP1": 4,
+    "CP2": 5,
+    "CP4": 6,
+    "EQUITY_BEFORE": 7,
+    "CP6": 8,
+    "EQUITY": 9,
+    "PA2": 11,
+    "PA23": 12,
+    "PA3": 13,
+    "PA310": 14,
+    "PA320": 15,
+    "PA330": 16,
+    "PA331": 17,
+    "PA340": 18,
+    "PA341": 19,
+    "PA350": 20,
+    "PA360": 21,
+    "PA361": 22,
+    "PA5": 23,
+    "PA6": 32,
+    "PA61": 25,
+    "PA62": 26,
+    "PA63": 27,
+    "PA631": 28,
+    "PA632": 29,
+    "PA633": 30,
+    "PA634": 31,
+    "PA71": 34,
+    "PA710": 35,
+    "PA712": 36,
+    "PA73": 37,
+    "PA7": 38,
+    "TOTAL_LIABILITY": 39,
+    "TOTAL_EQUITY_LIABILITY": 40
+  },
+  "children": {},
+  "workbook": {
+    "template": "templates/TAF_G1_G2_G3_G4.xlsx",
+    "filename": "COMAR_consolide.xlsx",
+    "balance_sheet": "TAF_G1",
+    "premium_sheet": "TAF_G3",
+    "anchors": [
+      {
+        "sheet": "TAF_G1",
+        "cell": "A1",
+        "value": "COMAR"
+      },
+      {
+        "sheet": "TAF_G3",
+        "cell": "B14",
+        "value": "COMAR"
+      }
+    ],
+    "columns": {
+      "2023": {
+        "asset": "E",
+        "liability": "M",
+        "premium": "O",
+        "details": "C"
+      },
+      "2024": {
+        "asset": "D",
+        "liability": "L",
+        "premium": "P",
+        "details": "D"
+      },
+      "2025": {
+        "asset": "C",
+        "liability": "K",
+        "premium": "Q",
+        "details": "E"
+      }
+    },
+    "details_sheet": "COMAR_Details",
+    "details_title": "Compléments du bilan COMAR (TND)",
+    "column_widths": {
+      "liability": 19,
+      "premium": 18
+    },
+    "premium_totals": {
+      "TOTAL_22": {
+        "row": 22,
+        "children": [
+          "AUTOMOBILE",
+          "INCENDIE",
+          "TRANSPORT",
+          "IRDS",
+          "GROUPE"
+        ]
+      },
+      "TOTAL_24": {
+        "row": 24,
+        "children": [
+          "VIE"
+        ]
+      },
+      "TOTAL_25": {
+        "row": 25,
+        "children": [
+          "TOTAL_22",
+          "TOTAL_24"
+        ]
+      }
+    },
+    "label_overrides": [
+      {
+        "sheet": "TAF_G1",
+        "cell": "I8",
+        "value": "CP6 Résultat de l'exercice"
+      },
+      {
+        "sheet": "TAF_G1",
+        "cell": "I21",
+        "value": "PA360 Autres provisions techniques (vie)"
+      },
+      {
+        "sheet": "TAF_G1",
+        "cell": "I35",
+        "value": "PA710 Report de commissions reçues des réassureurs"
+      }
+    ],
+    "extension_only": {}
+  },
+  "qualification_notes": {
+    "production_enabled": false,
+    "balance_hierarchies": "Use year-specific checks in the balance candidate; no absent rows treated as zero",
+    "IRDS": "Unresolved company-specific category composition",
+    "premiums": "Direct candidate mappings only; total annex includes Acceptation, target five-branch total does not",
+    "label_overrides": "Proposals only in this draft; original template remains unchanged",
+    "rounding": "Zero tolerance for the draft; retained 1–2 TND discrepancies are unresolved, not silently accepted"
+  }
+}
