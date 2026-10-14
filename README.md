@@ -1,145 +1,130 @@
 # LedgerOrchestrator
 
-### Multi-Agent Financial Statement Intelligence
+### Evidence-first extraction of insurers' financial statements for the CMF template
 
-LedgerOrchestrator is a local-first financial document intelligence prototype with explicit deterministic agent orchestration. It extracts structured accounting data from financial-statement PDFs, validates evidence, recalculates controlled Excel totals, and produces a reviewable audit trail.
+LedgerOrchestrator fills the CMF workbook `TAF_G1_G2_G3_G4.xlsx` (balance sheets
+and premiums by branch of Tunisian insurers) from their published annual reports.
+Every number it writes carries its source page, bounding box and SHA-256, and is
+admitted only when **independent accounting identities** agree: totals equal their
+details, the premium annex equals the technical statement, current figures equal
+next year's comparatives. A blank with a reason is preferred to a plausible guess.
 
-The current reference implementation is validated on **STAR individual financial statements, 2023–2025**, sourced from the Tunisian CMF publication workflow. Company/template profiles and explicit year mappings now drive the shared pipeline and workbook layer. Extraction adapters for additional companies and periods still require qualification on supplied documents.
+> Proof-of-concept, not a certified accounting system. Business rules that still
+> await the supervisor's confirmation are labelled `default` in
+> [DECISIONS.md](docs/DECISIONS.md).
 
-> This repository is a proof-of-concept product, not a certified accounting system. Missing, ambiguous, or contradictory source data is reported and never silently invented.
+## Results (14 October 2026)
 
-## Why it matters
+Coverage of the template cells for which a source document exists, measured by
+`python -m ledger_orchestrator.evaluation coverage`:
 
-Financial PDF extraction is not only an OCR problem. A reliable workflow must preserve units, periods, source locations, accounting relationships, conflicts, and the distinction between a real zero and missing information.
+| Sheet | Filled / sourced cells | Companies |
+| --- | ---: | --- |
+| TAF_G1 balance sheet 2021–2025 | 446 / 1,245 (35.8 %) | STAR, COMAR 2023–2025 (incl. 94 prefilled COMAR values, confirmed) |
+| TAF_G3 premiums by branch 2010–2025 | 183 / 312 (58.7 %) | STAR 2011–2025, COMAR 2019–2025, ASTREE 2012–2025 (partial) |
+| TAF_G2 premiums (takaful/life) | 0 / 96 | ZITOUNA not started |
+
+Accuracy against references the extractor never sees, measured by
+`python -m ledger_orchestrator.evaluation benchmark`:
+
+| Reference | Compared | Agreement |
+| --- | ---: | ---: |
+| COMAR balance values already typed in the template (2024/2025) | 92 | 100 % |
+| CGA aggregates in TAF_G4, 2024 (premiums, capital, result, equity, placements) — STAR and COMAR | 10 | 100 % |
+| ASTREE 2024 non-life + life premiums vs CGA | 1 | exact to the kTND |
+| Generic history reader vs the production STAR reader, 2024 | 14 | 100 % |
+
+Years that fail an identity are rejected with a reason rather than guessed (for
+example ASTREE 2016, COMAR 2017, the scanned COMAR 2016/2018 reports).
+
+## How it works
 
 ```text
-Orchestrator
-├── Documents: identity, period, native text and OCR
-├── Extraction: accounting lines, notes and branch premiums
-├── Validation: source reconciliation and evidence admission
-├── Workbook: controlled Excel writing and recalculation
-└── Review: coverage, anomalies and human-review queue
+documents → extraction → validation → workbook → review     (deterministic agents)
+    │            │             │            │          └ coverage, review queue, reasons
+    │            │             │            └ guarded writes, COUNT-guarded formulas,
+    │            │             │              conflicts preserved, LibreOffice recalc
+    │            │             └ identities: Σ details = total, gross − provisions = net,
+    │            │               annex = statement = reconciliation, N = N+1 comparative
+    │            └ native text or OCR, qualified readers per company and layout family
+    └ identity, period, unit, SHA-256
 ```
 
-The orchestrator runs these specialist agents in dependency order, stops downstream work on failure and records each transition in the run report. These agents are deterministic software components; no language model makes accounting decisions in the current version.
+- **Statements profiles** (`config/star.json`, `config/comar.json`) drive the full
+  balance sheet and premium pipeline for qualified years.
+- **Premium-history profiles** (`config/history/*.json`) read the regulated NC 26
+  annexes generically: annex 13/12 categories, PRNV11/PRV11 statement rows,
+  multi-line and interleaved headers, kTND annexes proven by identity.
+- **Consolidation** runs several profiles into one copy of the template and proves
+  that every write survived and no cell was written twice.
+- **Human review** (LangGraph, SQLite checkpoints) records decisions on unresolved
+  cells; an optional local copilot explains a run with checked citations.
 
-## Current capabilities
+### Actuarial and accounting rules (selected)
 
-- Local-only processing. Runtime code does not download documents or call cloud AI APIs.
-- Native PDF extraction with targeted French OCR for scanned pages.
-- Evidence: file, SHA-256, page, bounding box, method, unit and conversion factor.
-- Conservative admission rules: blanks remain blank; zero is written only when published and admissible.
-- Accounting controls for totals, subtotals, gross/provision/net relationships and year comparatives.
-- Controlled workbook editing that preserves the supplied template and existing conflicts.
-- Versioned company/template profiles, explicit year-to-column mappings and profile fingerprints.
-- Canonical financial facts with checked document provenance before workbook writing.
-- LibreOffice recalculation in a disposable environment with formula-cache verification.
-- Docker image, CLI and minimal local API.
-- Review files for unresolved or non-revalidated target cells.
-- Agent execution trace with stage status, duration and count-based metrics, available at `/runs/{run_id}/agents`.
-- Local review desk powered by LangGraph interrupts and SQLite checkpoints: inspect unresolved cells, open their PDF source, and record human decisions without changing the workbook.
-- Optional read-only local copilot: explains a run or review case from selected report facts, with server-checked citations; it never edits a workbook.
+- Premiums are issued premiums net of cancellations, before reinsurance (NC 28),
+  confirmed against CGA totals for STAR and COMAR (D-001).
+- The five template branches partition direct non-life business; acceptations are
+  excluded and reported (D-003). ASTREE Groupe = Maladie + Invalidité, corroborated
+  by FTUSA 2024 (D-009).
+- A dash is zero only when a published total proves it (D-002); a restated
+  comparative never overwrites the year's own publication (D-005).
+- Thousands of dinars are converted only when exact (D-008).
 
-## Agentic architecture
+### On language models
 
-LedgerOrchestrator coordinates specialist agents through explicit prerequisites. The validation agent must complete before the workbook agent can write; the review agent receives both validated data and the resulting workbook. An optional local model now assists the user in reading a run; agent-side ambiguous label correspondence remains future work. The model never approves financial values. See the [agent architecture](docs/ARCHITECTURE_AGENTS.md).
-
-## STAR reference result
-
-| Exercise | TAF_G1 balance | TAF_G3 premiums |
-| --- | ---: | ---: |
-| 2023 | 74 / 81 | 9 / 9 |
-| 2024 | 74 / 81 | 9 / 9 |
-| 2025 | 58 / 81 | 9 / 9 |
-
-The result is deliberately marked `needs_review`. This is an evidence-backed demonstrator, not a claim of complete accounting coverage.
-
-## Business rules demonstrated
-
-- Target unit: TND, with source unit and conversion factor retained.
-- Premium basis: issued premiums before reinsurance ceded.
-- Transport includes Aviation; IRDS includes Accidents at work.
-- Non-life Acceptations are kept separately and excluded from the five-branch target total.
-- Totals are formulas over validated published details.
-- Existing conflicting cells are preserved and reported.
+Models may propose, never admit. A local `qwen2.5:7b` was evaluated as a table
+reader on an ASTREE annex: it invented labels and split amounts, so its output
+fails the grounding checks and it is not used to read numbers. This negative
+result is recorded in the [plan](docs/PLAN.md).
 
 ## Quick start
 
-Docker Desktop is required for the full integration workflow.
+Docker Desktop is required (Tesseract and LibreOffice live in the image).
 
 ```powershell
 docker compose build
-docker compose run --rm engine python -m ledger_orchestrator --years 2023 2024 2025
-docker compose up -d
-Invoke-RestMethod http://localhost:8000/health
+# One consolidated workbook with every qualified profile:
+docker compose run --rm engine python -m ledger_orchestrator.consolidate --configs `
+  config/star.json config/comar.json config/history/star_premiums.json `
+  config/history/comar_premiums.json config/history/astree_premiums.json
+# Measure it:
+python -m ledger_orchestrator.evaluation coverage --root data --workbook outputs/consolidated_<id>/TAF_consolide.xlsx
 ```
 
-Open <http://127.0.0.1:8000/review> to start a STAR run or inspect unresolved
-cells. The review workflow is documented in [Human review with LangGraph](docs/REVUE_LANGGRAPH.md).
-The optional model setup is documented in [Local review copilot](docs/COPILOTE_LOCAL.md).
+The review desk is served at <http://127.0.0.1:8000/review> after `docker compose up -d`
+([LangGraph review](docs/REVUE_LANGGRAPH.md), [local copilot](docs/COPILOTE_LOCAL.md)).
 
-Generated artifacts are written under `outputs/<run_id>/`: the review workbook, structured report, anomaly log, review queue and optional previews.
+## Verification
+
+`scripts/docker_test.sh` runs the 144-test suite offline in the image. Before every
+merge, `scripts/verify_reference.py` replays the STAR and COMAR reference runs and
+compares documents, values, controls, anomalies, writes, coverage, formulas, styles
+and recalculated values (14 checks each). Tests use synthetic data only.
 
 ## Repository map
 
 ```text
-src/ledger_orchestrator/  product source package
-├── orchestration.py      specialist-agent coordination
-├── pipeline.py           agent execution and run reporting
-├── profiles.py           validated company/template contracts
-├── records.py            canonical financial facts and provenance
-├── extraction/           PDF, OCR, notes and comparatives
-├── validation/           accounting rules and source evidence
-├── workbook/             guarded writing, recalculation and audits
-├── review/               review queue, LangGraph and local copilot
-├── api/                  application routes and loopback gateway
-└── ui/                   local review interface
-config/                   company/template-specific rules
-tests/                    deterministic unit and integration tests
-docs/                     business logic, architecture and delivery material
-scripts/                  demo and verification utilities
-data/                     confidential local inputs (ignored by Git)
-outputs/                  generated local artifacts (ignored by Git)
+src/ledger_orchestrator/
+├── pipeline.py, orchestration.py   statements pipeline and agent trace
+├── history.py                      premium-history pipeline (TAF_G3)
+├── consolidate.py                  several profiles → one verified workbook
+├── evaluation/                     coverage matrix and reference benchmark
+├── extraction/                     STAR, COMAR, generic NC 26 annex reader, OCR
+├── validation/                     accounting identities and evidence gates
+├── workbook/                       guarded writers and recalculation
+├── review/, api/, ui/              review queue, LangGraph desk, local API
+config/                             company, history and qualification contracts
+docs/                               constitution, decisions, plan, status, business rules
 ```
 
-## Privacy boundary
-
-PDFs, Excel workbooks, caches, reports and generated outputs are excluded from Git. Only code, configuration templates, tests and documentation belong in the public repository. Do not commit confidential source documents.
-
-The runtime is offline with respect to source documents. External CMF research is not part of the extraction pipeline; only user-provided documents are in scope.
-
-## Test suite
-
-```powershell
-$env:PYTHONPATH = "src"
-python -m unittest discover -s tests -q
-```
-
-The Docker workflow additionally verifies the LibreOffice recalculation path. The suite covers number parsing, missing-vs-zero policy, evidence gates, conflicts, grouped premiums, OCR diagnostics, source audits and workbook preservation.
-
-The current suite has 88 tests, including synthetic alternate-company mappings
-and nonconsecutive years. GitHub Actions builds the standard Dockerfile and runs
-these tests without confidential inputs. Local full-reference regression is
-available through `scripts/verify_reference.py`; see [profile contracts](docs/PROFILES.md).
-
-## Product roadmap
-
-1. Qualify a second extraction adapter on supplied documents, starting with ASTREE.
-2. Validate historical layouts and explicit unit conversions before extending company/year coverage.
-3. Establish an independently reviewed reference dataset and quantify extraction accuracy.
-4. Extend the local review interface from documented decisions to controlled, auditable resolution and workbook regeneration.
-5. Extend the optional local model from read-only user assistance to ambiguous correspondence proposals, subject to deterministic validation.
+PDFs, workbooks and run outputs stay local and are excluded from Git.
 
 ## Documentation
 
-- [Delivery brief](docs/README_REMISE.md)
-- [15-minute demonstration guide](docs/DEMO_15_MIN.md)
-- [Business logic](docs/LOGIQUE_METIER.md)
-- [Project status](docs/STATUS.md)
-- [Profile contracts](docs/PROFILES.md)
-- [Next milestones and acceptance criteria](docs/ROADMAP.md)
-- [LangGraph review workflow](docs/REVUE_LANGGRAPH.md)
-- [Local review copilot](docs/COPILOTE_LOCAL.md)
+[Constitution](docs/CONSTITUTION.md) · [Decisions](docs/DECISIONS.md) ·
+[Plan](docs/PLAN.md) · [Status](docs/STATUS.md) · [Business rules](docs/LOGIQUE_METIER.md) ·
+[Agents](docs/ARCHITECTURE_AGENTS.md) · [Profiles](docs/PROFILES.md) · [Demo](docs/DEMO_15_MIN.md)
 
 ## Project attribution
 
