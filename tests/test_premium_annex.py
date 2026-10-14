@@ -88,9 +88,20 @@ class PremiumAnnexTests(unittest.TestCase):
         with self.assertRaises(AnnexError):
             read_premiums(case, 2020, TAXONOMY, 3)
         case = pages()
-        case[0]['text'] = case[0]['text'].replace('(en dinars)', '(en milliers de dinars)')
+        case[0]['text'] = case[0]['text'].replace('(en dinars)', '')     # no unit anywhere
         with self.assertRaises(AnnexError):
             read_premiums(case, 2020, TAXONOMY, 3)
+
+    def test_thousands_convert_exactly_or_not_at_all(self):
+        from ledger_orchestrator.extraction.premium_annex import exact_factor
+        self.assertEqual(exact_factor('kTND', [31729.119, 10312.252]), 1000)
+        with self.assertRaises(AnnexError):
+            exact_factor('kTND', [31729.1195])
+        case = pages()
+        case[0]['text'] = case[0]['text'].replace('(en dinars)', '(en milliers de dinars)')
+        records, _ = read_premiums(case, 2020, TAXONOMY, 3)
+        self.assertEqual((records['TOTAL_NONVIE']['value'], records['TOTAL_NONVIE']['conversion_factor']),
+                         (1000000000, 1000))
 
     def test_wrong_year_or_duplicate_annex_is_rejected(self):
         with self.assertRaises(AnnexError):
@@ -98,7 +109,7 @@ class PremiumAnnexTests(unittest.TestCase):
         case = pages()
         case.append(copy.deepcopy(case[3]))
         with self.assertRaises(AnnexError):
-            annex_row(case, 2020, NONLIFE, life=False)
+            annex_row(case, 2020, dict(aliases=NONLIFE), life=False)
 
     def test_units(self):
         self.assertEqual(statement_unit('(chiffres arrondis en dinars)'), 'TND')
@@ -134,4 +145,4 @@ class LayoutVariantTests(unittest.TestCase):
         case = pages()
         case[3]['text'] += ' TABLEAU DE RACCORDEMENT'
         with self.assertRaises(AnnexError):
-            annex_row(case, 2020, NONLIFE, life=False)
+            annex_row(case, 2020, dict(aliases=NONLIFE), life=False)

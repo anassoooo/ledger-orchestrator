@@ -157,10 +157,14 @@ def facts(annual, documents, config):
         for code, record in sorted(data['records'].items()):
             if record['year'] != year or record['code'] != code or not 1 <= record['page'] <= document['pages']:
                 raise ValueError('Premium record identity or page is invalid')
+            factor = record.get('conversion_factor', 1)
+            if factor not in (1, 1000):
+                raise ValueError('Only exact TND or kTND conversions are qualified (D-008)')
             evidence = SourceEvidence(record['source'], document['sha256'], year, record['page'], record['method'],
-                                      record['unit'], '1', record['bbox'], 'current')
-            amount = decimal_text(record['value'])
-            result.append(asdict(FinancialFact(1, config['company'], year, 'premiums', code, amount, amount,
+                                      record.get('source_unit', 'TND'), str(factor), record['bbox'], 'current')
+            source = decimal_text(record.get('source_value', record['value']))
+            target = decimal_text(record['value'])
+            result.append(asdict(FinancialFact(1, config['company'], year, 'premiums', code, source, target,
                                                'TND', record.get('approved', False), evidence)))
     return result
 

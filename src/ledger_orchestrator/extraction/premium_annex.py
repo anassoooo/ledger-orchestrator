@@ -18,7 +18,9 @@ by identities computed here and re-checked downstream:
 """
 import re
 
-from ledger_orchestrator.extraction.core import lines, normalize, numeric_groups
+from decimal import Decimal
+
+from ledger_orchestrator.extraction.core import lines, normalize, number, numeric_groups
 
 DINAR_UNIT = re.compile(r'(EN|ARRONDIS EN|EXPRIMEE?S? EN)\s+(DINARS?|DT)\b')
 # Accounting-policy declaration covering every statement of the document.
@@ -181,7 +183,8 @@ def _letters(text):
     return re.sub(r'[^A-Z]', '', normalize(text))
 
 
-def _band_labels(rows, header_rows, first_data, aliases, width):
+def _band_columns(rows, header_rows, first_data, width):
+    """Column right edges and the header text rebuilt inside each band."""
     """Multi-line headers: columns from amount right edges, labels from header words above.
 
     Column right edges are clustered over every numeric row of the table, so a
@@ -205,9 +208,8 @@ def _band_labels(rows, header_rows, first_data, aliases, width):
     rights = [max(c) for c in clusters if len(c) >= 3]
     if len(rights) < 2:
         raise AnnexError('Too few amount columns to locate category headers')
-    index = {alias_key: code for code, names in aliases.items() for alias_key in (_letters(n) for n in names)}
     words = [w for r in header_rows for w in r]
-    labels, previous, texts = [], None, []
+    columns, previous = [], None
     for right in rights:
         left = previous if previous is not None else right - 60
         band = [w for w in words if left + 2 < (w['x0'] + w['x1']) / 2 <= right + 8]
@@ -216,15 +218,51 @@ def _band_labels(rows, header_rows, first_data, aliases, width):
             by_line.setdefault(round(w['top']), []).append(w)
         text = ''.join(_letters(''.join(x['text'] for x in sorted(ws, key=lambda w: w['x0'])))
                        for _, ws in sorted(by_line.items()))
-        texts.append(text)
-        if text not in index:
-            raise AnnexError(f'Unknown category header: {text!r} in {texts}')
-        labels.append(dict(code=index[text], x0=right - (right - left) * 0.8, x1=right, text=text))
+        columns.append(dict(left=left, right=right, text=text))
         previous = right
-    codes = [l['code'] for l in labels]
+    return columns
+
+
+def _band_labels(columns, spec):
+    """Name band columns by exact alias, or by one ordered layout family.
+
+    A family lists every column in order; "expect" is a letter fragment its
+    header must contain, null for columns whose identity cannot change a target
+    value (all mapped to the same branch). Exactly one family must fit.
+    """
+    texts = [c['text'] for c in columns]
+    index = {key: code for code, names in spec['aliases'].items() for key in (_letters(n) for n in names)}
+    if all(t in index for t in texts):
+        codes = [index[t] for t in texts]
+        how = 'aliases'
+    else:
+        fits = [f for f in spec.get('families', []) if len(f['columns']) == len(columns) and all(
+            col['expect'] is None or col['expect'] in text for col, text in zip(f['columns'], texts))]
+        if len(fits) != 1:
+            raise AnnexError(f'No unique layout family for headers {texts} ({len(fits)} fit)')
+        codes = [col['code'] for col in fits[0]['columns']]
+        how = 'family ' + fits[0]['name']
     if len(codes) != len(set(codes)):
         raise AnnexError('Duplicate category header')
-    return labels
+    return [dict(code=code, x0=c['left'], x1=c['right'], text=c['text'], band=True, matched=how)
+            for code, c in zip(codes, columns)]
+
+
+def _by_bands(words, labels):
+    """Join the tokens whose right edge falls in each column band, then parse."""
+    values = []
+    for label in labels:
+        band = sorted((w for w in words if label['x0'] + 2 < w['x1'] <= label['x1'] + 8
+                       and w['text'].strip() not in DASHES), key=lambda w: w['x0'])
+        if not band:
+            continue
+        raw = ''.join(w['text'] for w in band)
+        try:
+            value = number(raw)
+        except ValueError as exc:
+            raise AnnexError(f'Unreadable amount {raw!r} in column {label["code"]}') from exc
+        values.append((value, band[0]['x0'], band[-1]['x1']))
+    return values
 
 
 def _column(labels, x0, x1):
@@ -246,7 +284,7 @@ def _column(labels, x0, x1):
     return distances[0][1]
 
 
-def annex_row(pages, year, aliases, life):
+def annex_row(pages, year, spec, life):
     """Locate annex 12/13 and read its "Primes émises" row by header columns."""
     candidates = []
     for page in pages:
@@ -264,7 +302,7 @@ def annex_row(pages, year, aliases, life):
         header_index = next((i for i, r in enumerate(rows) if _key(r[0]['text']) == 'CATEGORIES'), None)
         premium_index = [i for i, r in enumerate(rows) if _row_label(r).startswith('PRIMES EMISES')]
         if header_index is not None:
-            labels = _header_labels(rows[header_index][1:], aliases)
+            labels = _header_labels(rows[header_index][1:], spec['aliases'])
             premium_index = [i for i in premium_index if i > header_index]
         else:
             # Multi-line headers: the block between the title and the first data row.
@@ -274,7 +312,7 @@ def annex_row(pages, year, aliases, life):
                                and _row_label(r).startswith('PRIMES')), None)
             if title is None or first_data is None or not premium_index:
                 continue
-            labels = _band_labels(rows, rows[title + 1:first_data], first_data, aliases, page['width'])
+            labels = _band_labels(_band_columns(rows, rows[title + 1:first_data], first_data, page['width']), spec)
         if len(premium_index) != 1:
             raise AnnexError('Expected one "Primes émises" row in the category annex')
         candidates.append((page, labels, rows[premium_index[0]]))
@@ -282,7 +320,11 @@ def annex_row(pages, year, aliases, life):
         raise AnnexError(f"Expected one {'life' if life else 'non-life'} category annex, found {len(candidates)}")
     page, labels, row = candidates[0]
     label_end = max(w['x1'] for w in row if re.search(r'[A-Za-z]', w['text']))
-    values = numeric_groups(_signed([w for w in row if w['x0'] > label_end]), page['width'])
+    amounts = _signed([w for w in row if w['x0'] > label_end])
+    if labels[0].get('band'):
+        values = _by_bands(amounts, labels)
+    else:
+        values = numeric_groups(amounts, page['width'])
     dashes = [w for w in row if w['text'].strip() in DASHES and w['x0'] > label_end]
     cells = {l['code']: None for l in labels}
     for value, x0, x1 in values:
@@ -300,6 +342,28 @@ def annex_row(pages, year, aliases, life):
                 source_label=' '.join(w['text'] for w in row))
 
 
+def exact_factor(unit, values):
+    """D-008: kTND is converted only when every amount has at most three decimals."""
+    if unit == 'TND':
+        return 1
+    if unit != 'kTND':
+        raise AnnexError(f'Statement unit not qualified: {unit}')
+    for value in values:
+        scaled = Decimal(str(value)) * 1000
+        if scaled != scaled.to_integral_value():
+            raise AnnexError(f'kTND amount {value} has more than three decimals: conversion inexact')
+    return 1000
+
+
+def _convert(record, factor):
+    if factor != 1:
+        record['source_value'] = record['value']
+        record['source_unit'] = 'kTND'
+        record['value'] = int(Decimal(str(record['value'])) * factor)
+    record['conversion_factor'] = factor
+    return record
+
+
 def read_premiums(pages, year, taxonomy, tolerance):
     """Return admitted non-life categories, the non-life and life totals, and checks."""
     result, checks = {}, []
@@ -307,7 +371,7 @@ def read_premiums(pages, year, taxonomy, tolerance):
         spec = taxonomy['life' if life else 'nonlife']
         statement = statement_gross(pages, 'PRV11' if life else 'PRNV11', year)
         try:
-            annex = annex_row(pages, year, spec['aliases'], life)
+            annex = annex_row(pages, year, spec, life)
         except AnnexError as exc:
             if 'found 0' not in str(exc):
                 raise
@@ -317,30 +381,31 @@ def read_premiums(pages, year, taxonomy, tolerance):
                 checks.append(dict(identity='non-life category annex', status='not_published'))
                 continue
             pages_seen = corroborated_life_total(pages, statement)
-            if statement['unit'] != 'TND':
-                raise AnnexError(f"Statement unit not qualified: {statement['unit']}")
+            factor = exact_factor(statement['unit'], [statement['value']])
             checks.append(dict(identity='life statement total printed again', pages=pages_seen, delta=0))
-            result['TOTAL_VIE'] = dict(code='TOTAL_VIE', year=year, value=statement['value'], unit='TND',
+            result['TOTAL_VIE'] = _convert(dict(code='TOTAL_VIE', year=year, value=statement['value'], unit='TND',
                                        page=statement['page'], method=statement['method'], bbox=statement['bbox'],
                                        source_label=statement['source_label'], statement=statement,
-                                       corroborating_pages=pages_seen)
+                                       corroborating_pages=pages_seen), factor)
             continue
-        if statement['unit'] != 'TND':
-            raise AnnexError(f"Statement unit not qualified: {statement['unit']}")
-        if annex['unit'] not in (None, 'TND'):
+        if annex['unit'] not in (None, statement['unit']):
             raise AnnexError('Annex unit contradicts the statement')
+        printed = [c['value'] for c in annex['cells'].values() if c and c['value'] is not None]
+        factor = exact_factor(statement['unit'], printed + [statement['value']])
+        # Identities are checked in the printed unit; tolerance is in TND.
+        tolerance_printed = tolerance / factor
         cells = annex['cells']
         total = cells.get('TOTAL')
         if total is None or total['value'] is None:
             raise AnnexError('Missing annex total')
-        if abs(total['value'] - statement['value']) > tolerance:
+        if abs(total['value'] - statement['value']) > tolerance_printed:
             raise AnnexError(f"Annex total differs from {statement['code']}: {total['value'] - statement['value']}")
         subtotals = spec.get('subtotals', {})
         categories = [c for c in cells if c != 'TOTAL' and c not in subtotals]
         unknown = [c for c in categories if cells[c] is None or cells[c]['value'] is None]
         known = sum(cells[c]['value'] for c in categories if c not in unknown)
         delta = known - total['value']
-        if abs(delta) > tolerance:
+        if abs(delta) > tolerance_printed:
             raise AnnexError(f'Annex categories do not reconcile with the total: {delta}')
         # D-002: blanks/dashes are admitted only through the identity above. With
         # several, only their sum is proven, so they must share one target branch.
@@ -356,7 +421,7 @@ def read_premiums(pages, year, taxonomy, tolerance):
             if sub is None or sub['value'] is None:
                 raise AnnexError(f'Printed subtotal {name} has no amount')
             sub_delta = sum(cells[c]['value'] for c in members if c in cells and c not in unknown) - sub['value']
-            if abs(sub_delta) > tolerance:
+            if abs(sub_delta) > tolerance_printed:
                 raise AnnexError(f'Subtotal {name} does not reconcile: {sub_delta}')
             checks.append(dict(identity=f'{name} = sum of members', delta=sub_delta))
         checks.append(dict(identity=f"{'life' if life else 'non-life'} categories = annex total", delta=delta))
@@ -371,9 +436,9 @@ def read_premiums(pages, year, taxonomy, tolerance):
             if code in unknown:
                 record['nil_proof'] = dict(rule='D-002', printed='dash' if cell else 'blank', delta=delta,
                                            proven='value' if len(unknown) == 1 else 'sum', members=unknown)
-            result[record['code']] = record
+            result[record['code']] = _convert(record, factor)
         total_code = 'TOTAL_VIE' if life else 'TOTAL_NONVIE'
-        result[total_code] = dict(code=total_code, year=year, value=total['value'], unit='TND',
+        result[total_code] = _convert(dict(code=total_code, year=year, value=total['value'], unit='TND',
                                   page=annex['page'], method=annex['method'], bbox=total['bbox'],
-                                  source_label=annex['source_label'], statement=statement)
+                                  source_label=annex['source_label'], statement=statement), factor)
     return result, checks
