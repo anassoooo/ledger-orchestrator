@@ -7,8 +7,9 @@ import openpyxl
 from ledger_orchestrator.consolidate import verify_union
 
 
-def run(company, *writes):
-    return dict(company=company, writes=[dict(sheet='TAF_G1', cell=c, new=v) for c, v in writes])
+def run(company, *writes, profile=None):
+    return dict(company=company, profile=dict(id=profile or company.lower()),
+                writes=[dict(sheet='TAF_G1', cell=c, new=v) for c, v in writes])
 
 
 class ConsolidationTests(unittest.TestCase):
@@ -33,7 +34,10 @@ class ConsolidationTests(unittest.TestCase):
         checks = self.check({'C3': 1}, [run('COMAR', ('C3', 1)), run('STAR', ('C3', 1))])
         self.assertFalse(checks['no_cell_written_twice'])
         checks = self.check({'C3': 1}, [run('STAR', ('C3', 1)), run('STAR', ('C4', None))])
-        self.assertFalse(checks['companies_distinct'])
+        self.assertFalse(checks['profiles_distinct'])
+        checks = self.check({'C3': 1, 'C4': 2}, [run('STAR', ('C3', 1)),
+                                                  run('STAR', ('C4', 2), profile='star_premium_history')])
+        self.assertTrue(all(checks.values()))
 
 
 if __name__ == '__main__':

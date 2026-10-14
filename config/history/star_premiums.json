@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "profile_id": "star_premium_history",
+  "kind": "premium_history",
+  "revision": 1,
+  "status": "validated",
+  "company": "STAR",
+  "identity_terms": ["STAR", "SOCIETE TUNISIENNE D'ASSURANCES"],
+  "source_directory": "sources/STAR",
+  "years": [2011, 2012, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022],
+  "target_unit": "TND",
+  "rounding_tolerance_tnd": 3,
+  "premium_basis": "before_reinsurance",
+  "taxonomy": {
+    "nonlife": {
+      "aliases": {
+        "GROUPE": ["GROUPE"],
+        "A_TRAVAIL": ["A.TRAVAIL", "A. TRAVAIL"],
+        "INCENDIE": ["INCENDIE"],
+        "GRELE": ["GRELE"],
+        "MORTALITE_BETAIL": ["M.B"],
+        "TRANSPORT": ["TRANSPORT"],
+        "VOL": ["VOL"],
+        "AVIATION": ["AVIATION"],
+        "RISQUES_DIVERS": ["RISQUES DIVERS", "A.R.D.S"],
+        "AUTOMOBILE": ["AUTOMOBILE", "AUTOS"],
+        "TOTAL_DIRECT": ["T. AFF .DIR."],
+        "ACCEPTATION": ["ACCEPTATION", "ACCEPT°"],
+        "TOTAL": ["TOTAL"]
+      },
+      "subtotals": {
+        "TOTAL_DIRECT": ["GROUPE", "A_TRAVAIL", "INCENDIE", "GRELE", "MORTALITE_BETAIL", "TRANSPORT", "VOL",
+                         "AVIATION", "RISQUES_DIVERS", "AUTOMOBILE"]
+      }
+    },
+    "life": {
+      "aliases": {
+        "VIE": ["VIE"], "DECES": ["DECES"], "MIXTE": ["MIXTE"],
+        "ACCEPTATION": ["ACCEPTATION"], "TOTAL": ["TOTAL"]
+      }
+    },
+    "branches": {
+      "AUTOMOBILE": ["AUTOMOBILE"],
+      "INCENDIE": ["INCENDIE"],
+      "TRANSPORT": ["TRANSPORT", "AVIATION"],
+      "IRDS": ["RISQUES_DIVERS", "A_TRAVAIL", "GRELE", "MORTALITE_BETAIL", "VOL"],
+      "GROUPE": ["GROUPE"]
+    },
+    "excluded": ["ACCEPTATION"]
+  },
+  "workbook": {
+    "template": "templates/TAF_G1_G2_G3_G4.xlsx",
+    "filename": "STAR_historique.xlsx",
+    "sheet": "TAF_G3",
+    "anchor": {"cell": "B1", "value": "STAR"},
+    "year_row": 2,
+    "first_year": 2010,
+    "first_year_column": "B",
+    "branch_rows": {"AUTOMOBILE": 4, "INCENDIE": 5, "TRANSPORT": 6, "IRDS": 7, "GROUPE": 8, "VIE": 10},
+    "totals": {
+      "TOTAL_9": {"row": 9, "children": ["AUTOMOBILE", "INCENDIE", "TRANSPORT", "IRDS", "GROUPE"]},
+      "TOTAL_11": {"row": 11, "children": ["VIE"]},
+      "TOTAL_12": {"row": 12, "children": ["TOTAL_9", "TOTAL_11"]}
+    }
+  }
+}

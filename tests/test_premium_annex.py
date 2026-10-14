@@ -1,0 +1,110 @@
+import copy
+import unittest
+
+from ledger_orchestrator.extraction.premium_annex import AnnexError, annex_row, read_premiums, statement_unit
+
+NONLIFE = {'GROUPE': ['GROUPE'], 'INCENDIE': ['INCENDIE'], 'RISQUES_DIVERS': ['RISQUES DIVERS'],
+           'AUTOMOBILE': ['AUTOMOBILE', 'AUTOS'], 'ACCEPTATION': ['ACCEPTATION'], 'TOTAL': ['TOTAL']}
+LIFE = {'VIE': ['VIE'], 'DECES': ['DECES'], 'TOTAL': ['TOTAL']}
+TAXONOMY = dict(nonlife=dict(aliases=NONLIFE), life=dict(aliases=LIFE),
+                branches=dict(GROUPE=['GROUPE'], INCENDIE=['INCENDIE'], IRDS=['RISQUES_DIVERS'],
+                              AUTOMOBILE=['AUTOMOBILE']), excluded=['ACCEPTATION'])
+
+
+def words(top, items):
+    """items: (text, x1) pairs; each word is 30 points wide, right-aligned on x1."""
+    return [dict(text=t, x0=x1 - 6 * len(t), x1=x1, top=top, bottom=top + 8) for t, x1 in items]
+
+
+def row(top, label, amounts, columns):
+    result = words(top, [(label, 120)])
+    for amount, x1 in zip(amounts, columns):
+        if amount is not None:
+            result += words(top, [(part, x1 - 20 * i) for i, part in enumerate(reversed(amount.split()))])
+    return result
+
+
+def annex_page(page, header, amounts, title, columns):
+    header_words = words(100, [('CATEGORIES', 120)])
+    for text, x1 in zip(header, columns):
+        parts = text.split()
+        # Headers end about 10 points left of their right-aligned amounts (measured on STAR).
+        header_words += words(100, [(p, x1 - 10 - 45 * (len(parts) - 1 - i)) for i, p in enumerate(parts)])
+    body = header_words + row(120, 'Primes émises', amounts, columns)
+    text = f'{title} 31/12/2020 CATEGORIES ' + ' '.join(header) + ' PRIMES EMISES ' + ' '.join(a or '' for a in amounts)
+    return dict(page=page, width=842, height=595, method='native', text=text, words=body)
+
+
+def statement_page(page, code, value, life):
+    title = "Etat de résultat technique de l'assurance " + ('vie' if life else 'non-vie') + ' 31/12/2020 (en dinars)'
+    body = words(120, [(code, 60)]) + words(120, [(part, 300 + 20 * i) for i, part in enumerate(value.split())])
+    body += words(120, [('999', 500)])
+    return dict(page=page, width=842, height=595, method='native', text=title, words=body)
+
+
+COLUMNS = [200, 320, 440, 560, 680, 800]
+
+
+def pages(nonlife=None, total='1 000 000', life_total='50 000'):
+    nonlife = nonlife or ['400 000', '100 000', '200 000', '290 000', '10 000', '1 000 000']
+    return [statement_page(4, 'PRNV11', total, False), statement_page(5, 'PRV11', life_total, True),
+            annex_page(30, ['VIE', 'DECES', 'TOTAL'], ['20 000', '30 000', '50 000'],
+                       'Résultat technique par catégorie Vie', COLUMNS[:3]),
+            annex_page(31, ['GROUPE', 'INCENDIE', 'RISQUES DIVERS', 'AUTOMOBILE', 'ACCEPTATION', 'TOTAL'],
+                       nonlife, 'Résultat technique par catégorie Non Vie', COLUMNS)]
+
+
+class PremiumAnnexTests(unittest.TestCase):
+    def test_reads_categories_and_proves_both_identities(self):
+        records, checks = read_premiums(pages(), 2020, TAXONOMY, 3)
+        self.assertEqual(records['AUTOMOBILE']['value'], 290000)
+        self.assertEqual(records['TOTAL_NONVIE']['value'], 1000000)
+        self.assertEqual(records['TOTAL_VIE']['value'], 50000)
+        self.assertEqual(records['VIE_DECES']['value'], 30000)
+        self.assertEqual({c['delta'] for c in checks}, {0})
+
+    def test_single_blank_category_is_nil_only_by_identity(self):
+        values = ['400 000', '100 000', None, '490 000', '10 000', '1 000 000']
+        records, _ = read_premiums(pages(values), 2020, TAXONOMY, 3)
+        self.assertEqual(records['RISQUES_DIVERS']['value'], 0)
+        self.assertEqual(records['RISQUES_DIVERS']['nil_proof']['printed'], 'blank')
+        values = ['400 000', None, None, '490 000', '10 000', '1 000 000']
+        with self.assertRaises(AnnexError):
+            read_premiums(pages(values), 2020, TAXONOMY, 3)
+
+    def test_identity_failures_reject_the_year(self):
+        cases = {
+            'categories': pages(['400 000', '100 000', '200 000', '299 000', '10 000', '1 000 000']),
+            'statement': pages(total='1 000 900'),
+            'life statement': pages(life_total='51 000'),
+        }
+        for name, case in cases.items():
+            with self.subTest(name), self.assertRaises(AnnexError):
+                read_premiums(case, 2020, TAXONOMY, 3)
+
+    def test_unknown_header_or_missing_unit_is_rejected(self):
+        case = pages()
+        case[3]['words'] = [dict(w, text='CREDIT') if w['text'] == 'INCENDIE' else w for w in case[3]['words']]
+        with self.assertRaises(AnnexError):
+            read_premiums(case, 2020, TAXONOMY, 3)
+        case = pages()
+        case[0]['text'] = case[0]['text'].replace('(en dinars)', '(en milliers de dinars)')
+        with self.assertRaises(AnnexError):
+            read_premiums(case, 2020, TAXONOMY, 3)
+
+    def test_wrong_year_or_duplicate_annex_is_rejected(self):
+        with self.assertRaises(AnnexError):
+            read_premiums(pages(), 2021, TAXONOMY, 3)
+        case = pages()
+        case.append(copy.deepcopy(case[3]))
+        with self.assertRaises(AnnexError):
+            annex_row(case, 2020, NONLIFE, life=False)
+
+    def test_units(self):
+        self.assertEqual(statement_unit('(chiffres arrondis en dinars)'), 'TND')
+        self.assertEqual(statement_unit('Exprimé en milliers de dinars'), 'kTND')
+        self.assertIsNone(statement_unit('no unit here'))
+
+
+if __name__ == '__main__':
+    unittest.main()

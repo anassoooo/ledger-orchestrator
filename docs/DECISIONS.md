@@ -24,7 +24,11 @@ confirmation; `confirmed` means confirmed by the business owner.
   rounding tolerance: the row total of a premium annex (other categories vs
   published total), or the parent total of a balance-sheet hierarchy (a detail
   is written only under a reconciled parent). The proof is stored with the
-  record. A blank cell (nothing printed) stays missing.
+  record. On a balance sheet a blank cell (nothing printed) stays missing. In a
+  premium annex row, whose printed total is an exact identity, a blank or dash
+  is admitted under the same proof; with several blanks only their *sum* is
+  proven, so they are admitted only when they all map to the same target branch
+  (the branch value is then exact while individual values stay unproven).
 - **Rationale.** In financial statements a dash conventionally means "nil". The
   identity turns that convention into evidence instead of an assumption. Accident
   du travail is essentially a run-off line for Tunisian insurers since the
@@ -94,3 +98,21 @@ confirmation; `confirmed` means confirmed by the business owner.
   + 27,693). Technical provisions differ by 7,697 kTND from PA3 and from every
   simple combination of published lines, so the CGA basis is unknown.
 - **Status.** corroborated on STAR 2024; to recheck on each new company.
+
+## D-007 — Premium history: three readings, OCR only with native corroboration
+
+- **Rule.** A historical year (TAF_G3, no TAF_G1 column) is admitted when annex 13
+  categories reconcile with the annex total, the annex total equals the first
+  amount of the PRNV11 statement row (gross, year N), and the life total equals
+  PRV11 — through annex 12 when published, otherwise through a second page that
+  prints the same life total. The unit is the statement's declaration, or that
+  of a page printing the same amount. "MD" (millions) is never read as thousands.
+  An OCR reading is admitted only if a native page prints the same amount.
+- **Rationale.** These are the regulated NC 26 disclosures; three independent
+  printings of the same figure make a misread column practically impossible.
+- **Evidence.** STAR 2011–2022: 11/11 years admitted, identity deltas 0 or ±1 TND.
+  On 2024, where the production reader is known, the generic reader agrees 14/14;
+  on 2023 and 2025 (scanned statements) it rejects rather than guessing. The
+  2018→2019 life growth (12.7 → 30.0 M TND) is printed on three pages and the
+  2019 comparative column confirms the 2018 level.
+- **Status.** default.

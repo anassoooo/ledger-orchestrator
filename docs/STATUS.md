@@ -363,3 +363,17 @@ les écritures sont conservées, qu'aucune cellule n'est écrite deux fois et qu
 sociétés sont distinctes. Couverture du modèle complet : TAF_G1 446 / 1 245 cellules
 disposant d'une source (35,8 %), TAF_G3 36 / 312 (11,5 %). Aucune erreur de formule.
 Une feuille de compléments n'est créée que si des rubriques publiées n'ont pas de ligne.
+
+## Historique des primes STAR 2011–2022 — 14 octobre
+
+Lecteur générique des annexes réglementaires (NC 26) : annexe 13 non-vie, annexe 12
+vie, ligne PRNV11/PRV11 des états de résultat technique. Une année est admise si les
+catégories rapprochent le total de l'annexe, si ce total égale le brut de l'état et
+si le total vie est imprimé une seconde fois (D-007). En-tête inconnu, colonne
+ambiguë, unité non déclarée ou écart : l'année est rejetée avec son motif.
+
+STAR : 11/11 exercices admis (écarts 0 ou ±1 TND), TAF_G3 84/96 ; 2010 et 2013 n'ont
+pas de document source. Évaluation sur 2024, où le lecteur de production est connu :
+14/14 valeurs identiques ; 2023 et 2025 (états scannés) rejetés plutôt que devinés.
+Classeur consolidé STAR + COMAR + historique STAR : TAF_G3 102/312, aucune erreur.
+Vérification : 137 tests, non-régression STAR 14/14, rejeu COMAR 14/14.

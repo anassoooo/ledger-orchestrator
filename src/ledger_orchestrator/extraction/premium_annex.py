@@ -1,0 +1,289 @@
+"""Generic reader for the regulated premium disclosures of Tunisian insurers (NC 26).
+
+Every annual report contains the same semantic objects, whatever its layout:
+
+- the technical statements (non-life PRNV11, life PRV11), whose first amount on
+  the "primes émises (et acceptées)" row is the gross issued premium of year N;
+- annex 13 (non-life) and annex 12 (life): "Résultat technique par catégorie",
+  with one column per category and a "Primes émises" row.
+
+The reader anchors on those meanings rather than on page coordinates. Category
+columns are identified from the header line through a per-company alias table;
+an unknown header rejects the table instead of guessing. Admission is decided
+by identities computed here and re-checked downstream:
+
+1. categories (and any "total affaires directes" subtotal) sum to the annex total;
+2. the annex total equals the statement's gross issued premium;
+3. the statement declares its unit, which the identity transfers to the annex.
+"""
+import re
+
+from ledger_orchestrator.extraction.core import lines, normalize, numeric_groups
+
+DINAR_UNIT = re.compile(r'(EN|ARRONDIS EN|EXPRIME[S]? EN)\s+(DINARS?|DT)\b')
+# "MD" means millions of dinars in Tunisian usage; it is never read as thousands.
+THOUSAND_UNIT = re.compile(r'MILLIERS?\s+DE\s+DINARS|EN\s+MILLE\s+DINARS|\bEN\s+(KDT|MDT)\b')
+YEARS = re.compile(r'\b(20\d\d)\b')
+DASHES = {'-', '‐', '‑', '‒', '–', '—'}
+
+
+class AnnexError(ValueError):
+    """The disclosure does not match a qualified reading; nothing is admitted."""
+
+
+def _key(text):
+    return re.sub(r'[^A-Z0-9]', '', normalize(text))
+
+
+def statement_unit(text):
+    text = normalize(text)
+    if THOUSAND_UNIT.search(text):
+        return 'kTND'
+    if DINAR_UNIT.search(text):
+        return 'TND'
+    return None
+
+
+NONLIFE_PAGE = re.compile(r'NON[\s\-‐‑]*VIE')
+
+
+def _is_nonlife(text):
+    return bool(NONLIFE_PAGE.search(normalize(text)))
+
+
+def _statement_row(row, code, life):
+    tokens = [normalize(w['text']) for w in row]
+    # The code may be glued to its label ("PRNV11Primes"), never to a digit.
+    for i, token in enumerate(tokens):
+        if re.fullmatch(code + r'([^0-9].*)?', token):
+            return i + 1
+    label = ' '.join(tokens)
+    expected = 'PRIMES EMISES' if life else 'PRIMES EMISES ET ACCEPTE'
+    if label.startswith(expected):
+        return len(expected.split())
+    return None
+
+
+def statement_gross(pages, code, year):
+    """First amount of the PRNV11 / PRV11 row on a technical statement of year N.
+
+    The row is identified by its code or, in older reports, by its printed label.
+    A note reference printed between the label and the amounts is skipped.
+    """
+    life = code == 'PRV11'
+    found = []
+    for page in pages:
+        text = normalize(page['text'])
+        if 'RESULTAT TECHNIQUE' not in text or 'CATEGORIE' in text or str(year) not in text:
+            continue
+        if _is_nonlife(page['text']) == life:
+            continue
+        for row in lines(page['words']):
+            start = _statement_row(row, code, life)
+            if start is None:
+                continue
+            amounts = [w for w in row[start:] if not re.search(r'[A-Za-z]', w['text'])]
+            values = numeric_groups(amounts, page['width'])
+            # A note reference ("9.1") is its own column group, never part of an
+            # amount; a company's gross premium is never below 100 TND.
+            if len(values) > 1 and abs(values[0][0]) < 100:
+                values = values[1:]
+            if values:
+                value, x0, x1 = values[0]
+                found.append(dict(code=code, value=value, page=page['page'], method=page['method'],
+                                  unit=statement_unit(page['text']),
+                                  bbox=[x0, min(w['top'] for w in row), x1, max(w['bottom'] for w in row)],
+                                  source_label=' '.join(w['text'] for w in row)))
+    if len({(f['value'], f['unit']) for f in found}) != 1:
+        raise AnnexError(f'{code}: expected one statement reading, found {len(found)}')
+    reading = found[0]
+    if reading['unit'] is None:
+        reading['unit'], reading['unit_page'] = _unit_by_amount(pages, reading['value'])
+    return reading
+
+
+def _formatted(value):
+    return f'{int(value):,}'.replace(',', ' ')
+
+
+def _unit_by_amount(pages, value):
+    """Unit of a page that declares one and prints the same amount (e.g. the notes)."""
+    printed = _formatted(value)
+    units = {(statement_unit(p['text']), p['page']) for p in pages
+             if printed in p['text'] and statement_unit(p['text'])}
+    if len({u for u, _ in units}) != 1:
+        return None, None
+    return sorted(units)[0]
+
+
+def corroborated_life_total(pages, statement):
+    """Without a life category annex, a second page must print the same life total."""
+    printed = _formatted(statement['value'])
+    others = [dict(page=p['page'], method=p['method']) for p in pages
+              if p['page'] != statement['page'] and printed in p['text']
+              and re.search(r'PRIMES EMISES (VIE|PRV1)', normalize(p['text']))]
+    if not others:
+        raise AnnexError('No life category annex and no second reading of the life total')
+    return others
+
+
+def _header_labels(row, aliases):
+    """Group header tokens into canonical categories, longest alias first."""
+    keyed = sorted(((tuple(_key(t) for t in alias.split()), code)
+                    for code, names in aliases.items() for alias in names),
+                   key=lambda item: -len(item[0]))
+    words = [w for w in row if _key(w['text'])]
+    labels, i = [], 0
+    while i < len(words):
+        for tokens, code in keyed:
+            window = [_key(w['text']) for w in words[i:i + len(tokens)]]
+            if tuple(window) == tokens:
+                group = words[i:i + len(tokens)]
+                labels.append(dict(code=code, x0=group[0]['x0'], x1=group[-1]['x1'],
+                                   text=' '.join(w['text'] for w in group)))
+                i += len(tokens)
+                break
+        else:
+            raise AnnexError(f"Unknown category header: {words[i]['text']!r}")
+    codes = [l['code'] for l in labels]
+    if len(codes) != len(set(codes)):
+        raise AnnexError('Duplicate category header')
+    return labels
+
+
+def _column(labels, x0, x1):
+    """Assign an amount to its header column.
+
+    Layouts right-align amounts just right of the header or centre them under
+    it; both overlap the header span. The largest overlap wins and must be
+    clearly larger than the next; otherwise the nearest right edge decides,
+    with the same ambiguity guard. Ambiguity rejects the table.
+    """
+    overlaps = sorted(((min(x1, l['x1']) - max(x0, l['x0']), i) for i, l in enumerate(labels)), reverse=True)
+    if overlaps[0][0] > 0:
+        if len(overlaps) > 1 and overlaps[1][0] > 0.5 * overlaps[0][0]:
+            raise AnnexError('Amount overlaps two category headers')
+        return overlaps[0][1]
+    distances = sorted((abs(x1 - l['x1']), i) for i, l in enumerate(labels))
+    if len(distances) > 1 and distances[0][0] > 0.5 * distances[1][0]:
+        raise AnnexError('Amount between two category columns')
+    return distances[0][1]
+
+
+def annex_row(pages, year, aliases, life):
+    """Locate annex 12/13 and read its "Primes émises" row by header columns."""
+    candidates = []
+    for page in pages:
+        text = normalize(page['text'])
+        if 'CATEGORIE' not in text or 'PRIMES EMISES' not in text:
+            continue
+        # The year is proven by the identity with the year-N statement; a page
+        # printed for another year only is still rejected here.
+        if YEARS.findall(text) and str(year) not in text:
+            continue
+        if _is_nonlife(page['text']) == life:
+            continue
+        rows = lines(page['words'])
+        header_index = next((i for i, r in enumerate(rows) if _key(r[0]['text']) == 'CATEGORIES'), None)
+        if header_index is None:
+            continue
+        labels = _header_labels(rows[header_index][1:], aliases)
+        premium_rows = [r for r in rows[header_index + 1:]
+                        if normalize(' '.join(w['text'] for w in r)).startswith('PRIMES EMISES')]
+        if len(premium_rows) != 1:
+            raise AnnexError('Expected one "Primes émises" row in the category annex')
+        candidates.append((page, labels, premium_rows[0]))
+    if len(candidates) != 1:
+        raise AnnexError(f"Expected one {'life' if life else 'non-life'} category annex, found {len(candidates)}")
+    page, labels, row = candidates[0]
+    label_end = max(w['x1'] for w in row if re.search(r'[A-Za-z]', w['text']))
+    values = numeric_groups([w for w in row if w['x0'] > label_end], page['width'])
+    dashes = [w for w in row if w['text'].strip() in DASHES and w['x0'] > label_end]
+    cells = {l['code']: None for l in labels}
+    for value, x0, x1 in values:
+        code = labels[_column(labels, x0, x1)]['code']
+        if cells[code] is not None:
+            raise AnnexError('Two amounts in one category column')
+        cells[code] = dict(value=value, bbox=[x0, row[0]['top'], x1, max(w['bottom'] for w in row)])
+    for dash in dashes:
+        code = labels[_column(labels, dash['x0'], dash['x1'])]['code']
+        if cells[code] is not None:
+            raise AnnexError('A dash and an amount in one category column')
+        cells[code] = dict(value=None, dash=True, bbox=[dash['x0'], dash['top'], dash['x1'], dash['bottom']])
+    return dict(page=page['page'], method=page['method'], unit=statement_unit(page['text']),
+                labels=[l['text'] for l in labels], cells=cells,
+                source_label=' '.join(w['text'] for w in row))
+
+
+def read_premiums(pages, year, taxonomy, tolerance):
+    """Return admitted non-life categories, the non-life and life totals, and checks."""
+    result, checks = {}, []
+    for life in (False, True):
+        spec = taxonomy['life' if life else 'nonlife']
+        statement = statement_gross(pages, 'PRV11' if life else 'PRNV11', year)
+        try:
+            annex = annex_row(pages, year, spec['aliases'], life)
+        except AnnexError as exc:
+            if not life or 'found 0' not in str(exc):
+                raise
+            pages_seen = corroborated_life_total(pages, statement)
+            if statement['unit'] != 'TND':
+                raise AnnexError(f"Statement unit not qualified: {statement['unit']}")
+            checks.append(dict(identity='life statement total printed again', pages=pages_seen, delta=0))
+            result['TOTAL_VIE'] = dict(code='TOTAL_VIE', year=year, value=statement['value'], unit='TND',
+                                       page=statement['page'], method=statement['method'], bbox=statement['bbox'],
+                                       source_label=statement['source_label'], statement=statement,
+                                       corroborating_pages=pages_seen)
+            continue
+        if statement['unit'] != 'TND':
+            raise AnnexError(f"Statement unit not qualified: {statement['unit']}")
+        if annex['unit'] not in (None, 'TND'):
+            raise AnnexError('Annex unit contradicts the statement')
+        cells = annex['cells']
+        total = cells.get('TOTAL')
+        if total is None or total['value'] is None:
+            raise AnnexError('Missing annex total')
+        if abs(total['value'] - statement['value']) > tolerance:
+            raise AnnexError(f"Annex total differs from {statement['code']}: {total['value'] - statement['value']}")
+        subtotals = spec.get('subtotals', {})
+        categories = [c for c in cells if c != 'TOTAL' and c not in subtotals]
+        unknown = [c for c in categories if cells[c] is None or cells[c]['value'] is None]
+        known = sum(cells[c]['value'] for c in categories if c not in unknown)
+        delta = known - total['value']
+        if abs(delta) > tolerance:
+            raise AnnexError(f'Annex categories do not reconcile with the total: {delta}')
+        # D-002: blanks/dashes are admitted only through the identity above. With
+        # several, only their sum is proven, so they must share one target branch.
+        if len(unknown) > 1 and not life:
+            owners = {next((b for b, codes in taxonomy['branches'].items() if c in codes), 'excluded')
+                      for c in unknown}
+            if len(owners) != 1:
+                raise AnnexError(f'Blank categories {unknown} span several branches; values not provable')
+        for name, members in subtotals.items():
+            if name not in cells:
+                continue        # this layout family does not print the subtotal
+            sub = cells[name]
+            if sub is None or sub['value'] is None:
+                raise AnnexError(f'Printed subtotal {name} has no amount')
+            sub_delta = sum(cells[c]['value'] for c in members if c in cells and c not in unknown) - sub['value']
+            if abs(sub_delta) > tolerance:
+                raise AnnexError(f'Subtotal {name} does not reconcile: {sub_delta}')
+            checks.append(dict(identity=f'{name} = sum of members', delta=sub_delta))
+        checks.append(dict(identity=f"{'life' if life else 'non-life'} categories = annex total", delta=delta))
+        checks.append(dict(identity=f"annex total = {statement['code']} gross", delta=total['value'] - statement['value']))
+        prefix = 'VIE_' if life else ''
+        for code in categories:
+            cell = cells[code]
+            value = 0 if code in unknown else cell['value']
+            record = dict(code=prefix + code, year=year, value=value, unit='TND', page=annex['page'],
+                          method=annex['method'], bbox=cell['bbox'] if cell else None,
+                          source_label=annex['source_label'])
+            if code in unknown:
+                record['nil_proof'] = dict(rule='D-002', printed='dash' if cell else 'blank', delta=delta,
+                                           proven='value' if len(unknown) == 1 else 'sum', members=unknown)
+            result[record['code']] = record
+        total_code = 'TOTAL_VIE' if life else 'TOTAL_NONVIE'
+        result[total_code] = dict(code=total_code, year=year, value=total['value'], unit='TND',
+                                  page=annex['page'], method=annex['method'], bbox=total['bbox'],
+                                  source_label=annex['source_label'], statement=statement)
+    return result, checks

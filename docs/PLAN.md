@@ -83,6 +83,13 @@ statement ↔ annex ↔ comparative identities.
 **Acceptance:** per company-year verified or reasoned blank; comparatives used as
 second evidence; accuracy measured where a reference exists.
 
+🟡 STAR delivered: `python -m ledger_orchestrator.history --config
+config/history/star_premiums.json`. Generic NC 26 annex reader
+(`extraction/premium_annex.py`) with three-reading identities (D-007). STAR TAF_G3
+84/96 (2010 and 2013 have no source document). Consolidated STAR + COMAR + STAR
+history: TAF_G3 102/312 (32.7 %). Next: ASTREE (kTND years need D-008 exact
+conversion) and COMAR history.
+
 ## M5 — Model-assisted extraction, verified by identities
 
 A local model (Ollama, Qwen 2.5 7B on the RTX 3050) proposes table readings as

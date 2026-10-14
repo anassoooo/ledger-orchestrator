@@ -111,7 +111,9 @@ def read_pages(path, cache):
         finally:
             if renderer is not None:
                 renderer.close()
-    target.write_text(json.dumps(pages,ensure_ascii=False), encoding='utf-8')
+    # Never cache a failed OCR: another environment with Tesseract must redo it.
+    if not any(p['method'] == 'ocr_failed' for p in pages):
+        target.write_text(json.dumps(pages,ensure_ascii=False), encoding='utf-8')
     return pages, digest
 
 

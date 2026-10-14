@@ -4,7 +4,8 @@ Each profile runs the full five-agent pipeline on the workbook produced by the
 previous one. Isolation does not rely on trust: the writer refuses to change any
 cell outside the profile's own targets, and this module then checks that the
 final workbook contains every run's writes unchanged and that no two runs wrote
-the same cell (constitution, articles VIII and IX).
+the same cell (constitution, articles VIII and IX). A company may appear twice,
+e.g. its statements profile and its premium-history profile, never the same profile.
 
 Usage: python -m ledger_orchestrator.consolidate --configs config/star.json config/comar.json
 """
@@ -19,9 +20,18 @@ import uuid
 
 import openpyxl
 
+from ledger_orchestrator.history import execute_history
 from ledger_orchestrator.pipeline import execute, save_json
 
 FILENAME = 'TAF_consolide.xlsx'
+
+
+def run_profile(root, output, config_path, base):
+    """Dispatch by profile kind: full statements, or premium history only."""
+    kind = json.loads(Path(config_path).read_text(encoding='utf-8')).get('kind', 'statements')
+    if kind == 'premium_history':
+        return execute_history(root, output, Path(config_path), base_workbook=base)
+    return execute(root, output, Path(config_path), base_workbook=base)
 
 
 def consolidate(root, output, config_paths):
@@ -31,10 +41,11 @@ def consolidate(root, output, config_paths):
     folder.mkdir(parents=True)
     runs, base = [], None
     for config_path in config_paths:
-        report = execute(root, output, Path(config_path), base_workbook=base)
+        report = run_profile(root, output, config_path, base)
         base = output / report['run_id'] / report['workbook']
         runs.append(dict(run_id=report['run_id'], company=report['company'], status=report['status'],
-                         profile=report['profile'], workbook=str(base), writes=report['writes'],
+                         profile=report['profile'], kind=report.get('kind', 'statements'),
+                         workbook=str(base), writes=report['writes'],
                          confirmations=len(report.get('confirmations', [])),
                          conflicts=sum(i['type'] == 'existing_cell_conflict' for i in report['issues'])))
     final = folder / FILENAME
@@ -61,7 +72,7 @@ def verify_union(final, runs):
             if workbook[write['sheet']][write['cell']].value != write['new']:
                 preserved = False
     return dict(every_write_preserved=preserved, no_cell_written_twice=disjoint,
-                companies_distinct=len({r['company'] for r in runs}) == len(runs))
+                profiles_distinct=len({r['profile']['id'] for r in runs}) == len(runs))
 
 
 def main():
