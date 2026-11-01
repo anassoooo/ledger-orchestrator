@@ -397,3 +397,27 @@ Primes complètes : 2012, 2013, 2015, 2017–2021, 2025 ; vie seule 2022–2024.
 motivés : 2011, 2014, 2016. CGA 2024 : non-vie publiée + vie = 253 411 kTND, identique.
 Classeur consolidé à cinq profils : TAF_G1 446/1 245, TAF_G3 183/312 (58,7 %).
 Vérification : 144 tests, non-régression STAR 14/14, rejeu COMAR 14/14.
+
+## Banc d'essai des lecteurs de primes — 1er novembre
+
+Phase 1 du M5, sans modèle. Une clé de réponses figée (empreinte SHA-256) est construite
+à partir des runs de référence : 38 couples société-exercice TAF_G3, dont 24 complets,
+3 en vie seule (ASTREE 2022–2024) et 11 ouverts (rejetés avec motif), soit 344 réponses
+vérifiées par identités. Ce ne sont pas des références humaines indépendantes.
+Tout lecteur est jugé par une porte indépendante du lecteur : montant imprimé sur la page
+citée (géométrie ou texte, signe et frontières de chiffres), total imprimé deux fois
+(écart d'arrondi toléré), catégories = total, zéros prouvés selon D-002.
+
+| Lecteur | Admis corrects | Erreurs silencieuses |
+| --- | ---: | ---: |
+| Déterministe (production) | 328 / 344 | 0 |
+| Abstention systématique | 0 / 344 | 0 |
+
+Erreurs injectées : inversion de chiffres 24/24, ±10 TND 24/24, facteur 1000 24/24,
+copie de l'exercice précédent 216/216 détectées. **Échange de deux catégories de branches
+différentes : 2/48 détectées** — la porte prouve les sommes, pas l'affectation des colonnes.
+Les 16 rejets du lecteur déterministe viennent d'ASTREE 2017, où les colonnes collées
+rendent le texte ambigu. Le contrôle « imprimé dans le rapport N+1 » n'est qu'une preuve
+complémentaire : l'état N+1 ne publie l'exercice N que net de réassurance.
+Décision D-010 : les API externes ne reçoivent que les rapports annuels publiés.
+Vérification : 168 tests locaux réussis (2 tests LibreOffice réservés à Docker).

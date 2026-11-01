@@ -147,3 +147,27 @@ confirmation; `confirmed` means confirmed by the business owner.
   change a branch (Auto, Transport, Aviation, Incendie, Maladie, Invalidité, totals,
   Acceptations) must show their header key; IRDS-internal columns are positional.
 - **Status.** default — same supervisor question as D-003 for Crédit/Agricoles.
+
+## D-010 — External model APIs may read published annual reports, nothing else
+
+- **Rule.** This is the decision that article XI requires before any document
+  leaves the machine. An external model API (for example Groq, Google AI Studio or
+  OpenRouter, free tiers included) may receive **only** the text, word positions or
+  rendered page images of the insurers' published annual reports in
+  `data/sources/`. It never receives the CMF template, output workbooks, run
+  reports, values already typed into the template, review notes, or the benchmark
+  answer key. Every call is recorded (provider, exact model identifier, prompt
+  hash, request, response, latency) so that a benchmark can be replayed offline at
+  no cost and with identical results; a run without a recording is not a result.
+  API keys come from environment variables and never enter Git. Article IV is
+  unchanged: a model proposes readings, the identity gate admits or rejects them.
+- **Rationale.** Annual reports are public documents that the companies publish
+  themselves, so sending them reveals nothing confidential; free tiers may train on
+  their inputs (Gemini's free tier does outside the EEA, Switzerland and the UK),
+  which is acceptable for public inputs only. The CMF template and everything derived
+  from it are not public. A local machine with an RTX 3050 cannot run a vision model
+  good enough for scanned statements, and comparing providers is itself a result.
+- **Evidence.** Local `qwen2.5:7b` invented labels and split amounts on the ASTREE 2020
+  annex (14 October, PLAN M5). Free-tier limits change often and are checked on each
+  provider's console before a benchmark run, not assumed.
+- **Status.** decided by the project owner, 1 November 2026.

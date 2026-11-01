@@ -116,6 +116,16 @@ rate, latency.
 **Acceptance:** evaluation report on known years before any use on history;
 no admission without identities; prompts and model versions recorded.
 
+🟡 Phase 1 delivered (1 Nov): benchmark harness, no model involved.
+`python -m ledger_orchestrator.evaluation answer-key --consolidation <ref>` freezes 38
+TAF_G3 company-years (24 solved, 3 life-only, 11 open) into a fingerprinted key of 344
+identity-verified answers; `… harness` scores any reader through a reader-independent
+gate (grounding on the cited page, two printings of each total, categories = total,
+D-002 zeros). Deterministic baseline: 328/344 admitted, 0 silent errors. Injected
+errors: digit swaps, ±10 TND, ×1000 and previous-year copies all caught; **category
+swaps across branches pass (2/48 caught)**, so the gate must anchor columns to headers
+before any model reader is trusted. External APIs governed by D-010.
+
 ## M6 — ZITOUNA TAKAFUL (TAF_G1 + TAF_G2)
 
 Takaful accounting separates the participants' fund from the operator (wakala

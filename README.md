@@ -37,6 +37,22 @@ Accuracy against references the extractor never sees, measured by
 Years that fail an identity are rejected with a reason rather than guessed (for
 example ASTREE 2016, COMAR 2017, the scanned COMAR 2016/2018 reports).
 
+### Reader benchmark (1 November 2026)
+
+Before any language model reads a table, the verifier itself is tested.
+`python -m ledger_orchestrator.evaluation harness` scores a reader on 38 frozen
+company-years (344 identity-verified answers) through a gate that never trusts
+the reader, and injects known errors to measure what the gate catches:
+
+| Reader or injected error | Result |
+| --- | --- |
+| Deterministic production reader | 328 / 344 admitted, **0 silent errors** |
+| Digit swap · ±10 TND · ×1000 unit · previous-year column | 24/24 · 24/24 · 24/24 · 216/216 caught |
+| Two categories of different branches swapped | **2/48 caught**: sums prove totals, not column assignment |
+
+The last row is the next piece of work: model readers stay out of the pipeline
+until the gate anchors each amount to its column header.
+
 ## How it works
 
 ```text
