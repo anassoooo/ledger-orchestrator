@@ -421,3 +421,14 @@ rendent le texte ambigu. Le contrôle « imprimé dans le rapport N+1 » n'est q
 complémentaire : l'état N+1 ne publie l'exercice N que net de réassurance.
 Décision D-010 : les API externes ne reçoivent que les rapports annuels publiés.
 Vérification : 168 tests locaux réussis (2 tests LibreOffice réservés à Docker).
+
+## Ancrage des colonnes — 1er novembre
+
+La porte situe désormais chaque montant de catégorie sur la ligne « Primes émises » de
+l'annexe, dans la colonne dont l'en-tête nomme une catégorie de la même branche du modèle.
+La géométrie des colonnes réutilise les primitives qualifiées du lecteur de production ;
+le nommage est propre à la porte (alias complet, sinon mot distinctif de cinq lettres,
+toujours une seule branche par colonne) et n'exige aucune famille de mise en page.
+Échanges de catégories de branches différentes : 48/48 détectés (2/48 auparavant).
+Lecture de la ligne « Primes acquises » : 87/87 détectées, sur STAR seulement.
+Lecteur déterministe inchangé : 328/344 admis, 0 erreur silencieuse. 172 tests locaux réussis.

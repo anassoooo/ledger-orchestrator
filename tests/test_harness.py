@@ -8,40 +8,71 @@ from unittest.mock import patch
 
 from ledger_orchestrator.evaluation import harness
 from ledger_orchestrator.evaluation.answer_key import build_answer_key, load_answer_key
-from ledger_orchestrator.evaluation.gate import DocumentIndex, verify_premiums
+from ledger_orchestrator.evaluation.gate import DocumentIndex, name_band, verify_premiums
 from ledger_orchestrator.evaluation.readers import PERTURBATIONS, AbstainReader, PerturbedReader, Reading
 
 TAXONOMY = dict(branches=dict(AUTOMOBILE=['AUTO'], INCENDIE=['INC'], TRANSPORT=['TR'], IRDS=['DIV'], GROUPE=['GRP']),
                 excluded=['ACC'], life=dict(aliases=dict(VIE=['VIE'], TOTAL=['TOTAL'])),
-                nonlife=dict(aliases={}))
+                nonlife=dict(aliases=dict(AUTO=['AUTOMOBILE'], INC=['INCENDIE'], TR=['TRANSPORT'],
+                                          DIV=['RISQUES DIVERS'], GRP=['GROUPE'], ACC=['ACCEPTATION'],
+                                          TOTAL=['TOTAL'])))
+HEADERS = dict(AUTO='AUTOMOBILE', INC='INCENDIE', TR='TRANSPORT', DIV='RISQUES DIVERS', GRP='GROUPE',
+               ACC='ACCEPTATION', TOTAL='TOTAL', VIE='VIE')
 NONLIFE = dict(AUTO=1_200_000, INC=300_000, TR=150_000, DIV=250_000, GRP=80_000, ACC=20_000)
 TOTAL = sum(NONLIFE.values())          # 2 000 000
 LIFE = 500_000
+WIDTH = 600
 
 
-def words(tokens, top):
-    """Words laid out like a PDF row: amounts split at thousands, columns far apart."""
+def row_words(top, label, cells):
+    """One PDF row: a label, then amounts right-aligned on column edges, split at thousands."""
     result, x = [], 10.0
-    for token in tokens:
-        parts = f'{token:,}'.split(',') if isinstance(token, int) else [token]
-        for part in parts:
-            result.append(dict(text=part, x0=x, x1=x + 6 * len(part), top=top, bottom=top + 8))
-            x += 6 * len(part) + 2
-        x += 30
+    for token in label.split():
+        result.append(dict(text=token, x0=x, x1=x + 5 * len(token), top=top, bottom=top + 8))
+        x += 5 * len(token) + 3
+    for right, value in cells:
+        if value is None:
+            continue
+        parts = ['-'] if value == '-' else f'{value:,}'.split(',')
+        x = right
+        for part in reversed(parts):
+            result.append(dict(text=part, x0=x - 5 * len(part), x1=x, top=top, bottom=top + 8))
+            x -= 5 * len(part) + 2
     return result
 
 
-def page(number, rows):
-    all_words = [w for i, row in enumerate(rows) for w in words(row, 20.0 * (i + 1))]
-    text = '\n'.join(' '.join(f'{t:,}'.replace(',', ' ') if isinstance(t, int) else t for t in row) for row in rows)
-    return dict(page=number, width=600, height=800, words=all_words, text=text, method='native')
+def annex(number, title, columns, issued, earned):
+    """Category annex: title, header row, then numeric rows (the gate clusters column edges over them)."""
+    rights = [160 + 60 * i for i in range(len(columns))]
+    words, lines_ = [], []
+    words += row_words(20, title, [])
+    for right, code in zip(rights, columns):
+        for k, token in enumerate(HEADERS[code].split()):
+            words.append(dict(text=token, x0=right - 40, x1=right - 40 + 5 * len(token), top=40 + 8 * k,
+                              bottom=48 + 8 * k))
+    rows = [('Primes acquises', earned), ('Primes émises', issued),
+            ('Charges de prestations', [7_777] * len(columns)), ('Solde de souscription', [8_888] * len(columns))]
+    for i, (label, values) in enumerate(rows):
+        words += row_words(80 + 15 * i, label, list(zip(rights, values)))
+    text = '\n'.join([title, ' '.join(HEADERS[c] for c in columns)] +
+                     [label + ' ' + ' '.join('-' if v == '-' else f'{v:,}'.replace(',', ' ') for v in values)
+                      for label, values in rows])
+    return dict(page=number, width=WIDTH, height=800, words=words, text=text, method='native')
 
 
-def document(nonlife=NONLIFE, total=TOTAL, life=LIFE):
-    return [page(1, [['Primes', 'émises', *nonlife.values(), total]]),
-            page(2, [['PRNV11', 'Primes', 'émises', total, -100, total - 100]]),
-            page(3, [['Primes', 'émises', 'vie', life, life]]),
-            page(4, [['PRV11', 'Primes', 'émises', life]])]
+def statement(number, code, amounts):
+    text = f'{code} Primes émises ' + ' '.join(f'{v:,}'.replace(',', ' ') for v in amounts)
+    return dict(page=number, width=WIDTH, height=800, method='native', text=text,
+                words=row_words(20, f'{code} Primes émises', [(300 + 80 * i, v) for i, v in enumerate(amounts)]))
+
+
+def document(nonlife=NONLIFE, total=TOTAL, life=LIFE, earned=None):
+    issued = ['-' if v == 0 else v for v in nonlife.values()] + [total]
+    earned = earned or [v + 1_000 for v in [*nonlife.values(), total]]
+    return [annex(1, 'Résultat technique par catégorie non vie', [*nonlife, 'TOTAL'], issued, earned),
+            statement(2, 'PRNV11', [total, -100, total - 100]),
+            annex(3, 'Résultat technique par catégorie vie', ['VIE', 'TOTAL'], [life, life], [life + 9, life + 9]),
+            statement(4, 'PRV11', [life])]
 
 
 def proposals(nonlife=NONLIFE, total=TOTAL, life=LIFE):
@@ -68,9 +99,20 @@ class AmountMatchingTests(unittest.TestCase):
             self.assertEqual(index.units_on(value, 1), units, value)
 
     def test_geometry_separates_columns_the_text_cannot(self):
-        index = DocumentIndex([page(1, [['Primes', 1_996_280, 298_820_201]])])
+        page = dict(page=1, width=WIDTH, text='Primes 1 996 280 298 820 201',
+                    words=row_words(20, 'Primes', [(200, 1_996_280), (300, 298_820_201)]))
+        index = DocumentIndex([page])
         self.assertEqual(index.units_on(298820201, 1), ['TND'])
         self.assertEqual(index.units_on(280298, 1), [])
+
+    def test_headers_name_codes_by_alias_then_by_distinctive_word(self):
+        aliases = dict(A_TRAVAIL=['A T'], PERTE=["PERTE D'EXPLOITATION"], AUTO=['AUTO'], AUTOMOBILE=['AUTOMOBILE'],
+                       RC_DECENNALE=['RESPONSABILITE DECENNALE'], RC_CIVILE=['RESPONSABILITE CIVILE'])
+        self.assertEqual(name_band('PERTEDEXPLOITATION', aliases), ['PERTE'])     # "AT" inside it does not count
+        self.assertEqual(name_band('AUTOMOBILE', aliases), ['AUTOMOBILE'])
+        self.assertEqual(name_band('RESPOSABILITEDECENNALE', aliases), ['RC_DECENNALE'])   # typo in the PDF
+        self.assertEqual(name_band('RESPONSABILITERESP', aliases), ['RC_CIVILE', 'RC_DECENNALE'])
+        self.assertEqual(name_band('ELEMENTS', aliases), [])
 
 
 class GateTests(unittest.TestCase):
@@ -88,16 +130,16 @@ class GateTests(unittest.TestCase):
 
     def test_total_must_be_printed_twice(self):
         pages = document()
-        pages[1] = page(2, [['PRNV11', 'Primes', 'émises', 'illisible']])
+        pages[1] = statement(2, 'PRNV11', [])
         decisions = verify(proposals(), pages)
         self.assertFalse(decisions['TOTAL_NONVIE']['admitted'])
         self.assertIn('two required', ' '.join(decisions['TOTAL_NONVIE']['reasons']))
 
     def test_second_printing_may_differ_by_rounding_only(self):
         pages = document()
-        pages[1] = page(2, [['PRNV11', 'Primes', 'émises', TOTAL - 1]])
+        pages[1] = statement(2, 'PRNV11', [TOTAL - 1])
         self.assertTrue(verify(proposals(), pages)['TOTAL_NONVIE']['admitted'])
-        pages[1] = page(2, [['PRNV11', 'Primes', 'émises', TOTAL - 4]])
+        pages[1] = statement(2, 'PRNV11', [TOTAL - 4])
         self.assertFalse(verify(proposals(), pages)['TOTAL_NONVIE']['admitted'])
 
     def test_zeros_are_proven_only_within_one_branch(self):
@@ -117,13 +159,42 @@ class GateTests(unittest.TestCase):
         self.assertFalse(decisions['MYSTERY']['admitted'])
         self.assertFalse(decisions['AUTO']['admitted'])
 
-    def test_known_blind_spot_category_swap_is_admitted(self):
-        # Documented and measured by the harness: swapped columns keep every amount
-        # printed and every sum intact. This test fails the day the gate closes the gap.
+    def test_category_swap_across_branches_is_rejected_by_column_headers(self):
+        # Swapped columns keep every amount printed and every sum intact; only the
+        # header above each amount tells them apart.
         props = proposals()
         props['INC'], props['TR'] = props['TR'], props['INC']
         decisions = verify(props)
-        self.assertTrue(decisions['INC']['admitted'] and decisions['TR']['admitted'])
+        self.assertFalse(decisions['INC']['admitted'] or decisions['TR']['admitted'])
+        self.assertIn('printed under TRANSPORT', ' '.join(decisions['INC']['reasons']))
+
+    def test_swap_inside_one_branch_changes_no_target_and_is_not_judged(self):
+        taxonomy = copy.deepcopy(TAXONOMY)
+        taxonomy['branches']['IRDS'] = ['DIV', 'INC']          # both columns now feed IRDS
+        del taxonomy['branches']['INCENDIE']
+        props = proposals()
+        props['INC'], props['DIV'] = props['DIV'], props['INC']
+        decisions = verify_premiums(props, DocumentIndex(document()), taxonomy, 3)['decisions']
+        self.assertTrue(decisions['INC']['admitted'] and decisions['DIV']['admitted'])
+
+    def test_earned_premiums_row_is_not_issued_premiums(self):
+        earned = [v + 1_000 for v in [*NONLIFE.values(), TOTAL]]
+        earned[-1] = sum(earned[:-1])            # the earned row reconciles with its own total
+        pages = document(earned=earned)
+        pages[1] = statement(2, 'PRNV11', [TOTAL, earned[-1]])   # and that total is printed twice
+        props = proposals(dict(zip(NONLIFE, earned)), earned[-1])
+        decisions = verify(props, pages)
+        self.assertFalse(decisions['AUTO']['admitted'])
+        self.assertIn('not on the "Primes émises" row', ' '.join(decisions['AUTO']['reasons']))
+
+    def test_a_category_must_be_read_on_the_category_annex(self):
+        props = proposals()
+        props['AUTO'] = dict(value=str(NONLIFE['AUTO']), page=2)
+        pages = document()
+        pages[1] = statement(2, 'PRNV11', [TOTAL, NONLIFE['AUTO']])
+        decisions = verify(props, pages)
+        self.assertFalse(decisions['AUTO']['admitted'])
+        self.assertIn('category annex not readable on page 2', ' '.join(decisions['AUTO']['reasons']))
 
 
 def history_report(run_id='20261014T030645_cc0159b6'):
@@ -209,11 +280,8 @@ class HarnessTests(unittest.TestCase):
             result = self.run_reader(PerturbedReader(ExactReader(), kind, seed=1))
             stats = result['perturbations'][kind]
             self.assertGreater(stats['injected'], 0, kind)
-            if kind == 'category_swap':
-                self.assertEqual(stats['caught'], 0, 'the documented blind spot')
-            else:
-                self.assertEqual(stats['catch_rate'], 1.0, kind)
-                self.assertEqual(result['summary']['silent_errors'], 0, kind)
+            self.assertEqual(stats['catch_rate'], 1.0, kind)
+            self.assertEqual(result['summary']['silent_errors'], 0, kind)
 
     def test_previous_year_copy_needs_an_answer_to_copy(self):
         reading = PerturbedReader(ExactReader(), 'previous_year', {}).read(

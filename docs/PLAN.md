@@ -126,6 +126,13 @@ errors: digit swaps, ±10 TND, ×1000 and previous-year copies all caught; **cat
 swaps across branches pass (2/48 caught)**, so the gate must anchor columns to headers
 before any model reader is trusted. External APIs governed by D-010.
 
+✅ Column anchoring (1 Nov): every non-zero category must sit on the annex's
+"Primes émises" row under a header naming a category of its template branch.
+Category swaps across branches 48/48 caught, "Primes acquises" row 87/87 caught
+(STAR only: other layouts give no one-category-per-column earned row to inject),
+baseline unchanged at 328/344 with 0 silent errors. Next: the first model reader
+(phase 2) with recorded, replayable calls.
+
 ## M6 — ZITOUNA TAKAFUL (TAF_G1 + TAF_G2)
 
 Takaful accounting separates the participants' fund from the operator (wakala

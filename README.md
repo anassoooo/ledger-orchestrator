@@ -48,10 +48,13 @@ the reader, and injects known errors to measure what the gate catches:
 | --- | --- |
 | Deterministic production reader | 328 / 344 admitted, **0 silent errors** |
 | Digit swap · ±10 TND · ×1000 unit · previous-year column | 24/24 · 24/24 · 24/24 · 216/216 caught |
-| Two categories of different branches swapped | **2/48 caught**: sums prove totals, not column assignment |
+| Two categories of different branches swapped | 48/48 caught (2/48 before column anchoring) |
+| "Primes acquises" row read instead of "Primes émises" | 87/87 caught (STAR 2011–2022) |
 
-The last row is the next piece of work: model readers stay out of the pipeline
-until the gate anchors each amount to its column header.
+Sums prove totals, not which column an amount came from. The gate therefore
+locates every category amount on the "Primes émises" row of the annex and
+requires the header above it to name a category of the same template branch.
+The 16 answers still rejected (ASTREE 2017) print adjacent columns run together.
 
 ## How it works
 

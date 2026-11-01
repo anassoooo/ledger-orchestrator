@@ -25,9 +25,23 @@ An amount is printed on a page when either of two conservative readings finds it
   A match that starts with a three-digit group right after other digits, or is
   followed by one, may be the middle of a larger amount and is not accepted.
 
-Known blind spots, measured by the harness rather than hidden: two categories
-whose values are swapped keep every amount printed and every sum intact, so the
-gate admits them; only header-anchored column reading can prove an assignment.
+- Column anchoring: each non-zero category must be printed on the "Primes émises"
+  row of the category annex on its cited page, inside a column whose header names
+  a category of the same template branch. Sums prove totals, not assignments: two
+  categories of different branches swapped keep every amount printed and every
+  sum intact, and only their headers tell them apart. The check is made at branch
+  level because that is what the template stores; a swap inside IRDS changes no
+  target value (the same reason ASTREE's layout families leave those columns
+  positional). Requiring the "Primes émises" row also rejects a reader that took
+  the "Primes acquises" row, whose categories add up to a total printed twice too.
+
+Column geometry (right edges clustered over the table, header words per band,
+glued amounts split per band) reuses the production reader's primitives, which
+are qualified on every admitted layout. Naming is the gate's own and more
+permissive: any header that names one branch is enough and no complete layout
+family is needed, so readings of years the production reader rejects can still
+be verified. A column whose header names no branch, or several, admits nothing.
+
 A reader that copies the N-1 comparative column is caught only because the
 category annex prints year N alone.
 """
@@ -35,8 +49,9 @@ from decimal import Decimal
 from functools import lru_cache
 import re
 
-from ledger_orchestrator.extraction.core import lines, numeric_groups
-from ledger_orchestrator.extraction.premium_annex import MINUS
+from ledger_orchestrator.extraction.core import lines, normalize, numeric_groups
+from ledger_orchestrator.extraction.premium_annex import (MINUS, AnnexError, _band_columns, _by_bands, _letters,
+                                                          _row_label, _signed)
 
 LIFE_PREFIX = 'VIE_'
 SEPARATOR = r'[   .]?'
@@ -100,8 +115,20 @@ class DocumentIndex:
     """Geometry-grouped amounts and text of each page of one document."""
 
     def __init__(self, pages):
+        self.pages = {p['page']: p for p in pages}
         self.text = {p['page']: p.get('text', '') for p in pages}
         self.amounts = {p['page']: printed_amounts(p) for p in pages}
+        self._columns = {}
+
+    def premium_columns(self, page, aliases, branch_of):
+        """Named columns of the category annex on ``page`` (cached), or the reason it cannot be read."""
+        key = (page, tuple(sorted(aliases)))
+        if key not in self._columns:
+            try:
+                self._columns[key] = annex_columns(self.pages[page], aliases, branch_of)
+            except (AnnexError, KeyError) as exc:
+                self._columns[key] = f'category annex not readable on page {page}: {exc}'
+        return self._columns[key]
 
     def units_on(self, value, page):
         value = _amount(value)
@@ -121,12 +148,90 @@ class DocumentIndex:
         return sorted(p for p in self.text if any(self.units_on(c, p) for c in candidates))
 
 
+ANNEX_TITLE = re.compile(r'RESULTAT\s+TECHNIQUE\b.*\bCATEGORIE')
+ALIAS_WORD = 5      # letters a distinctive alias word needs to name a column on its own
+
+
+def name_band(header, aliases):
+    """Codes named by a column header (letters only).
+
+    A complete alias printed in the header names its code; an alias contained in
+    a longer matched alias does not count ("AT" inside "PERTE D'EXPLOITATION",
+    "AUTO" inside "AUTOMOBILE"). Only when no complete alias is printed, a
+    distinctive alias word of at least five letters names its code: PDFs print
+    "RESPOSABILITE DECENNALE" or interleave a neighbour's letters
+    ("AUTRESDOMMAGESASSAUXBIENS"). The caller requires all names to share a branch.
+    """
+    matched = {}
+    for code, names in aliases.items():
+        keys = [k for k in (_letters(n) for n in names) if k and k in header]
+        if keys:
+            matched[code] = max(keys, key=len)
+    if matched:
+        return sorted(c for c, k in matched.items()
+                      if not any(k != other and k in other for other in matched.values()))
+    return sorted(code for code, names in aliases.items()
+                  if any(len(w) >= ALIAS_WORD and w in header for n in names for w in map(_letters, n.split())))
+
+
+def annex_columns(page, aliases, branch_of, row_label='PRIMES EMISES'):
+    """Columns of the category annex on one page: header, branches named, amount on ``row_label``."""
+    rows = lines(page['words'])
+    premium = [i for i, r in enumerate(rows) if _row_label(r).startswith(row_label)]
+    # The table starts after "Résultat technique par catégorie" / "... de la catégorie"
+    # (STAR 2021-2022), or at a "CATEGORIES" header row when the title is on the
+    # previous page (STAR 2021 life annex). ``title`` is the row before the header.
+    titles = [i for i, r in enumerate(rows) if ANNEX_TITLE.search(normalize(' '.join(w['text'] for w in r)))]
+    titles += [i - 1 for i, r in enumerate(rows) if _letters(r[0]['text']) == 'CATEGORIES']
+    if not premium or not any(i < premium[0] for i in titles):
+        raise AnnexError('no category annex with a "Primes émises" row')
+    title = max(i for i in titles if i < premium[0])
+    first_data = next(i for i in range(title + 1, len(rows)) if _row_label(rows[i]).startswith('PRIMES'))
+    if len([i for i in premium if i > title]) != 1:
+        raise AnnexError('expected one "Primes émises" row in the category annex')
+    columns = _band_columns(rows, rows[title + 1:first_data], first_data, page['width'])
+    row = rows[premium[0]]
+    label_end = max(w['x1'] for w in row if re.search(r'[A-Za-z]', w['text']))
+    bands = [dict(code=i, x0=c['left'], x1=c['right']) for i, c in enumerate(columns)]
+    values = _by_bands(_signed([w for w in row if w['x0'] > label_end]), bands)
+    result = []
+    for column in columns:
+        inside = [_amount(v) for v, _, x1 in values if column['left'] + 2 < x1 <= column['right'] + 8]
+        codes = name_band(column['text'], aliases)
+        result.append(dict(header=column['text'], codes=codes, branches=sorted({branch_of.get(c, 'total')
+                                                                                 for c in codes}),
+                           amounts=inside))
+    return result
+
+
+def anchor(document, code, value, page, aliases, branch_of):
+    """None when ``value`` sits under a header of its branch; otherwise the reason."""
+    columns = document.premium_columns(page, aliases, branch_of)
+    if isinstance(columns, str):
+        return columns
+    holding = [c for c in columns if any(a == value or a * 1000 == value for a in c['amounts'])]
+    if not holding:
+        return f'{code} not on the "Primes émises" row of the category annex, page {page}'
+    branch = branch_of[code]
+    if any(c['branches'] == [branch] for c in holding):
+        return None
+    found = ' / '.join(f"{c['header'] or 'no header'} ({', '.join(c['branches']) or 'no branch'})" for c in holding)
+    return f'{code} ({branch}) printed under {found}'
+
+
 def scopes(taxonomy):
     """Non-life categories (assigned to a branch or excluded) and life categories."""
     nonlife = {c: b for b, codes in taxonomy['branches'].items() for c in codes}
     nonlife.update({c: 'excluded' for c in taxonomy['excluded']})
     life = {LIFE_PREFIX + c: 'VIE' for c in taxonomy['life']['aliases'] if c != 'TOTAL'}
     return dict(nonlife=('TOTAL_NONVIE', nonlife), life=('TOTAL_VIE', life))
+
+
+def header_aliases(taxonomy, scope):
+    """Header aliases of a scope keyed by proposal code (life codes carry the VIE_ prefix)."""
+    if scope == 'nonlife':
+        return taxonomy['nonlife']['aliases']
+    return {(c if c == 'TOTAL' else LIFE_PREFIX + c): names for c, names in taxonomy['life']['aliases'].items()}
 
 
 def verify_premiums(proposals, document, taxonomy, tolerance, next_document=None):
@@ -167,6 +272,14 @@ def verify_premiums(proposals, document, taxonomy, tolerance, next_document=None
             zeros = [c for c in codes if values[c] == 0]
             if len({members[c] for c in zeros}) > 1:
                 failures.append(f'zero categories {zeros} span several branches; not provable (D-002)')
+            aliases = header_aliases(taxonomy, scope)
+            for code in codes:
+                if values[code] != 0:
+                    reason = anchor(document, code, values[code], proposals[code].get('page'), aliases, members)
+                    checks.append(dict(scope=scope, identity=f'{code} under a header of its branch',
+                                       status='ok' if reason is None else reason))
+                    if reason is not None:
+                        failures.append(reason)
         # Evidence only: next year's report prints the N-1 premium net of reinsurance.
         checks.append(dict(scope=scope, identity='printed in next year report (evidence, not required)',
                            pages=None if next_document is None else next_document.pages_printing(values[total_code])))

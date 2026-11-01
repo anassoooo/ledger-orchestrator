@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 import random
 
-from ledger_orchestrator.evaluation.gate import scopes
+from ledger_orchestrator.evaluation.gate import annex_columns, header_aliases, scopes
 from ledger_orchestrator.extraction.premium_annex import AnnexError, read_premiums
 
 
@@ -44,7 +44,36 @@ class AbstainReader:
         return Reading(abstained='never reads')
 
 
-PERTURBATIONS = ('digit_swap', 'off_by_ten', 'thousand_factor', 'category_swap', 'previous_year')
+PERTURBATIONS = ('digit_swap', 'off_by_ten', 'thousand_factor', 'category_swap', 'previous_year', 'earned_row')
+
+
+def earned_row(proposals, pages, taxonomy):
+    """Replace non-life categories and total by the annex's "Primes acquises" row, column by column."""
+    total = proposals.get('TOTAL_NONVIE')
+    page = next((p for p in pages if total and p['page'] == total['page']), None)
+    if page is None:
+        return {}
+    _, members = scopes(taxonomy)['nonlife']
+    aliases = header_aliases(taxonomy, 'nonlife')
+    try:
+        earned = annex_columns(page, aliases, members, 'PRIMES ACQUISES')
+        issued = annex_columns(page, aliases, members)
+    except AnnexError:
+        return {}
+    # The annex unit (TND or exact kTND) is the one that reproduces the issued total.
+    factors = [f for c in issued if c['codes'] == ['TOTAL'] for a in c['amounts'] for f in (1, 1000)
+               if a * f == Decimal(total['value'])]
+    if not factors:
+        return {}
+    changed = {}
+    for column in earned:
+        if len(column['codes']) != 1 or len(column['amounts']) != 1:
+            continue
+        code = 'TOTAL_NONVIE' if column['codes'][0] == 'TOTAL' else column['codes'][0]
+        value = column['amounts'][0] * factors[0]
+        if code in proposals and value != Decimal(proposals[code]['value']) and value == value.to_integral_value():
+            changed[code] = str(int(value))
+    return changed
 
 
 class PerturbedReader:
@@ -74,6 +103,10 @@ class PerturbedReader:
                 if code in proposals and answer['amount'] != proposals[code]['value']:
                     proposals[code]['value'] = answer['amount']
                     perturbed[code] = self.kind
+        elif self.kind == 'earned_row':
+            for code, value in earned_row(proposals, pages, config['taxonomy']).items():
+                proposals[code]['value'] = value
+                perturbed[code] = self.kind
         elif self.kind == 'category_swap':
             pairs = [(a, b) for a in categories for b in categories
                      if a < b and members[a] != members[b] and proposals[a]['value'] != proposals[b]['value']]
