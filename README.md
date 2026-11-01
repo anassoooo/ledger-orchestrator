@@ -56,6 +56,13 @@ locates every category amount on the "Primes émises" row of the annex and
 requires the header above it to name a category of the same template branch.
 The 16 answers still rejected (ASTREE 2017) print adjacent columns run together.
 
+Model readers (Groq free tier, every call recorded and replayable offline): a
+shared deterministic locator finds the premium pages, and the model maps the
+"Primes émises" amounts to headers using their PDF x-ranges, then calls the gate
+as a `check` tool before submitting. qwen/qwen3.8-27b on STAR 2012 and 2014–2016:
+40/40 admitted, 0 silent errors, about 6k tokens per company-year
+(`harness --readers groq --model qwen/qwen3.8-27b --tasks star_`).
+
 ## How it works
 
 ```text

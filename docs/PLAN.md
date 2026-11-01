@@ -133,6 +133,25 @@ Category swaps across branches 48/48 caught, "Primes acquises" row 87/87 caught
 baseline unchanged at 328/344 with 0 silent errors. Next: the first model reader
 (phase 2) with recorded, replayable calls.
 
+🟡 Phase 2 (1 Nov): model readers on Groq's free tier, every call recorded and replayable.
+- An exploring agent (`--readers groq-explore`: contents, search, page reads, check) never
+  admitted a value: 50–80k tokens per company-year against 200k per day, and re-reading
+  what the context budget elided. It did produce the key finding: gpt-oss-120b read the
+  right row of STAR 2015 but shifted every amount one column (A.TRAVAIL is blank), and
+  column anchoring rejected it.
+- The scoped reader (`--readers groq`) separates navigation from reading: a shared,
+  deterministic locator finds premium pages by title and "Primes émises" row (38/38 tasks,
+  every cited page), and the model receives excerpts plus a Positions block (x-range of each
+  header word and amount). Text layout alone could not show STAR's right-aligned amounts
+  under left-aligned headers; with coordinates the shift disappeared.
+- qwen/qwen3.8-27b, STAR: 2 calls and ~6k tokens per year. First run 100/125 admitted,
+  2 silent errors, both a GRELE / M.B swap inside IRDS (template value unchanged) caused by
+  the Positions block joining two headers printed 1.7 pt apart; fixed. Rerun: 2012 and
+  2014–2016 40/40 admitted, 0 silent errors; 2011 too large for the 7,000 input-token
+  per-minute cap; 2017–2022 not reached (daily quota).
+Next: finish STAR and run COMAR and ASTREE across days (recordings make reruns free);
+compare models; make the context estimate tokenizer-aware.
+
 ## M6 — ZITOUNA TAKAFUL (TAF_G1 + TAF_G2)
 
 Takaful accounting separates the participants' fund from the operator (wakala

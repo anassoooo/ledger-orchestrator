@@ -5,6 +5,7 @@
   python -m ledger_orchestrator.evaluation harness [--key KEY] [--readers deterministic abstain perturbed]
   python -m ledger_orchestrator.evaluation models                      (Groq models available to your key)
   python -m ledger_orchestrator.evaluation harness --readers groq --model <id> [--tasks star_] [--replay]
+      groq: located annexes, the model reads (scoped); groq-explore: the model also navigates
 """
 import argparse
 from datetime import datetime, timezone
@@ -15,7 +16,7 @@ from ledger_orchestrator.evaluation.answer_key import build_answer_key, load_ans
 from ledger_orchestrator.evaluation.benchmark import benchmark
 from ledger_orchestrator.evaluation.coverage_matrix import coverage_matrix
 from ledger_orchestrator.evaluation.harness import previous_answers, run_benchmark
-from ledger_orchestrator.evaluation.model_reader import CallRecorder, ChatClient, ModelReader
+from ledger_orchestrator.evaluation.model_reader import CallRecorder, ChatClient, ModelReader, ScopedModelReader
 from ledger_orchestrator.evaluation.readers import (PERTURBATIONS, AbstainReader, DeterministicReader,
                                                     PerturbedReader)
 
@@ -26,9 +27,10 @@ KEY = Path('outputs/benchmark/answer_key_premiums.json')
 def readers(names, key, args=None):
     result = []
     for name in names:
-        if name == 'groq':
+        if name in ('groq', 'groq-explore'):
             recorder = CallRecorder(args.key.parent / 'calls', 'replay' if args.replay else 'record')
-            result.append(ModelReader(ChatClient('groq', args.model), recorder))
+            kind = ScopedModelReader if name == 'groq' else ModelReader
+            result.append(kind(ChatClient('groq', args.model), recorder))
         elif name == 'deterministic':
             result.append(DeterministicReader())
         elif name == 'abstain':
@@ -71,7 +73,7 @@ def main():
         result = dict(provider='groq', models=ChatClient('groq', 'listing').models())
     elif args.command == 'harness':
         key = load_answer_key(args.key)
-        if 'groq' in args.readers and not args.model:
+        if {'groq', 'groq-explore'} & set(args.readers) and not args.model:
             parser.error('the groq reader needs --model (list them with: evaluation models)')
         if args.tasks:
             # A subset run reports its scope; the key itself stays frozen and complete.

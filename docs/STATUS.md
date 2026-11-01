@@ -432,3 +432,20 @@ toujours une seule branche par colonne) et n'exige aucune famille de mise en pag
 Échanges de catégories de branches différentes : 48/48 détectés (2/48 auparavant).
 Lecture de la ligne « Primes acquises » : 87/87 détectées, sur STAR seulement.
 Lecteur déterministe inchangé : 328/344 admis, 0 erreur silencieuse. 172 tests locaux réussis.
+
+## Lecteurs par modèle (phase 2) — 1er novembre
+
+Lecteurs Groq (offre gratuite), chaque appel enregistré et rejouable hors ligne (D-010 :
+seules les pages des rapports publiés sortent de la machine ; clé dans `.env`, ignoré par git).
+- Agent explorateur (`--readers groq-explore`) : aucune valeur admise. 50 à 80 k jetons par
+  exercice pour 200 k par jour. Sur STAR 2015, gpt-oss-120b a lu la bonne ligne mais décalé
+  chaque montant d'une colonne (A.TRAVAIL vide) ; l'ancrage des colonnes l'a rejeté.
+- Lecteur ciblé (`--readers groq`) : un localisateur déterministe commun trouve les pages
+  de primes par titre et ligne « Primes émises » (38/38 tâches, toutes les pages citées) ;
+  le modèle reçoit les extraits et un bloc de positions (abscisses des en-têtes et montants).
+- qwen/qwen3.8-27b sur STAR, 2 appels et ~6 k jetons par exercice. Premier passage : 100/125
+  admis, 2 erreurs silencieuses (GRELE / M.B échangés dans IRDS, valeur du modèle inchangée),
+  dues au bloc de positions qui fusionnait deux en-têtes distants de 1,7 pt — corrigé.
+  Second passage : 2012 et 2014–2016 40/40 admis, 0 erreur silencieuse ; 2011 dépasse la
+  limite de 7 000 jetons d'entrée par minute ; 2017–2022 non atteints (quota journalier).
+Vérification : 32 tests du lecteur et du banc réussis, sans réseau.

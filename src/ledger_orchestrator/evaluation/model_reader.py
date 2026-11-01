@@ -1,11 +1,18 @@
 """Phase 2: a tool-using model reader. The model proposes; the identity gate disposes.
 
-The agent receives one company-year: the report's pages behind four tools and the
-profile's category codes with their header aliases. It never sees the answer key.
+Two readers, neither of which ever sees the answer key:
 
-- ``search_pages(query)``: pages whose text contains every query word;
-- ``read_page(page, start_row)``: 25 rows of a page, words placed by their x
-  position so that columns, blanks and dashes stay aligned;
+- ``ScopedModelReader`` (``--readers groq``): a shared deterministic locator finds
+  the premium pages; the model gets their excerpts with the x-range of each header
+  word and amount, and only reads. About 2 calls per company-year.
+- ``ModelReader`` (``--readers groq-explore``): the model also navigates the
+  report. Too expensive for free tiers (50-80k tokens per company-year).
+
+Tools:
+
+- ``search_pages(query)``: pages ranked by how many query words they contain;
+- ``read_page(page, start_row)``: 15 rows of a page, words placed by their x
+  position so that columns, blanks and dashes stay aligned; ``find_rows`` filters rows;
 - ``check(proposals)``: the same identity gate the harness applies, with its
   reasons, so the agent can correct a reading or decide to abstain;
 - ``submit(proposals)`` / ``abstain(reason)``: the final answer.
@@ -29,7 +36,7 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, build_opener
 
-from ledger_orchestrator.evaluation.gate import DocumentIndex, LIFE_PREFIX, verify_premiums
+from ledger_orchestrator.evaluation.gate import ANNEX_TITLE, DocumentIndex, LIFE_PREFIX, verify_premiums
 from ledger_orchestrator.evaluation.readers import Reading
 from ledger_orchestrator.extraction.core import lines, normalize
 
@@ -252,6 +259,113 @@ Rules:
 Use the tools; answer only through submit or abstain."""
 
 
+SCOPED_SYSTEM = """You read the category annexes of a Tunisian insurer's published annual report
+({company}, financial year {year}). The pages were located for you: each excerpt shows a title, column
+headers and a "Primes émises" row (gross issued premiums of year {year}). Three kinds of page:
+- category annex: one column per category, then TOTAL. Categories are read only here.
+- technical statement: columns gross ("brutes"), ceded, net, then the previous year's net. Its
+  "Primes émises et acceptées" row gives the scope's total in the gross column of year {year}.
+- reconciliation table: the scope's total on its "Primes émises" row.
+When no life category annex exists, fill TOTAL_VIE alone from the life statement.
+Codes you may fill (only these; most insurers print only some of these categories):
+{codes}
+Rules:
+- Map each amount on the "Primes émises" row to the column header above it. Rows keep the printed
+  horizontal positions, so an amount lines up with its own header. A header may span several rows:
+  read the words stacked above each column.
+- A column with nothing printed under it (blank or dash) is 0, and the next amount belongs to the
+  next header, never to the empty one. Count positions, not the order of the numbers.
+- Category annexes come with a Positions block: the x-range of each header word and of each
+  amount. Assign an amount to the header whose x-range overlaps it most; a header with no
+  overlapping amount is 0: propose it with value 0, do not leave it out. Words side by side or stacked over the same amount form one column title.
+- When check says "X printed under Y", the amount you gave X sits under header Y: move it.
+- TOTAL_NONVIE and TOTAL_VIE are the TOTAL columns of the non-life and life annexes. Never use the
+  "Primes acquises" row.
+- Values are in TND. If the annex is in thousands of dinars with three decimals (e.g. 84 404,579),
+  multiply by 1000 exactly.
+- "page" is the annex page where you read the amount.
+- Call check with all codes. If it rejects a reading, compare the positions again and re-check.
+  Submit what check admits, or abstain. Never guess. read_page shows more rows if a header is cut."""
+SCOPED_TOOLS = ('read_page', 'check', 'submit', 'abstain')
+SCOPED_MAX_TURNS = 6
+EXCERPT_ROWS = 18
+
+
+# Row codes may be glued to the label ("PRV11PRIMES"); COMAR prefixes a typographic minus.
+PREMIUM_ROW = re.compile(r'\s*(?:PRN?V1+\s*|[-‐‑‒–−]\s*)?PRIMES\s+EMISES')
+STATEMENT_TITLE = re.compile(r"RESULTAT\s+TECHNIQUE\s+(?:DE\s+L.?\s*ASSURANCE|(?:NON[\s-]*)?VIE\b)")
+UNIT_ROW = re.compile(r'MILLIERS?\s+DE\s+DINARS|EN\s+DINARS|CHIFFRES\s+EN|\bKDT\b|\bMDT\b')
+
+
+def locate_annexes(pages):
+    """Pages printing gross issued premiums, found by title and a "Primes émises" row only.
+
+    Three kinds: the category annex (one column per category), the technical statement
+    (gross / ceded / net columns, totals only) and the reconciliation table (totals). No
+    column is named here: the locator is shared by every scoped reader, so a benchmark of
+    scoped readers measures reading. Returns [(page, label, title_row, premium_row)]."""
+    found = []
+    for page in pages:
+        rows = [normalize(' '.join(w['text'] for w in r)) for r in lines(page.get('words', []))]
+        premium = [i for i, r in enumerate(rows) if PREMIUM_ROW.match(r)]
+        if not premium:
+            continue
+        before = rows[:premium[0]]
+        titles = [i for i, r in enumerate(before) if ANNEX_TITLE.search(r) or STATEMENT_TITLE.search(r)]
+        titles += [i for i, r in enumerate(before) if re.match(r'\s*CATEGORIES\b', r)]
+        if not titles:
+            continue
+        first = min(titles)
+        heading = ' '.join(rows[first:first + 2])
+        kind = ('reconciliation table' if 'RACCORDEMENT' in heading else
+                'category annex' if ANNEX_TITLE.search(heading) or 'CATEGORIES' in heading else 'technical statement')
+        scope = ('non-life' if re.search(r'NON[\s-]*VIE', heading) else
+                 'life' if re.search(r'\bVIE\b', heading) else 'scope not printed')
+        found.append((page, f'{kind}, {scope}', first, premium[0]))
+    return found
+
+
+def _phrases(row, gap):
+    """Words of one row joined into phrases when closer than ``gap`` points, with their x-range."""
+    phrases = []
+    for word in row:
+        if phrases and word['x0'] - phrases[-1][2] < gap:
+            phrases[-1] = (phrases[-1][0] + ' ' + word['text'], phrases[-1][1], word['x1'])
+        else:
+            phrases.append((word['text'], word['x0'], word['x1']))
+    return phrases
+
+
+def positions(page, first, premium):
+    """Header phrases and "Primes émises" amounts with their x-range in PDF points.
+
+    A text layout cannot show both left-aligned headers and right-aligned amounts
+    unambiguously (STAR: each amount starts where its header ends); the coordinates
+    can. This is the page's own geometry, the same for every reader, not an answer."""
+    rows = lines(page.get('words', []))
+    gap = 3.0     # points: spaces inside an amount or a header are 1-2 pt; ASTREE columns sit ~5 pt apart
+    header = []
+    for row in rows[first + 1:premium]:
+        if re.match(r'\s*PRIMES\b', normalize(' '.join(w['text'] for w in row))):
+            continue    # the "Primes acquises" row, not a header
+        # Header words stay separate: STAR 2011 prints GRELE and M.B 1.7 pt apart, two columns.
+        header += [(w['text'], w['x0'], w['x1']) for w in row if re.search(r'[A-Za-z]', w['text'])]
+    label_end = max([w['x1'] for w in rows[premium] if re.search(r'[A-Za-z]', w['text'])] or [0])
+    amounts = _phrases([w for w in rows[premium] if w['x0'] > label_end and re.search(r'\d|^[-‐‑‒–−]$', w['text'])], gap)
+    fmt = lambda items: ' | '.join(f'{t} [{x0:.0f}-{x1:.0f}]' for t, x0, x1 in items)
+    return f'Positions (x-range in PDF points)\n  headers: {fmt(header)}\n  Primes émises: {fmt(amounts)}'
+
+
+def annex_excerpt(page, first, premium, limit=EXCERPT_ROWS):
+    """Two rows above the title (headers printed there) through the "Primes émises" row, plus units."""
+    rows = page_rows(page)
+    plain = [normalize(r) for r in rows]
+    keep = [i for i, r in enumerate(plain) if UNIT_ROW.search(r)]
+    start = max(first - 2, premium - limit + 1, 0)
+    keep = sorted(set(keep) | set(range(start, premium + 1)))
+    return '\n'.join(f'{i:>3} {rows[i]}' for i in keep)
+
+
 def _first_line(page, width=100):
     return ' '.join((page.get('text', '').strip().splitlines() or [''])[0].split())[:width]
 
@@ -367,17 +481,26 @@ class ModelReader:
         life = {LIFE_PREFIX + c for c in taxonomy['life']['aliases'] if c != 'TOTAL'}
         return nonlife | life | {'TOTAL_NONVIE', 'TOTAL_VIE'}
 
+    tools = TOOLS
+    context_chars = CONTEXT_CHARS
+
+    def _opening(self, task, pages, config):
+        """The first messages, or a reason to abstain without calling the model."""
+        return [dict(role='system', content=SYSTEM.format(company=task['company'], year=task['year'],
+                                                          codes=codes_table(config['taxonomy']))),
+                dict(role='user', content=f'The report has {len(pages)} pages; first line of each:\n'
+                                          f'{contents(pages)}\nFind the annexes and fill the codes.')]
+
     def read(self, task, pages, config):
         state = _Task(pages, DocumentIndex(pages), config)
-        messages = [dict(role='system', content=SYSTEM.format(company=task['company'], year=task['year'],
-                                                               codes=codes_table(config['taxonomy']))),
-                    dict(role='user', content=f'The report has {len(pages)} pages; first line of each:\n'
-                                              f'{contents(pages)}\nFind the annexes and fill the codes.')]
         usage = dict(calls=0, input_tokens=0, output_tokens=0, recorded=0, elided=0)
+        messages = self._opening(task, pages, config)
+        if isinstance(messages, str):
+            return Reading(abstained=messages, usage=usage)
         seen = set()
         for _ in range(self.max_turns):
-            usage['elided'] += fit_context(messages)
-            payload = dict(model=self.client.model, messages=messages, tools=TOOLS, tool_choice='auto',
+            usage['elided'] += fit_context(messages, self.context_chars)
+            payload = dict(model=self.client.model, messages=messages, tools=self.tools, tool_choice='auto',
                            temperature=self.temperature, max_tokens=2048)
             request = dict(provider=self.client.provider, payload=payload)
             try:
@@ -421,3 +544,35 @@ class ModelReader:
                 seen.add(signature)
                 messages.append(dict(role='tool', tool_call_id=call['id'], content=content))
         return Reading(abstained='turn budget exhausted', usage=usage)
+
+
+class ScopedModelReader(ModelReader):
+    """The model only reads: the annex pages are located for it, deterministically.
+
+    The exploring agent spent most of its calls and tokens finding pages and re-reading
+    what the context budget elided (50-80k tokens per company-year, against a free tier
+    of 200k per day). Here one request carries the located annex excerpts, and the loop
+    is check, correct, submit: a few calls per company-year. Page navigation stays
+    available through read_page, for a header cut by the excerpt."""
+
+    tools = [t for t in TOOLS if t['function']['name'] in SCOPED_TOOLS]
+    # qwen on Groq caps input at 7,000 tokens per minute and packs fewer characters per token.
+    context_chars = 14_000
+
+    def __init__(self, client, recorder, temperature=0, max_turns=SCOPED_MAX_TURNS):
+        super().__init__(client, recorder, temperature, max_turns)
+        self.name = f'{client.provider}-scoped:{client.model}'
+
+    def _opening(self, task, pages, config):
+        annexes = locate_annexes(pages)
+        if not annexes:
+            return 'no premium page located (title and "Primes émises" row)'
+        excerpts = '\n\n'.join(
+            f'--- page {page["page"]} ({label}, guessed from the title), rows {first}-{premium}:\n'
+            f'{annex_excerpt(page, first, premium)}'
+            + (f'\n{positions(page, first, premium)}' if label.startswith('category annex') else '')
+            for page, label, first, premium in annexes)
+        return [dict(role='system', content=SCOPED_SYSTEM.format(company=task['company'], year=task['year'],
+                                                                 codes=codes_table(config['taxonomy']))),
+                dict(role='user', content=f'Located annexes ({len(pages)} pages in the report):\n\n{excerpts}\n\n'
+                                          'Read the "Primes émises" amounts, check, then submit.')]

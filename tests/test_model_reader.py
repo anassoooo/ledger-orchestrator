@@ -7,8 +7,9 @@ import unittest
 import unittest.mock
 
 from ledger_orchestrator.evaluation.model_reader import (CallRecorder, ChatClient, ModelReader, ProviderError,
-                                                         ReplayMissing, api_key, fit_context, page_rows)
-from test_harness import NONLIFE, TAXONOMY, document, proposals
+                                                         ReplayMissing, ScopedModelReader, api_key, fit_context,
+                                                         locate_annexes, page_rows)
+from test_harness import NONLIFE, TAXONOMY, WIDTH, document, proposals, row_words
 
 CONFIG = dict(taxonomy=TAXONOMY, rounding_tolerance_tnd=3)
 TASK = dict(task_id='example:2020', profile_id='example', company='EXAMPLE', year=2020)
@@ -192,6 +193,52 @@ class ModelReaderTests(unittest.TestCase):
                          [m.end() for m in re.finditer(r'\d(?=\s{2,}|$)', acquired)])
         self.assertLessEqual(abs(header.index('AUTOMOBILE') - issued.index('1 200')), 3)
         self.assertLessEqual(abs(header.index('TRANSPORT') - issued.index('150')), 3)
+
+
+def titled_statement(number, title, label, amounts):
+    words = row_words(10, title, []) + row_words(25, label, [(300 + 80 * i, v) for i, v in enumerate(amounts)])
+    return dict(page=number, width=WIDTH, height=800, method='native', words=words,
+                text=title + '\n' + label + ' ' + ' '.join(f'{v:,}'.replace(',', ' ') for v in amounts))
+
+
+class ScopedReaderTests(unittest.TestCase):
+    def reader(self, transport, folder):
+        client = ChatClient('groq', 'example-model', key=SECRET, transport=transport, sleep=lambda s: None)
+        return ScopedModelReader(client, CallRecorder(folder))
+
+    def test_locator_finds_annexes_statements_and_printing_variants(self):
+        pages = document() + [
+            titled_statement(5, "Etat de résultat technique vie", 'PRV11PRIMES émises et acceptées', [700, 9]),
+            titled_statement(6, "Résultat technique par catégorie d'assurance non vie", '‐PRIMES EMISES', [5]),
+            titled_statement(7, 'Ventilation des primes par zone', 'Primes émises', [5])]
+        found = {page['page']: label for page, label, _, _ in locate_annexes(pages)}
+        self.assertEqual(found, {1: 'category annex, non-life', 3: 'category annex, life',
+                                 5: 'technical statement, life', 6: 'category annex, non-life'})
+
+    def test_scoped_reader_reads_only_the_located_excerpts_then_checks_and_submits(self):
+        answer = proposals()
+        script = [reply(tool_call('check', dict(proposals=answer), 1)),
+                  reply(tool_call('submit', dict(proposals=answer), 2))]
+        with tempfile.TemporaryDirectory() as temp:
+            provider = ScriptedProvider(script)
+            reading = self.reader(provider, temp).read(TASK, document(), CONFIG)
+        self.assertEqual(reading.proposals, answer)
+        self.assertEqual(reading.usage['calls'], 2)
+        payload = provider.requests[0]['payload']
+        self.assertEqual({t['function']['name'] for t in payload['tools']}, {'read_page', 'check', 'submit', 'abstain'})
+        opening = payload['messages'][1]['content']
+        self.assertIn('page 1 (category annex, non-life', opening)
+        self.assertRegex(opening, r'Primes\s+émises')
+        # The excerpt stops at the "Primes émises" row: later rows are not sent.
+        self.assertNotIn('Solde', opening)
+
+    def test_nothing_located_abstains_without_calling_the_model(self):
+        def offline(*_):
+            raise AssertionError('no request expected')
+        with tempfile.TemporaryDirectory() as temp:
+            reading = self.reader(offline, temp).read(TASK, [document()[1]], CONFIG)
+        self.assertTrue(reading.abstained.startswith('no premium page located'))
+        self.assertEqual(reading.usage['calls'], 0)
 
 
 if __name__ == '__main__':
