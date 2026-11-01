@@ -26,12 +26,15 @@ from ledger_orchestrator.pipeline import execute, save_json
 FILENAME = 'TAF_consolide.xlsx'
 
 
-def run_profile(root, output, config_path, base):
+def profile_kind(config_path):
+    return json.loads(Path(config_path).read_text(encoding='utf-8')).get('kind', 'statements')
+
+
+def run_profile(root, output, config_path, base=None, years=None):
     """Dispatch by profile kind: full statements, or premium history only."""
-    kind = json.loads(Path(config_path).read_text(encoding='utf-8')).get('kind', 'statements')
-    if kind == 'premium_history':
-        return execute_history(root, output, Path(config_path), base_workbook=base)
-    return execute(root, output, Path(config_path), base_workbook=base)
+    if profile_kind(config_path) == 'premium_history':
+        return execute_history(root, output, Path(config_path), years, base_workbook=base)
+    return execute(root, output, Path(config_path), years, base_workbook=base)
 
 
 def consolidate(root, output, config_paths):

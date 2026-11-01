@@ -1,3 +1,4 @@
+import contextlib
 import json
 import tempfile
 import unittest
@@ -6,6 +7,16 @@ from unittest.mock import patch
 
 from ledger_orchestrator.review.copilot import ABSTENTION, LocalModelUnavailable, ReadOnlyCopilot, local_model_settings
 from ledger_orchestrator.api.gateway import ALLOWED_PATH
+
+
+@contextlib.contextmanager
+def closing_review_workflow(api, output):
+    """Close the API's cached review database so its directory can be deleted."""
+    try:
+        yield
+    finally:
+        api.review_workflow(str(output / 'review_graph.sqlite3')).close()
+        api.review_workflow.cache_clear()
 
 
 def sample_report():
@@ -137,7 +148,10 @@ class CopilotTests(unittest.TestCase):
             report_bytes = json.dumps(report).encode('utf-8')
             (folder / 'report.json').write_bytes(report_bytes)
             (folder / 'STAR_consolide.xlsx').write_bytes(b'unchanged workbook')
-            with patch.object(api, 'OUTPUT', output), patch.dict('os.environ', {'CMF_LLM_MODEL': ''}, clear=False):
+            # The cached review workflow holds the SQLite file open; Windows cannot
+            # delete an open file, so it is closed before the directory is removed.
+            with closing_review_workflow(api, output), patch.object(api, 'OUTPUT', output), \
+                    patch.dict('os.environ', {'CMF_LLM_MODEL': ''}, clear=False):
                 with TestClient(api.app) as client:
                     self.assertFalse(client.get('/copilot/status').json()['enabled'])
                     detail = client.get(f'/runs/{run_id}/review/TAF_G1-Q53').json()

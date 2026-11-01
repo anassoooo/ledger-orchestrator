@@ -76,6 +76,15 @@ disponibles. `POST /runs` accepte un identifiant déclaré côté serveur :
 
 Omettre `profile_id` conserve le profil `CMF_CONFIG`. Omettre `years` utilise ses
 exercices. L'API n'accepte pas de chemin de configuration ou de PDF fourni par le client.
+
+Le catalogue comprend les profils d'états (`config/*.json`) et d'historique des
+primes (`config/history/*.json`), distingués par `kind`. La même commande
+`python -m ledger_orchestrator --config …` exécute l'un ou l'autre selon son `kind`.
+`POST /consolidations` prend une liste ordonnée d'identifiants :
+
+```json
+{"profile_ids":["star","comar","star_premium_history","comar_premium_history","astree_premium_history"]}
+```
 La revue ouvre le chemin de preuve enregistré, y compris lorsqu'un comparatif
 provient du PDF de l'exercice suivant. Le téléchargement utilise le nom enregistré
 dans le rapport.

@@ -8,6 +8,10 @@ class RunRequest(BaseModel):
     years:list[int]|None=Field(default=None,min_length=1,max_length=201)
 
 
+class ConsolidationRequest(BaseModel):
+    profile_ids:list[str]=Field(min_length=1,max_length=12)
+
+
 class ReviewDecision(BaseModel):
     action:str
     reviewer:str=Field(min_length=2,max_length=80)

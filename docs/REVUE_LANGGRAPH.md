@@ -47,6 +47,14 @@ le rapport en lecture seule et ne change pas le graphe de revue humaine. Voir
 | `POST /runs/{run_id}/review/{case_id}/start` | Créer le point d'interruption |
 | `POST /runs/{run_id}/review/{case_id}/decision` | Reprendre avec une décision humaine |
 | `GET /runs/{run_id}/review/{case_id}/source` | PDF source, servi en lecture seule |
+| `POST /consolidations` | Exécuter plusieurs profils, dans l'ordre donné, sur une seule copie du modèle |
+| `GET /consolidations` | Consolidations disponibles et leurs runs |
+| `GET /consolidations/{id}` | Résumé et contrôles de la consolidation |
+| `GET /consolidations/{id}/workbook` | Classeur consolidé, seulement si tous les contrôles ont réussi |
+
+Les runs d'historique des primes (TAF_G3) apparaissent dans `GET /runs` avec
+`kind: premium_history` ; leurs cellules non admises s'ouvrent dans la même file
+de revue, avec le motif de rejet de l'exercice.
 
 Le serveur reste lié à l'interface loopback. Cette version ne fournit pas
 d'authentification multi-utilisateur, de validation comptable par clic, ni de

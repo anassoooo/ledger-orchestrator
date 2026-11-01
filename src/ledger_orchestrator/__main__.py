@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 from pathlib import Path
-from ledger_orchestrator.pipeline import execute
+from ledger_orchestrator.consolidate import run_profile
 
 
 def main():
@@ -12,8 +12,10 @@ def main():
     parser.add_argument('--config',type=Path,default=Path(os.getenv('CMF_CONFIG','config/star.json')))
     parser.add_argument('--years',nargs='+',type=int,help='Exercices du profil ; tous par défaut')
     args=parser.parse_args()
-    result=execute(args.root,args.output,args.config,args.years)
-    print(json.dumps({k:result[k] for k in ('run_id','status','written_cells','workbook')},ensure_ascii=False))
+    # Statements and premium-history profiles share one entry point (and the API worker).
+    result=run_profile(args.root,args.output,args.config,years=args.years)
+    print(json.dumps(dict(run_id=result['run_id'],kind=result.get('kind','statements'),status=result['status'],
+                          written_cells=len(result['writes']),workbook=result['workbook']),ensure_ascii=False))
 
 
 if __name__=='__main__':
