@@ -3,6 +3,8 @@
   python -m ledger_orchestrator.evaluation benchmark --root data --run outputs/<run_id>
   python -m ledger_orchestrator.evaluation answer-key --consolidation outputs/consolidated_<id> [--key KEY]
   python -m ledger_orchestrator.evaluation harness [--key KEY] [--readers deterministic abstain perturbed]
+  python -m ledger_orchestrator.evaluation models                      (Groq models available to your key)
+  python -m ledger_orchestrator.evaluation harness --readers groq --model <id> [--tasks star_] [--replay]
 """
 import argparse
 from datetime import datetime, timezone
@@ -13,6 +15,7 @@ from ledger_orchestrator.evaluation.answer_key import build_answer_key, load_ans
 from ledger_orchestrator.evaluation.benchmark import benchmark
 from ledger_orchestrator.evaluation.coverage_matrix import coverage_matrix
 from ledger_orchestrator.evaluation.harness import previous_answers, run_benchmark
+from ledger_orchestrator.evaluation.model_reader import CallRecorder, ChatClient, ModelReader
 from ledger_orchestrator.evaluation.readers import (PERTURBATIONS, AbstainReader, DeterministicReader,
                                                     PerturbedReader)
 
@@ -20,10 +23,13 @@ TEMPLATE = 'templates/TAF_G1_G2_G3_G4.xlsx'
 KEY = Path('outputs/benchmark/answer_key_premiums.json')
 
 
-def readers(names, key):
+def readers(names, key, args=None):
     result = []
     for name in names:
-        if name == 'deterministic':
+        if name == 'groq':
+            recorder = CallRecorder(args.key.parent / 'calls', 'replay' if args.replay else 'record')
+            result.append(ModelReader(ChatClient('groq', args.model), recorder))
+        elif name == 'deterministic':
             result.append(DeterministicReader())
         elif name == 'abstain':
             result.append(AbstainReader())
@@ -36,7 +42,10 @@ def readers(names, key):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('command', choices=['coverage', 'benchmark', 'answer-key', 'harness'])
+    parser.add_argument('command', choices=['coverage', 'benchmark', 'answer-key', 'harness', 'models'])
+    parser.add_argument('--model', help='Provider model identifier for a model reader (harness)')
+    parser.add_argument('--replay', action='store_true', help='Replay recorded model calls only; no network')
+    parser.add_argument('--tasks', nargs='+', help='Only tasks whose identifier contains one of these strings')
     parser.add_argument('--root', type=Path, default=Path('data'))
     parser.add_argument('--workbook', type=Path)
     parser.add_argument('--run', type=Path, help='Run folder containing report.json')
@@ -58,15 +67,23 @@ def main():
             statuses[task['status']] = statuses.get(task['status'], 0) + 1
         result = dict(key=str(args.key), sha256=key['sha256'], tasks=len(key['tasks']), by_status=statuses,
                       expected_answers=sum(len(t['expected']) for t in key['tasks']))
+    elif args.command == 'models':
+        result = dict(provider='groq', models=ChatClient('groq', 'listing').models())
     elif args.command == 'harness':
         key = load_answer_key(args.key)
-        result = run_benchmark(key, readers(args.readers, key), args.root, args.cache)
+        if 'groq' in args.readers and not args.model:
+            parser.error('the groq reader needs --model (list them with: evaluation models)')
+        if args.tasks:
+            # A subset run reports its scope; the key itself stays frozen and complete.
+            key = dict(key, tasks=[t for t in key['tasks'] if any(s in t['task_id'] for s in args.tasks)])
+        result = run_benchmark(key, readers(args.readers, key, args), args.root, args.cache)
         folder = args.key.parent / ('harness_' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S'))
         folder.mkdir(parents=True)
         (folder / 'results.json').write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding='utf-8')
         if not args.full:
             result = dict(folder=str(folder), answer_key=result['answer_key'], results=[
                 {k: r[k] for k in ('reader', 'summary', 'seconds', 'usage', 'perturbations') if k in r}
+                | dict(abstentions={t['task_id']: t['abstained'] for t in r.get('tasks', []) if t.get('abstained')})
                 for r in result['results']])
     elif args.command == 'coverage':
         result = coverage_matrix(template, args.root / 'sources', args.workbook)
